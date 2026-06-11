@@ -11,6 +11,30 @@ export default function MobileNavIcon({ name, active = false }) {
           <rect x="13" y="13" width="8" height="8" rx="1.5" stroke={stroke} strokeWidth="1.8" />
         </svg>
       );
+    case 'megaphone':
+      return (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M4 10v4a2 2 0 0 0 2 2h1l5 4V6L7 10H6a2 2 0 0 0-2 2z"
+            stroke={stroke}
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16 8.5a4.5 4.5 0 0 1 0 7"
+            stroke={stroke}
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="M18.5 6a7.5 7.5 0 0 1 0 12"
+            stroke={stroke}
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            opacity="0.55"
+          />
+        </svg>
+      );
     case 'users':
       return (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
