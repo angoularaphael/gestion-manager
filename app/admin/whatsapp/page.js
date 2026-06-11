@@ -48,10 +48,7 @@ export default function WhatsAppPage() {
         const res = await fetch('/api/admin/whatsapp?action=start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            method,
-            phone: method === 'pairing_code' ? phone.replace(/\D/g, '') : undefined,
-          }),
+          body: JSON.stringify({ method, phone: method === 'pairing_code' ? phone : undefined }),
           signal: AbortSignal.timeout(15000),
         });
         const data = await res.json().catch(() => ({}));
@@ -123,7 +120,7 @@ export default function WhatsAppPage() {
             />
           )}
           <ActionButton className="btn primary" onClick={start} loading={starting}>
-            {starting ? 'Démarrage…' : method === 'pairing_code' ? 'Générer le code' : 'Générer le QR'}
+            {starting ? 'Démarrage…' : 'Démarrer / QR'}
           </ActionButton>
           <ActionButton className="btn danger" onClick={logout} loading={loggingOut}>
             {loggingOut ? 'Déconnexion…' : 'Déconnecter'}
