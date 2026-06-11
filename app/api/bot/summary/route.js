@@ -11,7 +11,15 @@ export async function GET() {
   const config = getBotConfig();
   const summary = {
     config,
-    whatsapp: { loading: false, connected: false, connecting: false, error: null },
+    whatsapp: {
+      loading: false,
+      connected: false,
+      connecting: false,
+      qr: null,
+      pairingCode: null,
+      qrError: null,
+      error: null,
+    },
     email: { loading: false, configured: false, error: null },
   };
 
@@ -25,6 +33,9 @@ export async function GET() {
     const status = await botFetch('/api/status');
     summary.whatsapp.connected = Boolean(status.connected);
     summary.whatsapp.connecting = Boolean(status.connecting);
+    summary.whatsapp.qr = status.qr || null;
+    summary.whatsapp.pairingCode = status.pairingCode || null;
+    summary.whatsapp.qrError = status.qrError || null;
   } catch (e) {
     summary.whatsapp.error = e.message;
   }
