@@ -14,28 +14,24 @@ export default function WhatsAppPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch('/api/bot/summary', { cache: 'no-store' });
+      const res = await fetch('/api/admin/whatsapp', { cache: 'no-store' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setStatus({
           connected: false,
-          error: data.error || 'Connexion au bot impossible.',
+          error: data.error || 'Bot inaccessible.',
         });
         return;
       }
-      if (data.whatsapp?.error) {
-        setStatus({ connected: false, error: data.whatsapp.error });
-        return;
-      }
       setStatus({
-        connected: Boolean(data.whatsapp?.connected),
-        connecting: Boolean(data.whatsapp?.connecting),
-        qr: data.whatsapp?.qr || null,
-        pairingCode: data.whatsapp?.pairingCode || null,
-        qrError: data.whatsapp?.qrError || null,
+        connected: Boolean(data.connected),
+        connecting: Boolean(data.connecting),
+        qr: data.qr || null,
+        pairingCode: data.pairingCode || null,
+        qrError: data.qrError || null,
       });
     } catch {
-      setStatus({ connected: false, error: 'Connexion au bot impossible.' });
+      setStatus({ connected: false, error: 'Bot inaccessible.' });
     }
   }, []);
 
@@ -49,13 +45,10 @@ export default function WhatsAppPage() {
     if (starting) return;
     await runStart(async () => {
       try {
-        const res = await fetch('/api/bot', {
+        const res = await fetch('/api/admin/whatsapp?action=start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            path: '/api/start',
-            body: { method, phone: method === 'pairing_code' ? phone : undefined },
-          }),
+          body: JSON.stringify({ method, phone: method === 'pairing_code' ? phone : undefined }),
           signal: AbortSignal.timeout(15000),
         });
         const data = await res.json().catch(() => ({}));
@@ -67,7 +60,7 @@ export default function WhatsAppPage() {
           ...s,
           qrError: String(e.message || e).includes('abort')
             ? 'Délai dépassé — réessayez dans quelques instants.'
-            : 'Connexion impossible pour le moment.',
+            : 'Bot inaccessible.',
         }));
       } finally {
         refresh();
@@ -78,11 +71,7 @@ export default function WhatsAppPage() {
   async function logout() {
     if (loggingOut) return;
     await runLogout(async () => {
-      await fetch('/api/bot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/api/logout', body: {} }),
-      });
+      await fetch('/api/admin/whatsapp?action=logout', { method: 'POST' });
       refresh();
     });
   }
