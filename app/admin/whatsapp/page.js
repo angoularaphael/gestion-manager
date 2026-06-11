@@ -30,6 +30,9 @@ export default function WhatsAppPage() {
       setStatus({
         connected: Boolean(data.whatsapp?.connected),
         connecting: Boolean(data.whatsapp?.connecting),
+        qr: data.whatsapp?.qr || null,
+        pairingCode: data.whatsapp?.pairingCode || null,
+        qrError: data.whatsapp?.qrError || null,
       });
     } catch {
       setStatus({ connected: false, error: 'Connexion au bot impossible.' });
