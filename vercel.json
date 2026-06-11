@@ -1,7 +1,0 @@
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": ".",
-  "rewrites": [
-    { "source": "/((?!assets|css|js|config\\.js).*)", "destination": "/index.html" }
-  ]
-}

@@ -1,9 +1,18 @@
 {
   "name": "gestion-manager",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Console Boxing Center — gestion managers & messagerie",
   "scripts": {
-    "build": "node scripts/inject-config.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "bcryptjs": "^3.0.2",
+    "jose": "^5.9.6",
+    "next": "^14.2.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
