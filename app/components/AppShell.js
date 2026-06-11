@@ -19,28 +19,25 @@ export default function AppShell({ user, children }) {
   }, [pathname]);
 
   useEffect(() => {
-    if (!open) {
-      document.body.style.overflow = '';
-      return undefined;
-    }
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
+    if (!open) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
     };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [open]);
+
+  function closeSidebar() {
+    setOpen(false);
+  }
+
+  function toggleSidebar() {
+    setOpen((v) => !v);
+  }
 
   return (
     <div className={`app-shell ${open ? 'sidebar-open' : ''}`}>
-      {open && (
-        <button
-          type="button"
-          className="sidebar-overlay"
-          aria-label="Fermer le menu"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      <aside className={`sidebar ${open ? 'open' : ''}`} aria-hidden={!open}>
+      <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-brand">
           <div className="sidebar-brand-inner">
             <Image src="/logo.png" alt="Boxing Center" width={140} height={36} className="brand-logo" priority />
@@ -50,7 +47,7 @@ export default function AppShell({ user, children }) {
             type="button"
             className="sidebar-close"
             aria-label="Fermer le menu"
-            onClick={() => setOpen(false)}
+            onClick={closeSidebar}
           >
             ×
           </button>
@@ -71,7 +68,7 @@ export default function AppShell({ user, children }) {
                       key={link.href}
                       href={link.href}
                       className={active ? 'active' : ''}
-                      onClick={() => setOpen(false)}
+                      onClick={closeSidebar}
                     >
                       {link.text}
                     </Link>
@@ -97,15 +94,25 @@ export default function AppShell({ user, children }) {
           <button
             type="button"
             className="menu-toggle"
-            aria-label="Ouvrir le menu"
+            aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
             aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
+            onClick={toggleSidebar}
           >
             <BurgerIcon />
           </button>
           <h2 className="topbar-title">{topbarTitle}</h2>
           <div className="topbar-user">{user?.email}</div>
         </header>
+
+        {open && (
+          <button
+            type="button"
+            className="sidebar-overlay"
+            aria-label="Fermer le menu"
+            onClick={closeSidebar}
+          />
+        )}
+
         <main className="main">{children}</main>
       </div>
     </div>

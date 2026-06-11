@@ -8,16 +8,13 @@ const SPLASH_MS = 2800;
 const EXIT_MS = 650;
 
 export default function AppBoot({ children }) {
-  const [phase, setPhase] = useState('hidden');
+  const [phase, setPhase] = useState('done');
 
   useEffect(() => {
     registerServiceWorker();
 
     const seen = sessionStorage.getItem('bc_splash_seen');
-    if (seen) {
-      setPhase('done');
-      return undefined;
-    }
+    if (seen) return undefined;
 
     setPhase('show');
     const exitTimer = setTimeout(() => setPhase('exit'), SPLASH_MS);
@@ -32,10 +29,12 @@ export default function AppBoot({ children }) {
     };
   }, []);
 
+  const hideApp = phase === 'show' || phase === 'exit';
+
   return (
     <>
-      {phase === 'show' || phase === 'exit' ? <WelcomeSplash phase={phase} /> : null}
-      <div className={phase !== 'done' ? 'app-boot--behind-splash' : undefined}>{children}</div>
+      {hideApp ? <WelcomeSplash phase={phase} /> : null}
+      <div className={hideApp ? 'app-boot--behind-splash' : undefined}>{children}</div>
     </>
   );
 }
