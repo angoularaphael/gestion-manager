@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { parseClientJson } from '../../../lib/bot';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 
@@ -241,14 +242,6 @@ export default function EnvoyerPage() {
       test_only: testOnly,
     };
 
-    if (channels.includes('email') && (testOnly || mode === 'single')) {
-      payload.html = buildEmailHtml({
-        subject,
-        body: message,
-        recipientName: testOnly ? 'Atangana' : selectedManager?.nom || '',
-      });
-    }
-
     if (testOnly) {
       // test only
     } else if (mode === 'single') {
@@ -288,7 +281,7 @@ export default function EnvoyerPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: '/api/send-to-managers', body: payload }),
       });
-      const data = await res.json();
+      const data = await parseClientJson(res);
       if (!res.ok) throw new Error(data.error || 'Erreur envoi');
       setResult({
         success: true,

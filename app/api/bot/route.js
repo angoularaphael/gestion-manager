@@ -3,7 +3,7 @@ import { botFetch } from '../../../lib/bot';
 import { getSession } from '../../../lib/session';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 25;
+export const maxDuration = 60;
 
 export async function GET(request) {
   const session = await getSession();
