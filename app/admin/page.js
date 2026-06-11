@@ -5,9 +5,13 @@ export default async function DashboardPage() {
   let status = {};
   try {
     stats = await botFetch('/api/managers/stats');
-    status = await botFetch('/api/status');
   } catch (e) {
     stats = { error: e.message };
+  }
+  try {
+    status = await botFetch('/api/status');
+  } catch {
+    status = { connected: false };
   }
 
   return (
