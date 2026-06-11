@@ -69,9 +69,6 @@ export default function UserForm() {
     <div className="admin-users-layout">
       <form className="card" onSubmit={onSubmit}>
         <h2>Ajouter un administrateur</h2>
-        <p className="muted" style={{ marginTop: '-0.25rem', marginBottom: '1rem' }}>
-          Seul le super administrateur peut créer des comptes équipe (rôle administrateur).
-        </p>
 
         <label htmlFor="user-email">Email</label>
         <input id="user-email" name="email" type="email" required placeholder="collaborateur@exemple.fr" />

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ADMIN_NAV, titleForPath } from '../../lib/adminNav';
 import InstallPwa from './InstallPwa';
+import LogoutButton from './LogoutButton';
 
 export default function AppShell({ user, children }) {
   const pathname = usePathname();
@@ -61,11 +62,7 @@ export default function AppShell({ user, children }) {
             <span className="sidebar-user-label">Session</span>
             <strong>{user?.email || '—'}</strong>
           </div>
-          <form action="/api/auth/logout" method="post">
-            <button type="submit" className="btn-logout">
-              Déconnexion
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </aside>
 
