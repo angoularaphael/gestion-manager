@@ -1223,4 +1223,412 @@ th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; colo
   .main { padding: 1rem; }
   .send-actions { flex-direction: column; }
   .send-actions .btn { width: 100%; }
+
+  .admin-users-layout { grid-template-columns: 1fr; }
+  .password-field { flex-wrap: wrap; }
+  .password-field input { min-width: 0; flex: 1 1 100%; }
+}
+
+/* Administrateurs */
+.page-lead { margin: -0.5rem 0 1.25rem; max-width: 52rem; }
+
+.admin-users-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 340px);
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.password-field {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.password-field input { flex: 1; margin-bottom: 0; }
+
+.field-hint {
+  margin: -0.65rem 0 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.send-credentials-fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.send-credentials-fieldset legend {
+  padding: 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.inline-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border: none;
+}
+
+.inline-check input { width: auto; margin: 0; }
+
+.credentials-created h3 { margin: 0 0 0.75rem; font-size: 1rem; }
+
+.credentials-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.credentials-dl dt { color: var(--muted); margin: 0; }
+.credentials-dl dd { margin: 0; word-break: break-all; }
+
+.password-reveal {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  background: #f1f5f9;
+  border-radius: 4px;
+  font-size: 0.88rem;
+}
+
+.delivery-status { margin-bottom: 0.75rem; }
+.ok-msg { color: var(--ok); font-size: 0.88rem; margin: 0.25rem 0; }
+
+.badge.super {
+  background: rgba(37, 99, 235, 0.14);
+  color: var(--accent);
+}
+
+.row-super-admin td { background: rgba(37, 99, 235, 0.04); }
+
+.btn.sm {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+/* Splash d'accueil */
+.app-boot--behind-splash {
+  visibility: hidden;
+  overflow: hidden;
+  max-height: 100vh;
+}
+
+.welcome-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  background: #0f172a;
+  animation: splashEnter 0.5s ease;
+}
+
+.welcome-splash--exit {
+  animation: splashExit 0.65s ease forwards;
+  pointer-events: none;
+}
+
+.welcome-splash__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37, 99, 235, 0.35), transparent 55%),
+    linear-gradient(165deg, #0f172a 0%, #1e3a5f 48%, #0f172a 100%);
+}
+
+.welcome-splash__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.45;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.welcome-splash__glow--a {
+  width: 280px;
+  height: 280px;
+  top: 12%;
+  left: 10%;
+  background: #2563eb;
+}
+
+.welcome-splash__glow--b {
+  width: 220px;
+  height: 220px;
+  bottom: 15%;
+  right: 8%;
+  background: #60a5fa;
+  animation-delay: 1.2s;
+}
+
+.welcome-splash__content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 28rem;
+  color: #fff;
+}
+
+.welcome-splash__logo-wrap {
+  margin-bottom: 1.5rem;
+  animation: logoReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.welcome-splash__logo {
+  width: auto;
+  height: auto;
+  max-width: min(220px, 72vw);
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
+}
+
+.welcome-splash__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #93c5fd;
+  animation: textRise 0.7s ease 0.25s both;
+}
+
+.welcome-splash__title {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.35rem, 5vw, 1.85rem);
+  font-weight: 800;
+  line-height: 1.25;
+  animation: textRise 0.7s ease 0.4s both;
+}
+
+.welcome-splash__title span {
+  display: block;
+  margin-top: 0.25rem;
+  background: linear-gradient(90deg, #fff, #93c5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.welcome-splash__tagline {
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  animation: textRise 0.7s ease 0.55s both;
+}
+
+.welcome-splash__loader {
+  width: min(220px, 60vw);
+  height: 4px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  animation: textRise 0.7s ease 0.7s both;
+}
+
+.welcome-splash__loader-bar {
+  display: block;
+  height: 100%;
+  width: 40%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #93c5fd);
+  animation: loaderSlide 1.4s ease-in-out infinite;
+}
+
+@keyframes splashEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes splashExit {
+  to { opacity: 0; transform: scale(1.03); }
+}
+
+@keyframes logoReveal {
+  from { opacity: 0; transform: scale(0.82) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes textRise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.12); opacity: 0.55; }
+}
+
+@keyframes loaderSlide {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+/* PWA install */
+.btn-install-pwa {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.2);
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-install-pwa:hover {
+  background: rgba(37, 99, 235, 0.35);
+}
+
+.btn-install-pwa.ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ios-install-hint {
+  margin-bottom: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.ios-install-hint p { margin: 0 0 0.5rem; }
+
+.install-pwa-login .btn-install-pwa {
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: var(--accent);
+}
+
+.install-pwa-login .btn-install-pwa:hover {
+  background: #dbeafe;
+}
+
+.install-pwa-login .ios-install-hint {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* Responsive — renforts */
+.dashboard-card .btn { margin-top: 0.5rem; }
+
+.wa-phone-input {
+  width: 100%;
+  max-width: 200px;
+  margin: 0;
+}
+
+.wa-commands-card { margin-top: 1rem; }
+.wa-commands-lead { margin-bottom: 1rem; font-size: 0.9rem; }
+
+@media (max-width: 767px) {
+  .login-card {
+    margin: 1rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .alert-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .alert-banner .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .wa-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wa-actions select,
+  .wa-actions input,
+  .wa-actions .btn {
+    width: 100%;
+    max-width: none;
+  }
+
+  .wa-phone-input { max-width: none; }
+
+  .commands-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .command-group li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .admin-users-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .credentials-created {
+    order: -1;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .topbar-title {
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 55vw;
+  }
+
+  .broadcast-options {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-tabs {
+    flex-direction: column;
+  }
+
+  .mode-tabs button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main { padding: 0.75rem; }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .welcome-splash__eyebrow {
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+  }
 }

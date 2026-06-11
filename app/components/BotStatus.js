@@ -5,21 +5,21 @@ import { useEffect, useState } from 'react';
 
 export default function BotStatus() {
   const [status, setStatus] = useState({ loading: true, connected: false, error: null });
-  const [emailStatus, setEmailStatus] = useState(null);
+  const [emailReady, setEmailReady] = useState(null);
 
   useEffect(() => {
     fetch('/api/bot?path=' + encodeURIComponent('/api/status'))
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
-        if (!ok) throw new Error(d.error || 'Bot inaccessible');
-        setStatus({ loading: false, connected: Boolean(d.connected), error: null, data: d });
+        if (!ok) throw new Error(d.error || 'Service indisponible');
+        setStatus({ loading: false, connected: Boolean(d.connected), error: null });
       })
-      .catch((e) => setStatus({ loading: false, connected: false, error: e.message }));
+      .catch(() => setStatus({ loading: false, connected: false, error: true }));
 
     fetch('/api/bot?path=' + encodeURIComponent('/api/email-status'))
       .then((r) => r.json())
-      .then((d) => setEmailStatus(d))
-      .catch(() => setEmailStatus(null));
+      .then((d) => setEmailReady(Boolean(d?.configured)))
+      .catch(() => setEmailReady(false));
   }, []);
 
   return (
@@ -27,42 +27,14 @@ export default function BotStatus() {
       {status.error && (
         <div className="alert-banner warn">
           <div>
-            <strong>Bot hors ligne</strong>
-            <p>
-              {status.error} — Les managers restent visibles via Supabase. WhatsApp et envois passent
-              par le bot Bothosting.
-            </p>
+            <strong>Messagerie temporairement indisponible</strong>
+            <p>La liste des managers reste accessible. Réessayez l&apos;envoi plus tard.</p>
           </div>
-        </div>
-      )}
-
-      {emailStatus && !emailStatus.configured && (
-        <div className="alert-banner warn">
-          <div>
-            <strong>Email Brevo non prêt</strong>
-            <p>
-              {!emailStatus.hasApiKey && 'Clé API Brevo manquante sur le bot. '}
-              {emailStatus.hasApiKey && !emailStatus.senderVerified && (
-                <>
-                  Validez l&apos;expéditeur <code>{emailStatus.senderEmail}</code> dans Brevo →
-                  Expéditeurs.
-                </>
-              )}
-            </p>
-          </div>
-          <a
-            href="https://app.brevo.com/senders"
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-sm"
-          >
-            Configurer Brevo
-          </a>
         </div>
       )}
 
       <div className="dashboard-cards">
-        <div className="card">
+        <div className="card dashboard-card">
           <h2>WhatsApp</h2>
           <p>
             Statut :{' '}
@@ -79,41 +51,28 @@ export default function BotStatus() {
           </Link>
         </div>
 
-        <div className="card">
+        <div className="card dashboard-card">
           <h2>Envoi de messages</h2>
-          <p className="muted">
-            Utilisez « Test atangana (seul) » pour tester sans contacter les vrais managers.
-          </p>
+          <p className="muted">Contactez vos managers par email ou WhatsApp.</p>
           <Link href="/admin/envoyer" className="btn">
             Envoyer
           </Link>
         </div>
 
-        {emailStatus && (
-          <div className="card">
-            <h2>Email (Brevo)</h2>
-            <ul className="info-list">
-              <li>
-                <span>Clé API</span>
-                <strong>{emailStatus.hasApiKey ? 'OK' : 'Manquante'}</strong>
-              </li>
-              <li>
-                <span>Expéditeur</span>
-                <strong>{emailStatus.senderEmail || '—'}</strong>
-              </li>
-              <li>
-                <span>Validé Brevo</span>
-                <strong className={emailStatus.senderVerified ? 'text-ok' : 'text-err'}>
-                  {emailStatus.senderVerified ? 'Oui' : 'Non'}
-                </strong>
-              </li>
-              <li>
-                <span>Réception</span>
-                <strong>{emailStatus.receptionEmail || '—'}</strong>
-              </li>
-            </ul>
-          </div>
-        )}
+        <div className="card dashboard-card">
+          <h2>Email</h2>
+          <p>
+            Statut :{' '}
+            {emailReady === null ? (
+              <span className="badge">…</span>
+            ) : (
+              <span className={`badge ${emailReady ? 'ok' : 'err'}`}>
+                {emailReady ? 'Disponible' : 'Indisponible'}
+              </span>
+            )}
+          </p>
+          <p className="muted">Envoi des messages depuis la console.</p>
+        </div>
       </div>
     </>
   );
