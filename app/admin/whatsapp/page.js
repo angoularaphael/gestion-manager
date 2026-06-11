@@ -11,20 +11,25 @@ export default function WhatsAppPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch('/api/bot?path=' + encodeURIComponent('/api/status'), {
-        cache: 'no-store',
-      });
+      const res = await fetch('/api/bot/summary', { cache: 'no-store' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setStatus({
           connected: false,
-          error: data.error || 'Connexion au bot impossible depuis Vercel.',
+          error: data.error || 'Connexion au bot impossible.',
         });
         return;
       }
-      setStatus(data);
+      if (data.whatsapp?.error) {
+        setStatus({ connected: false, error: data.whatsapp.error });
+        return;
+      }
+      setStatus({
+        connected: Boolean(data.whatsapp?.connected),
+        connecting: Boolean(data.whatsapp?.connecting),
+      });
     } catch {
-      setStatus({ connected: false, error: 'Connexion au bot impossible depuis Vercel.' });
+      setStatus({ connected: false, error: 'Connexion au bot impossible.' });
     }
   }, []);
 

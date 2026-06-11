@@ -1306,6 +1306,19 @@ th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; colo
   line-height: 1.45;
 }
 
+.alert-banner-detail {
+  margin-top: 0.5rem !important;
+  font-size: 0.82rem !important;
+  opacity: 0.92;
+}
+
+.alert-banner-detail code {
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
 .alert-banner.warn {
   background: #fffbeb;
   border-color: #fcd34d;
