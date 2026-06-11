@@ -33,34 +33,67 @@ function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, co
   );
 }
 
-function SelectedManagerChips({ managers, onRemove }) {
-  if (!managers.length) return null;
+function SendSidebar({ mode, broadcast, managers, audienceSummary, previewHtml, showEmailPreview, onRemove }) {
   return (
-    <div className="selected-managers">
-      <p className="selected-managers-label">
-        {managers.length} sélectionné{managers.length > 1 ? 's' : ''}
-      </p>
-      <div className="selected-chips">
-        {managers.map((m) => (
-          <span key={m.id} className="selected-chip">
-            <span className="selected-chip-name">{m.nom}</span>
-            {m.email || m.telephone ? (
-              <span className="selected-chip-meta">{m.email || m.telephone}</span>
-            ) : null}
-            {onRemove ? (
-              <button
-                type="button"
-                className="selected-chip-remove"
-                onClick={() => onRemove(m.id)}
-                aria-label={`Retirer ${m.nom}`}
-              >
-                ×
-              </button>
-            ) : null}
-          </span>
-        ))}
-      </div>
-    </div>
+    <aside className="send-sidebar">
+      <section className="send-sidebar-card">
+        <h3 className="send-sidebar-title">Sélection</h3>
+        {managers.length > 0 ? (
+          <ul className="sidebar-manager-list">
+            {managers.map((m) => (
+              <li key={m.id} className="sidebar-manager-item">
+                <div className="sidebar-manager-info">
+                  <strong>{m.nom}</strong>
+                  <span className="country-pill sm">{extractCountry(m)}</span>
+                  {m.email && <small>{m.email}</small>}
+                  {m.telephone && <small>{m.telephone}</small>}
+                </div>
+                {onRemove ? (
+                  <button
+                    type="button"
+                    className="sidebar-manager-remove"
+                    onClick={() => onRemove(m.id)}
+                    aria-label={`Retirer ${m.nom}`}
+                  >
+                    ×
+                  </button>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : audienceSummary ? (
+          <div className="sidebar-audience-summary">
+            <strong>{audienceSummary.count}</strong>
+            <span>{audienceSummary.label}</span>
+            {audienceSummary.country ? <small>Pays : {audienceSummary.country}</small> : null}
+          </div>
+        ) : (
+          <p className="muted sidebar-empty">
+            {mode === 'single'
+              ? 'Choisissez un manager dans la liste.'
+              : broadcast === 'selection'
+                ? 'Cochez des managers dans la liste.'
+                : 'Choisissez une audience.'}
+          </p>
+        )}
+        {managers.length > 0 && (
+          <p className="sidebar-count">
+            {managers.length} destinataire{managers.length > 1 ? 's' : ''}
+          </p>
+        )}
+      </section>
+
+      {showEmailPreview && (
+        <section className="send-preview">
+          <div className="preview-header">
+            <h3>Aperçu email</h3>
+          </div>
+          <div className="preview-frame">
+            <iframe title="Aperçu email" srcDoc={previewHtml} sandbox="" />
+          </div>
+        </section>
+      )}
+    </aside>
   );
 }
 
@@ -76,7 +109,6 @@ export default function EnvoyerPage() {
   const [subject, setSubject] = useState('Message Boxing Center');
   const [message, setMessage] = useState('');
   const [channels, setChannels] = useState(['email']);
-  const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -114,10 +146,40 @@ export default function EnvoyerPage() {
     () => managers.filter((m) => selectedIds.has(m.id)),
     [managers, selectedIds]
   );
+  const sidebarManagers = useMemo(() => {
+    if (mode === 'single') return selectedManager ? [selectedManager] : [];
+    if (broadcast === 'selection') return selectedManagers;
+    return [];
+  }, [mode, broadcast, selectedManager, selectedManagers]);
+
+  const audienceSummary = useMemo(() => {
+    if (mode !== 'bulk' || broadcast === 'selection') return null;
+    const count =
+      broadcast === 'email'
+        ? withEmail.length
+        : broadcast === 'phone'
+          ? withPhone.length
+          : filtered.length;
+    const labels = {
+      email: 'managers avec email',
+      phone: 'managers avec téléphone',
+      all: 'managers au total',
+    };
+    return {
+      count,
+      label: labels[broadcast] || 'managers',
+      country: country || null,
+    };
+  }, [mode, broadcast, withEmail.length, withPhone.length, filtered.length, country]);
+
+  const previewRecipient =
+    sidebarManagers[0]?.nom ||
+    (mode === 'bulk' && broadcast !== 'selection' ? '' : '');
+
   const previewHtml = buildEmailHtml({
     subject,
     body: message || '',
-    recipientName: selectedManager?.nom || '',
+    recipientName: previewRecipient,
   });
 
   const recipientCount = useMemo(() => {
@@ -228,7 +290,18 @@ export default function EnvoyerPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur envoi');
-      setResult({ success: true, data });
+      setResult({
+        success: true,
+        data,
+        previewHtml:
+          channels.includes('email')
+            ? buildEmailHtml({
+                subject,
+                body: message,
+                recipientName: testOnly ? 'Atangana' : previewRecipient,
+              })
+            : null,
+      });
     } catch (e) {
       setResult({ error: e.message });
     } finally {
@@ -293,10 +366,6 @@ export default function EnvoyerPage() {
                   country={country}
                   onCountryChange={setCountry}
                   countries={countries}
-                />
-                <SelectedManagerChips
-                  managers={selectedManager ? [selectedManager] : []}
-                  onRemove={() => setSelectedId('')}
                 />
                 <div className="manager-picker">
                   {loadingManagers ? (
@@ -381,10 +450,6 @@ export default function EnvoyerPage() {
                       onCountryChange={setCountry}
                       countries={countries}
                     />
-                    <SelectedManagerChips
-                      managers={selectedManagers}
-                      onRemove={(id) => toggleSelect(id)}
-                    />
                     <div className="selection-toolbar">
                       <button type="button" className="btn ghost" onClick={selectAllFiltered}>
                         Tout sélectionner
@@ -437,11 +502,6 @@ export default function EnvoyerPage() {
                 placeholder="Message"
               />
             </div>
-            {channels.includes('email') && (
-              <button type="button" className="btn ghost" onClick={() => setShowPreview((v) => !v)}>
-                {showPreview ? 'Masquer aperçu' : 'Aperçu'}
-              </button>
-            )}
           </section>
 
           <div className="send-actions">
@@ -516,22 +576,35 @@ export default function EnvoyerPage() {
                       </ul>
                     </details>
                   )}
+                  {result.previewHtml && (
+                    <div className="sent-preview">
+                      <h4>Aperçu de l&apos;email envoyé</h4>
+                      <div className="preview-frame sent-preview-frame">
+                        <iframe title="Email envoyé" srcDoc={result.previewHtml} sandbox="" />
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
           )}
         </div>
 
-        {showPreview && channels.includes('email') && (
-          <aside className="send-preview">
-            <div className="preview-header">
-              <h3>Aperçu</h3>
-            </div>
-            <div className="preview-frame">
-              <iframe title="Aperçu email" srcDoc={previewHtml} sandbox="" />
-            </div>
-          </aside>
-        )}
+        <SendSidebar
+          mode={mode}
+          broadcast={broadcast}
+          managers={sidebarManagers}
+          audienceSummary={audienceSummary}
+          previewHtml={previewHtml}
+          showEmailPreview={channels.includes('email')}
+          onRemove={
+            mode === 'single'
+              ? () => setSelectedId('')
+              : broadcast === 'selection'
+                ? (id) => toggleSelect(id)
+                : null
+          }
+        />
       </div>
     </div>
   );
