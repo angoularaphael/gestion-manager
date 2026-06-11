@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ActionButton from './ActionButton';
+import { useSingleAction } from '../../lib/useSingleAction';
 
 function isStandalone() {
   if (typeof window === 'undefined') return false;
@@ -20,10 +22,14 @@ export default function InstallPwa({ compact = false, variant = 'sidebar' }) {
   const rootClass = variant === 'login' ? 'install-pwa-login' : '';
   const [deferred, setDeferred] = useState(null);
   const [installed, setInstalled] = useState(false);
+  const [isIos, setIsIos] = useState(false);
   const [showIosHint, setShowIosHint] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const { run: runInstall, pending: installing } = useSingleAction();
 
   useEffect(() => {
+    setIsIos(isIosSafari());
+
     if (isStandalone()) {
       setInstalled(true);
       return undefined;
@@ -39,11 +45,13 @@ export default function InstallPwa({ compact = false, variant = 'sidebar' }) {
   }, []);
 
   async function onInstall() {
-    if (!deferred) return;
-    deferred.prompt();
-    const { outcome } = await deferred.userChoice;
-    if (outcome === 'accepted') setInstalled(true);
-    setDeferred(null);
+    if (!deferred || installing) return;
+    await runInstall(async () => {
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      if (outcome === 'accepted') setInstalled(true);
+      setDeferred(null);
+    });
   }
 
   if (installed || dismissed) return null;
@@ -51,18 +59,18 @@ export default function InstallPwa({ compact = false, variant = 'sidebar' }) {
   if (deferred) {
     return (
       <div className={rootClass}>
-        <button
-          type="button"
+        <ActionButton
           className={compact ? 'btn-install-pwa compact' : 'btn-install-pwa'}
           onClick={onInstall}
+          loading={installing}
         >
-          Installer l&apos;application
-        </button>
+          {installing ? 'Installation…' : "Installer l'application"}
+        </ActionButton>
       </div>
     );
   }
 
-  if (isIosSafari() && !showIosHint) {
+  if (isIos && !showIosHint) {
     return (
       <div className={rootClass}>
         <button

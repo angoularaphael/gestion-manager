@@ -1,16 +1,17 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import ActionButton from '../../components/ActionButton';
+import { useSingleAction } from '../../../lib/useSingleAction';
 
 export function UserDeleteButton({ email }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const { run, pending: deleting } = useSingleAction();
 
   async function onDelete() {
-    if (!confirm(`Supprimer l'accès de ${email} ?`)) return;
-    setLoading(true);
-    try {
+    if (deleting) return;
+    await run(async () => {
+      if (!confirm(`Supprimer l'accès de ${email} ?`)) return;
       const res = await fetch('/api/users', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -19,16 +20,12 @@ export function UserDeleteButton({ email }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
       router.refresh();
-    } catch (e) {
-      alert(e.message || 'Suppression impossible');
-    } finally {
-      setLoading(false);
-    }
+    }).catch((e) => alert(e.message || 'Suppression impossible'));
   }
 
   return (
-    <button type="button" className="btn danger sm" disabled={loading} onClick={onDelete}>
-      {loading ? '…' : 'Supprimer'}
-    </button>
+    <ActionButton className="btn danger sm" loading={deleting} onClick={onDelete}>
+      {deleting ? '…' : 'Supprimer'}
+    </ActionButton>
   );
 }

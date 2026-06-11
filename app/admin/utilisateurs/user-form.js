@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ActionButton from '../../components/ActionButton';
+import { useSingleAction } from '../../../lib/useSingleAction';
 
 function generatePassword() {
   const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -19,6 +21,7 @@ function formatPhoneDisplay(phone) {
 
 export default function UserForm() {
   const router = useRouter();
+  const { run, pending: saving } = useSingleAction();
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -28,6 +31,8 @@ export default function UserForm() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    if (saving) return;
+
     setError('');
     setCreated(null);
     const fd = new FormData(e.target);
@@ -40,34 +45,33 @@ export default function UserForm() {
       send_whatsapp: sendWhatsApp,
     };
 
-    const res = await fetch('/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error || 'Erreur');
-      return;
-    }
+    await run(async () => {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur');
 
-    setCreated({
-      email: data.user.email,
-      name: data.user.name,
-      password: payload.password,
-      phone: data.user.phone,
-      delivery: data.delivery,
-    });
-    setPassword('');
-    e.target.reset();
-    setSendEmail(true);
-    setSendWhatsApp(false);
-    router.refresh();
+      setCreated({
+        email: data.user.email,
+        name: data.user.name,
+        password: payload.password,
+        phone: data.user.phone,
+        delivery: data.delivery,
+      });
+      setPassword('');
+      e.target.reset();
+      setSendEmail(true);
+      setSendWhatsApp(false);
+      router.refresh();
+    }).catch((err) => setError(err.message));
   }
 
   return (
     <div className="admin-users-layout">
-      <form className="card" onSubmit={onSubmit}>
+      <form className={`card ${saving ? 'form-locked' : ''}`} onSubmit={onSubmit}>
         <h2>Ajouter un administrateur</h2>
 
         <div className="form-field">
@@ -150,9 +154,9 @@ export default function UserForm() {
         </fieldset>
 
         {error && <p className="error">{error}</p>}
-        <button type="submit" className="btn">
-          Enregistrer
-        </button>
+        <ActionButton type="submit" className="btn" loading={saving}>
+          {saving ? 'Enregistrement…' : 'Enregistrer'}
+        </ActionButton>
       </form>
 
       {created && (

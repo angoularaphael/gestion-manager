@@ -1,13 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import ActionButton from '../../components/ActionButton';
 import { BOT_COMMANDS } from '../../../lib/botCommands';
+import { useSingleAction } from '../../../lib/useSingleAction';
 
 export default function WhatsAppPage() {
   const [status, setStatus] = useState({});
   const [method, setMethod] = useState('qr');
   const [phone, setPhone] = useState('33762641473');
-  const [loading, setLoading] = useState(false);
+  const { run: runStart, pending: starting } = useSingleAction();
+  const { run: runLogout, pending: loggingOut } = useSingleAction();
 
   const refresh = useCallback(async () => {
     try {
@@ -40,41 +43,45 @@ export default function WhatsAppPage() {
   }, [refresh]);
 
   async function start() {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/bot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          path: '/api/start',
-          body: { method, phone: method === 'pairing_code' ? phone : undefined },
-        }),
-        signal: AbortSignal.timeout(15000),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setStatus((s) => ({ ...s, qrError: data.error || 'Échec du démarrage' }));
+    if (starting) return;
+    await runStart(async () => {
+      try {
+        const res = await fetch('/api/bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: '/api/start',
+            body: { method, phone: method === 'pairing_code' ? phone : undefined },
+          }),
+          signal: AbortSignal.timeout(15000),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setStatus((s) => ({ ...s, qrError: data.error || 'Échec du démarrage' }));
+        }
+      } catch (e) {
+        setStatus((s) => ({
+          ...s,
+          qrError: String(e.message || e).includes('abort')
+            ? 'Délai dépassé — réessayez dans quelques instants.'
+            : 'Connexion impossible pour le moment.',
+        }));
+      } finally {
+        refresh();
       }
-    } catch (e) {
-      setStatus((s) => ({
-        ...s,
-        qrError: String(e.message || e).includes('abort')
-          ? 'Délai dépassé — réessayez dans quelques instants.'
-          : 'Connexion impossible pour le moment.',
-      }));
-    } finally {
-      setLoading(false);
-      refresh();
-    }
+    });
   }
 
   async function logout() {
-    await fetch('/api/bot', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: '/api/logout', body: {} }),
+    if (loggingOut) return;
+    await runLogout(async () => {
+      await fetch('/api/bot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: '/api/logout', body: {} }),
+      });
+      refresh();
     });
-    refresh();
   }
 
   return (
@@ -120,12 +127,12 @@ export default function WhatsAppPage() {
               aria-label="Numéro WhatsApp"
             />
           )}
-          <button type="button" className="btn primary" onClick={start} disabled={loading}>
-            {loading ? 'Démarrage…' : 'Démarrer / QR'}
-          </button>
-          <button type="button" className="btn danger" onClick={logout}>
-            Déconnecter
-          </button>
+          <ActionButton className="btn primary" onClick={start} loading={starting}>
+            {starting ? 'Démarrage…' : 'Démarrer / QR'}
+          </ActionButton>
+          <ActionButton className="btn danger" onClick={logout} loading={loggingOut}>
+            {loggingOut ? 'Déconnexion…' : 'Déconnecter'}
+          </ActionButton>
         </div>
       </section>
 

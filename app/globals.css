@@ -589,7 +589,23 @@ h1 {
 }
 
 .btn:hover:not(:disabled) { background: var(--accent-hover); }
-.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn:disabled,
+.btn[aria-busy="true"],
+.mobile-icon-btn:disabled,
+.mobile-icon-btn[aria-busy="true"],
+.btn-logout:disabled,
+.btn-logout[aria-busy="true"],
+.btn-install-pwa:disabled,
+.btn-install-pwa[aria-busy="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-locked {
+  pointer-events: none;
+  opacity: 0.85;
+}
 .btn.secondary { background: #e2e8f0; color: var(--text); }
 .btn.secondary:hover:not(:disabled) { background: #cbd5e1; }
 .btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--border); }
