@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -34,8 +35,8 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1 style={{ marginTop: 0 }}>Boxing Center</h1>
-        <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Gestion managers</p>
+        <Image src="/logo.png" alt="Boxing Center" width={200} height={50} className="login-logo" priority />
+        <p className="login-subtitle">Gestion managers</p>
         <form onSubmit={onSubmit}>
           <label htmlFor="email">Email</label>
           <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />

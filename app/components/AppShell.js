@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -23,7 +24,7 @@ export default function AppShell({ user, children }) {
 
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <h1>Boxing Center</h1>
+          <Image src="/logo.png" alt="Boxing Center" width={140} height={36} className="brand-logo" priority />
           <small className="brand-role">Administration</small>
         </div>
 
