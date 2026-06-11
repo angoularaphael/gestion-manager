@@ -49,10 +49,10 @@ export default function ManagersPage() {
     const onKey = (e) => {
       if (e.key === 'Escape') setSelected(null);
     };
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('manager-sheet-open');
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove('manager-sheet-open');
       window.removeEventListener('keydown', onKey);
     };
   }, [selected]);
