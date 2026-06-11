@@ -14,14 +14,17 @@ export default function WhatsAppPage() {
       const res = await fetch('/api/bot?path=' + encodeURIComponent('/api/status'), {
         cache: 'no-store',
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setStatus({ connected: false, error: 'Service momentanément indisponible' });
+        setStatus({
+          connected: false,
+          error: data.error || 'Connexion au bot impossible depuis Vercel.',
+        });
         return;
       }
       setStatus(data);
     } catch {
-      setStatus({ connected: false, error: 'Service momentanément indisponible' });
+      setStatus({ connected: false, error: 'Connexion au bot impossible depuis Vercel.' });
     }
   }, []);
 
