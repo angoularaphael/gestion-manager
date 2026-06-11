@@ -1,12 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import InstallPwa from '../components/InstallPwa';
 
 export default function LoginPage() {
   const router = useRouter();
+  const submittingRef = useRef(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,8 +15,12 @@ export default function LoginPage() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    if (submittingRef.current || loading) return;
+
+    submittingRef.current = true;
     setError('');
     setLoading(true);
+
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -26,9 +31,10 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.error || 'Erreur');
       router.push('/admin');
       router.refresh();
+      return;
     } catch (err) {
+      submittingRef.current = false;
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   }
@@ -38,13 +44,27 @@ export default function LoginPage() {
       <div className="login-card">
         <Image src="/logo.png" alt="Boxing Center" width={200} height={50} className="login-logo" priority />
         <p className="login-subtitle">Gestion managers</p>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className={loading ? 'login-form--locked' : undefined}>
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            required
+          />
           <label htmlFor="password">Mot de passe</label>
-          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+            required
+          />
           {error && <p className="error">{error}</p>}
-          <button type="submit" className="btn" style={{ width: '100%' }} disabled={loading}>
+          <button type="submit" className="btn" style={{ width: '100%' }} disabled={loading} aria-busy={loading}>
             {loading ? 'Connexion…' : 'Se connecter'}
           </button>
         </form>

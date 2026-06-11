@@ -7,6 +7,9 @@ import {
   filterManagers,
   listCountries,
 } from '../../../lib/managerCountry';
+import ManagerDetailSheet from './ManagerDetailSheet';
+
+const PAGE_SIZE = 10;
 
 export default function ManagersPage() {
   const [managers, setManagers] = useState([]);
@@ -15,6 +18,8 @@ export default function ManagersPage() {
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
   const [country, setCountry] = useState('');
+  const [page, setPage] = useState(0);
+  const [selected, setSelected] = useState(null);
 
   const loadManagers = useCallback(async () => {
     setLoading(true);
@@ -35,11 +40,36 @@ export default function ManagersPage() {
     loadManagers();
   }, [loadManagers]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [search, type, country]);
+
+  useEffect(() => {
+    if (!selected) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setSelected(null);
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [selected]);
+
   const countries = useMemo(() => listCountries(managers), [managers]);
 
   const filtered = useMemo(
     () => filterManagers(managers, { search, type, country }),
     [managers, search, type, country]
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+
+  const paged = useMemo(
+    () => filtered.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE),
+    [filtered, safePage]
   );
 
   const stats = useMemo(() => {
@@ -58,10 +88,12 @@ export default function ManagersPage() {
 
   return (
     <div className="managers-page">
-      <header className="page-header">
+      <header className="page-header managers-page-header">
         <div>
           <h1>Managers</h1>
-          <p className="page-subtitle">Recherche, filtres par pays et type de contact</p>
+          <p className="page-subtitle managers-page-subtitle">
+            Recherche, filtres par pays et type de contact
+          </p>
         </div>
         <div className="header-stats">
           <div className="mini-stat">
@@ -144,7 +176,69 @@ export default function ManagersPage() {
         </div>
       )}
 
-      <section className="card managers-table-card">
+      {/* Mobile : fiches 10 par page */}
+      <section className="managers-mobile-list" aria-label="Liste des managers">
+        {loading && <p className="muted managers-mobile-empty">Chargement des managers…</p>}
+        {!loading && filtered.length === 0 && !error && (
+          <p className="muted managers-mobile-empty">Aucun manager ne correspond aux filtres.</p>
+        )}
+        <ul className="manager-card-list">
+          {paged.map((m) => {
+            const pays = extractCountry(m);
+            return (
+              <li key={m.id}>
+                <button
+                  type="button"
+                  className="manager-card"
+                  onClick={() => setSelected(m)}
+                >
+                  <div className="manager-card-main">
+                    <strong>{m.nom}</strong>
+                    <span className="country-pill sm">{pays}</span>
+                  </div>
+                  <div className="manager-card-meta">
+                    <span className="contact-badge">{contactLabel(m)}</span>
+                    {m.email ? <span className="manager-card-hint">{m.email}</span> : null}
+                    {!m.email && m.telephone ? (
+                      <span className="manager-card-hint">{m.telephone}</span>
+                    ) : null}
+                  </div>
+                  <span className="manager-card-chevron" aria-hidden="true">
+                    ›
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {!loading && filtered.length > 0 && (
+          <div className="manager-pagination">
+            <button
+              type="button"
+              className="btn ghost sm"
+              disabled={safePage <= 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+            >
+              Précédent
+            </button>
+            <span className="manager-pagination-label">
+              {safePage + 1} / {totalPages}
+            </span>
+            <button
+              type="button"
+              className="btn ghost sm"
+              disabled={safePage >= totalPages - 1}
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            >
+              Suivant
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* Desktop : tableau */}
+      <section className="card managers-table-card managers-desktop-table">
         <div className="table-wrap">
           <table className="data-table">
             <thead>
@@ -176,14 +270,14 @@ export default function ManagersPage() {
                 const pays = extractCountry(m);
                 return (
                   <tr key={m.id}>
-                    <td className="cell-name" data-label="Nom">{m.nom}</td>
-                    <td data-label="Pays">
+                    <td className="cell-name">{m.nom}</td>
+                    <td>
                       <span className="country-pill">{pays}</span>
                     </td>
-                    <td className="cell-muted" data-label="Email">{m.email || '—'}</td>
-                    <td className="cell-muted" data-label="Téléphone">{m.telephone || '—'}</td>
-                    <td className="cell-muted" data-label="Localisation">{m.localisation || '—'}</td>
-                    <td data-label="Contact">
+                    <td className="cell-muted">{m.email || '—'}</td>
+                    <td className="cell-muted">{m.telephone || '—'}</td>
+                    <td className="cell-muted">{m.localisation || '—'}</td>
+                    <td>
                       <span className="contact-badge">{contactLabel(m)}</span>
                     </td>
                   </tr>
@@ -193,6 +287,8 @@ export default function ManagersPage() {
           </table>
         </div>
       </section>
+
+      <ManagerDetailSheet manager={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
