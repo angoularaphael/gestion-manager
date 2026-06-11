@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { BOT_COMMANDS, RECEPTION_EMAIL } from '../../../lib/botCommands';
+import { BOT_COMMANDS, BOXING_CENTER_CONTACT_EMAIL, RECEPTION_EMAIL } from '../../../lib/botCommands';
 
 export default function WhatsAppPage() {
   const [status, setStatus] = useState({});
@@ -122,8 +122,9 @@ export default function WhatsAppPage() {
         <section className="card">
           <h2 className="section-title">Réception & envoi</h2>
           <ul className="info-list">
+            <li><span>Contact Boxing Center</span><strong>{BOXING_CENTER_CONTACT_EMAIL}</strong></li>
             <li><span>Réponses managers</span><strong>{RECEPTION_EMAIL}</strong></li>
-            <li><span>Envoi Brevo</span><strong>suzinabot@gmail.com</strong></li>
+            <li><span>Expéditeur technique Brevo</span><strong className="muted">suzinabot@gmail.com</strong></li>
             <li><span>Console</span><strong>gestion-manager.vercel.app</strong></li>
           </ul>
         </section>
