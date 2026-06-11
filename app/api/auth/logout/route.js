@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
-import { clearSession } from '../../../../lib/session';
 
-export async function POST(request) {
-  clearSession();
-  return NextResponse.redirect(new URL('/login', request.url));
+const COOKIE = 'bc_session';
+
+export async function POST() {
+  const response = NextResponse.json({ success: true });
+  response.cookies.set(COOKIE, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 0,
+  });
+  return response;
 }

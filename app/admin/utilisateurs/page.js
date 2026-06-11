@@ -22,15 +22,9 @@ export default async function UtilisateursPage() {
     return <p className="error">{e.message}</p>;
   }
 
-  const superEmail = process.env.SUPER_ADMIN_EMAIL || '—';
-
   return (
     <>
       <h1>Administrateurs</h1>
-      <p className="muted page-lead">
-        Gérez les comptes équipe. Un seul super administrateur ({superEmail}) — les autres sont des
-        administrateurs.
-      </p>
 
       <UserForm />
 
@@ -49,7 +43,7 @@ export default async function UtilisateursPage() {
             </thead>
             <tbody>
               <tr className="row-super-admin">
-                <td>{superEmail}</td>
+                <td>—</td>
                 <td>Super administrateur</td>
                 <td>—</td>
                 <td>
