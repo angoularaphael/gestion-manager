@@ -364,6 +364,21 @@ export default function EnvoyerPage() {
               ) : (
                 <>
                   <p><strong>Envoi terminé</strong> — {result.data.managers} manager(s) traité(s)</p>
+                  {result.data.destinations?.length > 0 && (
+                    <ul className="dest-list">
+                      {result.data.destinations.map((d, i) => (
+                        <li key={i}>
+                          {d.channel === 'email' ? '✉️' : '💬'}{' '}
+                          <strong>{d.to}</strong>
+                          {d.manager ? ` (${d.manager})` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <p className="muted" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                    Test atangana → linuxcam05@gmail.com + copie sur l&apos;email de réception du bot.
+                    Vérifiez aussi les <strong>spams</strong>.
+                  </p>
                   <div className="result-grid">
                     {channels.includes('email') && (
                       <div className="result-stat">
