@@ -4,31 +4,53 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function BotStatus() {
-  const [status, setStatus] = useState({ loading: true, connected: false, error: null });
-  const [emailReady, setEmailReady] = useState(null);
+  const [summary, setSummary] = useState(null);
 
   useEffect(() => {
-    fetch('/api/bot?path=' + encodeURIComponent('/api/status'))
+    fetch('/api/bot/summary', { cache: 'no-store' })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
-        if (!ok) throw new Error(d.error || 'Service indisponible');
-        setStatus({ loading: false, connected: Boolean(d.connected), error: null });
+        if (!ok) {
+          setSummary({
+            whatsapp: { error: d.error || 'Indisponible', connected: false },
+            email: { configured: false, error: null },
+            config: {},
+          });
+          return;
+        }
+        setSummary(d);
       })
-      .catch(() => setStatus({ loading: false, connected: false, error: true }));
-
-    fetch('/api/bot?path=' + encodeURIComponent('/api/email-status'))
-      .then((r) => r.json())
-      .then((d) => setEmailReady(Boolean(d?.configured)))
-      .catch(() => setEmailReady(false));
+      .catch(() => {
+        setSummary({
+          whatsapp: { error: 'Connexion impossible', connected: false },
+          email: { configured: false, error: null },
+          config: {},
+        });
+      });
   }, []);
+
+  const wa = summary?.whatsapp;
+  const email = summary?.email;
+  const botError = wa?.error;
+  const showBotHint =
+    botError &&
+    (botError.includes('Vercel') ||
+      botError.includes('Bothosting') ||
+      botError.includes('non configurée'));
 
   return (
     <>
-      {status.error && (
+      {botError && (
         <div className="alert-banner warn">
           <div>
             <strong>Messagerie temporairement indisponible</strong>
             <p>La liste des managers reste accessible. Réessayez l&apos;envoi plus tard.</p>
+            {showBotHint && (
+              <p className="alert-banner-detail">
+                Vérifiez sur Vercel : <code>WHATSAPP_BOT_URL</code>, <code>SITE_API_SECRET</code> et que
+                le bot Bothosting est démarré.
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -38,11 +60,11 @@ export default function BotStatus() {
           <h2>WhatsApp</h2>
           <p>
             Statut :{' '}
-            {status.loading ? (
+            {!summary ? (
               <span className="badge">…</span>
             ) : (
-              <span className={`badge ${status.connected ? 'ok' : 'err'}`}>
-                {status.connected ? 'Connecté' : 'Déconnecté'}
+              <span className={`badge ${wa?.connected ? 'ok' : 'err'}`}>
+                {wa?.connected ? 'Connecté' : wa?.connecting ? 'Connexion…' : 'Déconnecté'}
               </span>
             )}
           </p>
@@ -63,11 +85,11 @@ export default function BotStatus() {
           <h2>Email</h2>
           <p>
             Statut :{' '}
-            {emailReady === null ? (
+            {!summary ? (
               <span className="badge">…</span>
             ) : (
-              <span className={`badge ${emailReady ? 'ok' : 'err'}`}>
-                {emailReady ? 'Disponible' : 'Indisponible'}
+              <span className={`badge ${email?.configured ? 'ok' : 'err'}`}>
+                {email?.configured ? 'Disponible' : 'Indisponible'}
               </span>
             )}
           </p>
