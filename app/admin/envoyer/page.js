@@ -53,8 +53,8 @@ export default function EnvoyerPage() {
   const selectedManager = managers.find((m) => m.id === selectedId);
   const previewHtml = buildEmailHtml({
     subject,
-    body: message || 'Votre message apparaîtra ici…',
-    recipientName: selectedManager?.nom || 'Manager',
+    body: message || '',
+    recipientName: selectedManager?.nom || '',
   });
 
   const recipientCount = useMemo(() => {
@@ -151,22 +151,9 @@ export default function EnvoyerPage() {
 
   return (
     <div className="send-page">
-      <header className="page-header">
-        <div>
-          <h1>Envoyer un message</h1>
-          <p className="page-subtitle">Email Brevo et WhatsApp — un manager ou en diffusion</p>
-        </div>
-        <div className="header-stats">
-          <div className="mini-stat">
-            <span>{withEmail.length}</span>
-            <small>avec email</small>
-          </div>
-          <div className="mini-stat">
-            <span>{withPhone.length}</span>
-            <small>avec tél.</small>
-          </div>
-        </div>
-      </header>
+      <p className="page-meta muted">
+        {withEmail.length} avec email · {withPhone.length} avec téléphone
+      </p>
 
       <div className="mode-tabs">
         <button type="button" className={mode === 'single' ? 'active' : ''} onClick={() => setMode('single')}>
@@ -181,23 +168,23 @@ export default function EnvoyerPage() {
         <div className="send-main">
           <section className="card send-card">
             <h2 className="section-title">Canaux</h2>
-            <div className="channel-pills">
-              <button
-                type="button"
-                className={`channel-pill email ${channels.includes('email') ? 'on' : ''}`}
-                onClick={() => toggleChannel('email')}
-              >
-                <span className="pill-icon">✉️</span>
-                Email Brevo
-              </button>
-              <button
-                type="button"
-                className={`channel-pill wa ${channels.includes('whatsapp') ? 'on' : ''}`}
-                onClick={() => toggleChannel('whatsapp')}
-              >
-                <span className="pill-icon">💬</span>
+            <div className="channel-row">
+              <label className="channel-check">
+                <input
+                  type="checkbox"
+                  checked={channels.includes('email')}
+                  onChange={() => toggleChannel('email')}
+                />
+                Email
+              </label>
+              <label className="channel-check">
+                <input
+                  type="checkbox"
+                  checked={channels.includes('whatsapp')}
+                  onChange={() => toggleChannel('whatsapp')}
+                />
                 WhatsApp
-              </button>
+              </label>
             </div>
           </section>
 
@@ -210,14 +197,14 @@ export default function EnvoyerPage() {
               <>
                 <input
                   type="search"
-                  placeholder="Rechercher un manager…"
+                  placeholder="Rechercher"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="search-input"
                 />
                 <div className="manager-picker">
                   {loadingManagers ? (
-                    <p className="muted">Chargement…</p>
+                    <p className="muted">Chargement</p>
                   ) : (
                     filtered.slice(0, 80).map((m) => (
                       <button
@@ -228,8 +215,8 @@ export default function EnvoyerPage() {
                       >
                         <span className="manager-name">{m.nom}</span>
                         <span className="manager-meta">
-                          {m.email && <span className="tag email-tag">✉ {m.email}</span>}
-                          {m.telephone && <span className="tag phone-tag">📱 {m.telephone}</span>}
+                          {m.email && <span className="tag email-tag">{m.email}</span>}
+                          {m.telephone && <span className="tag phone-tag">{m.telephone}</span>}
                           {!m.email && !m.telephone && <span className="tag muted-tag">Sans contact</span>}
                         </span>
                       </button>
@@ -275,7 +262,7 @@ export default function EnvoyerPage() {
                     <div className="selection-toolbar">
                       <input
                         type="search"
-                        placeholder="Filtrer la liste…"
+                        placeholder="Filtrer"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="search-input"
@@ -317,7 +304,7 @@ export default function EnvoyerPage() {
                   id="subject"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Objet du message…"
+                  placeholder="Objet"
                 />
               </div>
             )}
@@ -328,12 +315,12 @@ export default function EnvoyerPage() {
                 rows={8}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Rédigez votre message aux managers…"
+                placeholder="Message"
               />
             </div>
             {channels.includes('email') && (
               <button type="button" className="btn ghost" onClick={() => setShowPreview((v) => !v)}>
-                {showPreview ? 'Masquer l\'aperçu email' : 'Aperçu email Brevo'}
+                {showPreview ? 'Masquer aperçu' : 'Aperçu'}
               </button>
             )}
           </section>
@@ -345,7 +332,7 @@ export default function EnvoyerPage() {
               onClick={() => send({ testOnly: true })}
               disabled={loading || !message.trim()}
             >
-              {loading ? 'Envoi…' : 'Test (atangana)'}
+              {loading ? 'Envoi' : 'Test atangana'}
             </button>
             <button
               type="button"
@@ -353,7 +340,7 @@ export default function EnvoyerPage() {
               onClick={() => send({ testOnly: false })}
               disabled={loading || !message.trim() || recipientCount === 0}
             >
-              {loading ? 'Envoi en cours…' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
+              {loading ? 'Envoi' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
             </button>
           </div>
 
@@ -368,17 +355,13 @@ export default function EnvoyerPage() {
                     <ul className="dest-list">
                       {result.data.destinations.map((d, i) => (
                         <li key={i}>
-                          {d.channel === 'email' ? '✉️' : '💬'}{' '}
+                          <span className="dest-channel">{d.channel === 'email' ? 'Email' : 'WhatsApp'}</span>
                           <strong>{d.to}</strong>
                           {d.manager ? ` (${d.manager})` : ''}
                         </li>
                       ))}
                     </ul>
                   )}
-                  <p className="muted" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                    Test atangana → linuxcam05@gmail.com + copie sur l&apos;email de réception du bot.
-                    Vérifiez aussi les <strong>spams</strong>.
-                  </p>
                   <div className="result-grid">
                     {channels.includes('email') && (
                       <div className="result-stat">
@@ -419,11 +402,10 @@ export default function EnvoyerPage() {
           )}
         </div>
 
-        {(showPreview || mode === 'single') && channels.includes('email') && (
+        {showPreview && channels.includes('email') && (
           <aside className="send-preview">
             <div className="preview-header">
-              <h3>Aperçu email</h3>
-              <span className="badge">Brevo</span>
+              <h3>Aperçu</h3>
             </div>
             <div className="preview-frame">
               <iframe title="Aperçu email" srcDoc={previewHtml} sandbox="" />
