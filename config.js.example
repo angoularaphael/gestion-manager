@@ -1,0 +1,3 @@
+window.BC_CONFIG = {
+  apiBase: 'http://localhost:3002',
+};

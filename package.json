@@ -1,0 +1,9 @@
+{
+  "name": "gestion-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Console Boxing Center — gestion managers & messagerie",
+  "scripts": {
+    "build": "node scripts/inject-config.js"
+  }
+}
