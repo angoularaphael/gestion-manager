@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
@@ -8,12 +8,12 @@ import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 
-function PromoteurFilterBar({ search, onSearchChange, country, onCountryChange, countries, showCountry = true }) {
+function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, countries, showCountry = true }) {
   return (
     <div className="filter-bar">
       <input
         type="search"
-        placeholder="Rechercher un nom, email, ville…"
+        placeholder="Rechercher un nom, email, villeÔÇª"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         className="search-input"
@@ -37,14 +37,14 @@ function PromoteurFilterBar({ search, onSearchChange, country, onCountryChange, 
   );
 }
 
-function SendSidebar({ mode, broadcast, promoteurs, audienceSummary, previewHtml, showEmailPreview, onRemove }) {
+function SendSidebar({ mode, broadcast, managers, audienceSummary, previewHtml, showEmailPreview, onRemove }) {
   return (
     <aside className="send-sidebar">
       <section className="send-sidebar-card">
-        <h3 className="send-sidebar-title">Sélection</h3>
-        {promoteurs.length > 0 ? (
+        <h3 className="send-sidebar-title">S├®lection</h3>
+        {managers.length > 0 ? (
           <ul className="sidebar-manager-list">
-            {promoteurs.map((m) => (
+            {managers.map((m) => (
               <li key={m.id} className="sidebar-manager-item">
                 <div className="sidebar-manager-info">
                   <strong>{m.nom}</strong>
@@ -59,7 +59,7 @@ function SendSidebar({ mode, broadcast, promoteurs, audienceSummary, previewHtml
                     onClick={() => onRemove(m.id)}
                     aria-label={`Retirer ${m.nom}`}
                   >
-                    ×
+                    ├ù
                   </button>
                 ) : null}
               </li>
@@ -74,15 +74,15 @@ function SendSidebar({ mode, broadcast, promoteurs, audienceSummary, previewHtml
         ) : (
           <p className="muted sidebar-empty">
             {mode === 'single'
-              ? 'Choisissez un promoteur dans la liste.'
+              ? 'Choisissez un manager dans la liste.'
               : broadcast === 'selection'
-                ? 'Cochez des promoteurs dans la liste.'
+                ? 'Cochez des managers dans la liste.'
                 : 'Choisissez une audience.'}
           </p>
         )}
-        {promoteurs.length > 0 && (
+        {managers.length > 0 && (
           <p className="sidebar-count">
-            {promoteurs.length} destinataire{promoteurs.length > 1 ? 's' : ''}
+            {managers.length} destinataire{managers.length > 1 ? 's' : ''}
           </p>
         )}
       </section>
@@ -90,10 +90,10 @@ function SendSidebar({ mode, broadcast, promoteurs, audienceSummary, previewHtml
       {showEmailPreview && (
         <section className="send-preview">
           <div className="preview-header">
-            <h3>Aperçu email</h3>
+            <h3>Aper├ºu email</h3>
           </div>
           <div className="preview-frame">
-            <iframe title="Aperçu email" srcDoc={previewHtml} sandbox="" />
+            <iframe title="Aper├ºu email" srcDoc={previewHtml} sandbox="" />
           </div>
         </section>
       )}
@@ -101,10 +101,10 @@ function SendSidebar({ mode, broadcast, promoteurs, audienceSummary, previewHtml
   );
 }
 
-export default function EnvoyerPromoteursPage() {
+export default function EnvoyerPage() {
   const [mode, setMode] = useState('single');
-  const [promoteurs, setPromoteurs] = useState([]);
-  const [loadingPromoteurs, setLoadingPromoteurs] = useState(true);
+  const [managers, setManagers] = useState([]);
+  const [loadingManagers, setLoadingManagers] = useState(true);
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
   const [selectedId, setSelectedId] = useState('');
@@ -116,45 +116,45 @@ export default function EnvoyerPromoteursPage() {
   const { run: runSend, pending: sending } = useSingleAction();
   const [result, setResult] = useState(null);
 
-  const loadPromoteurs = useCallback(async () => {
-    setLoadingPromoteurs(true);
+  const loadManagers = useCallback(async () => {
+    setLoadingManagers(true);
     try {
-      const res = await fetch('/api/promoteurs');
+      const res = await fetch('/api/managers');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
-      setPromoteurs(data.promoteurs || []);
+      setManagers(data.managers || []);
     } catch (e) {
-      setPromoteurs([]);
-      setResult({ error: `Liste promoteurs : ${e.message}` });
+      setManagers([]);
+      setResult({ error: `Liste managers : ${e.message}` });
     } finally {
-      setLoadingPromoteurs(false);
+      setLoadingManagers(false);
     }
   }, []);
 
   useEffect(() => {
-    loadPromoteurs();
-  }, [loadPromoteurs]);
+    loadManagers();
+  }, [loadManagers]);
 
-  const countries = useMemo(() => listCountries(promoteurs), [promoteurs]);
+  const countries = useMemo(() => listCountries(managers), [managers]);
 
   const filtered = useMemo(
-    () => filterManagers(promoteurs, { search, country }),
-    [promoteurs, search, country]
+    () => filterManagers(managers, { search, country }),
+    [managers, search, country]
   );
 
   const withEmail = useMemo(() => filtered.filter((m) => m.email), [filtered]);
   const withPhone = useMemo(() => filtered.filter((m) => m.telephone), [filtered]);
 
-  const selectedPromoteur = promoteurs.find((m) => m.id === selectedId);
-  const selectedPromoteurs = useMemo(
-    () => promoteurs.filter((m) => selectedIds.has(m.id)),
-    [promoteurs, selectedIds]
+  const selectedManager = managers.find((m) => m.id === selectedId);
+  const selectedManagers = useMemo(
+    () => managers.filter((m) => selectedIds.has(m.id)),
+    [managers, selectedIds]
   );
-  const sidebarPromoteurs = useMemo(() => {
-    if (mode === 'single') return selectedPromoteur ? [selectedPromoteur] : [];
-    if (broadcast === 'selection') return selectedPromoteurs;
+  const sidebarManagers = useMemo(() => {
+    if (mode === 'single') return selectedManager ? [selectedManager] : [];
+    if (broadcast === 'selection') return selectedManagers;
     return [];
-  }, [mode, broadcast, selectedPromoteur, selectedPromoteurs]);
+  }, [mode, broadcast, selectedManager, selectedManagers]);
 
   const audienceSummary = useMemo(() => {
     if (mode !== 'bulk' || broadcast === 'selection') return null;
@@ -165,19 +165,19 @@ export default function EnvoyerPromoteursPage() {
           ? withPhone.length
           : filtered.length;
     const labels = {
-      email: 'promoteurs avec email',
-      phone: 'promoteurs avec téléphone',
-      all: 'promoteurs au total',
+      email: 'managers avec email',
+      phone: 'managers avec t├®l├®phone',
+      all: 'managers au total',
     };
     return {
       count,
-      label: labels[broadcast] || 'promoteurs',
+      label: labels[broadcast] || 'managers',
       country: country || null,
     };
   }, [mode, broadcast, withEmail.length, withPhone.length, filtered.length, country]);
 
   const previewRecipient =
-    sidebarPromoteurs[0]?.nom ||
+    sidebarManagers[0]?.nom ||
     (mode === 'bulk' && broadcast !== 'selection' ? '' : '');
 
   const previewHtml = buildEmailHtml({
@@ -187,12 +187,12 @@ export default function EnvoyerPromoteursPage() {
   });
 
   const recipientCount = useMemo(() => {
-    if (mode === 'single') return selectedPromoteur ? 1 : 0;
+    if (mode === 'single') return selectedManager ? 1 : 0;
     if (broadcast === 'email') return withEmail.length;
     if (broadcast === 'phone') return withPhone.length;
     if (broadcast === 'all') return filtered.length;
     return selectedIds.size;
-  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedPromoteur]);
+  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedManager]);
 
   function toggleChannel(ch) {
     setChannels((prev) => {
@@ -229,11 +229,11 @@ export default function EnvoyerPromoteursPage() {
 
       if (!testOnly) {
         const label =
-          mode === 'single' && selectedPromoteur
-            ? `le promoteur « ${selectedPromoteur.nom} »`
-            : `${recipientCount} promoteur(s) réel(s)`;
+          mode === 'single' && selectedManager
+            ? `le manager ┬½ ${selectedManager.nom} ┬╗`
+            : `${recipientCount} manager(s) r├®el(s)`;
         const ok = window.confirm(
-          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
+          `Confirmer l'envoi ├á ${label} ?\n\nSeul le bouton ┬½ Test atangana ┬╗ envoie au compte de test.`
         );
         if (!ok) return;
       }
@@ -251,16 +251,16 @@ export default function EnvoyerPromoteursPage() {
         // test only
       } else if (mode === 'single') {
         if (!selectedId) {
-          setResult({ error: 'Sélectionnez un promoteur' });
+          setResult({ error: 'S├®lectionnez un manager' });
           return;
         }
-        payload.promoter_ids = [selectedId];
+        payload.manager_ids = [selectedId];
       } else if (broadcast === 'selection') {
         if (!selectedIds.size) {
-          setResult({ error: 'Sélectionnez au moins un promoteur' });
+          setResult({ error: 'S├®lectionnez au moins un manager' });
           return;
         }
-        payload.promoter_ids = [...selectedIds];
+        payload.manager_ids = [...selectedIds];
       } else if (country) {
         const ids =
           broadcast === 'email'
@@ -269,10 +269,10 @@ export default function EnvoyerPromoteursPage() {
               ? withPhone.map((m) => m.id)
               : filtered.map((m) => m.id);
         if (!ids.length) {
-          setResult({ error: 'Aucun promoteur pour ce pays' });
+          setResult({ error: 'Aucun manager pour ce pays' });
           return;
         }
-        payload.promoter_ids = ids;
+        payload.manager_ids = ids;
       } else {
         payload.broadcast = broadcast;
       }
@@ -280,7 +280,7 @@ export default function EnvoyerPromoteursPage() {
       const res = await fetch('/api/bot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/api/send-to-promoteurs', body: payload }),
+        body: JSON.stringify({ path: '/api/send-to-managers', body: payload }),
       });
       const data = await parseClientJson(res);
       if (!res.ok) throw new Error(data.error || 'Erreur envoi');
@@ -304,18 +304,18 @@ export default function EnvoyerPromoteursPage() {
       <EnvoyerBackLink />
       <header className="page-header">
         <div>
-          <h1>Envoyer aux promoteurs</h1>
+          <h1>Envoyer aux managers</h1>
           <p className="page-subtitle">
-            {country ? `Filtre : ${country} · ` : ''}
-            {withEmail.length} email · {withPhone.length} téléphone
-            {filtered.length !== promoteurs.length ? ` · ${filtered.length} affiché(s)` : ''}
+            {country ? `Filtre : ${country} ┬À ` : ''}
+            {withEmail.length} email ┬À {withPhone.length} t├®l├®phone
+            {filtered.length !== managers.length ? ` ┬À ${filtered.length} affich├®(s)` : ''}
           </p>
         </div>
       </header>
 
       <div className="mode-tabs">
         <button type="button" className={mode === 'single' ? 'active' : ''} onClick={() => setMode('single')}>
-          Un seul promoteur
+          Un seul manager
         </button>
         <button type="button" className={mode === 'bulk' ? 'active' : ''} onClick={() => setMode('bulk')}>
           Diffusion
@@ -351,7 +351,7 @@ export default function EnvoyerPromoteursPage() {
 
             {mode === 'single' ? (
               <>
-                <PromoteurFilterBar
+                <ManagerFilterBar
                   search={search}
                   onSearchChange={setSearch}
                   country={country}
@@ -359,7 +359,7 @@ export default function EnvoyerPromoteursPage() {
                   countries={countries}
                 />
                 <div className="manager-picker">
-                  {loadingPromoteurs ? (
+                  {loadingManagers ? (
                     <p className="muted">Chargement</p>
                   ) : (
                     filtered.slice(0, 80).map((m) => (
@@ -388,28 +388,28 @@ export default function EnvoyerPromoteursPage() {
                     <input type="radio" name="broadcast" value="email" checked={broadcast === 'email'} onChange={() => setBroadcast('email')} />
                     <div>
                       <strong>Tous avec email</strong>
-                      <span>{withEmail.length} promoteur(s){country ? ` · ${country}` : ''}</span>
+                      <span>{withEmail.length} manager(s){country ? ` ┬À ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'phone' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="phone" checked={broadcast === 'phone'} onChange={() => setBroadcast('phone')} />
                     <div>
-                      <strong>Tous avec téléphone</strong>
-                      <span>{withPhone.length} promoteur(s){country ? ` · ${country}` : ''}</span>
+                      <strong>Tous avec t├®l├®phone</strong>
+                      <span>{withPhone.length} manager(s){country ? ` ┬À ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'all' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="all" checked={broadcast === 'all'} onChange={() => setBroadcast('all')} />
                     <div>
-                      <strong>Tous les promoteurs</strong>
-                      <span>{filtered.length} promoteur(s){country ? ` · ${country}` : ''}</span>
+                      <strong>Tous les managers</strong>
+                      <span>{filtered.length} manager(s){country ? ` ┬À ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'selection' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="selection" checked={broadcast === 'selection'} onChange={() => setBroadcast('selection')} />
                     <div>
-                      <strong>Sélection manuelle</strong>
-                      <span>{selectedIds.size} sélectionné(s)</span>
+                      <strong>S├®lection manuelle</strong>
+                      <span>{selectedIds.size} s├®lectionn├®(s)</span>
                     </div>
                   </label>
                 </div>
@@ -434,7 +434,7 @@ export default function EnvoyerPromoteursPage() {
 
                 {broadcast === 'selection' && (
                   <div className="selection-panel">
-                    <PromoteurFilterBar
+                    <ManagerFilterBar
                       search={search}
                       onSearchChange={setSearch}
                       country={country}
@@ -443,7 +443,7 @@ export default function EnvoyerPromoteursPage() {
                     />
                     <div className="selection-toolbar">
                       <button type="button" className="btn ghost" onClick={selectAllFiltered}>
-                        Tout sélectionner
+                        Tout s├®lectionner
                       </button>
                       <button type="button" className="btn ghost" onClick={() => setSelectedIds(new Set())}>
                         Effacer
@@ -459,7 +459,7 @@ export default function EnvoyerPromoteursPage() {
                           />
                           <span className="checkbox-label">
                             <strong>{m.nom}</strong>
-                            <small>{m.email || m.telephone || '—'}</small>
+                            <small>{m.email || m.telephone || 'ÔÇö'}</small>
                           </span>
                         </label>
                       ))}
@@ -501,9 +501,9 @@ export default function EnvoyerPromoteursPage() {
               onClick={() => send({ testOnly: true })}
               loading={sending}
               disabled={!message.trim()}
-              title="Envoie uniquement au compte test Atangana — jamais aux vrais promoteurs"
+              title="Envoie uniquement au manager test Atangana ÔÇö jamais aux vrais managers"
             >
-              {sending ? 'Envoi…' : 'Test atangana (seul)'}
+              {sending ? 'EnvoiÔÇª' : 'Test atangana (seul)'}
             </ActionButton>
             <ActionButton
               className="btn primary"
@@ -511,7 +511,7 @@ export default function EnvoyerPromoteursPage() {
               loading={sending}
               disabled={!message.trim() || recipientCount === 0}
             >
-              {sending ? 'Envoi…' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
+              {sending ? 'EnvoiÔÇª' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
             </ActionButton>
           </div>
 
@@ -521,14 +521,14 @@ export default function EnvoyerPromoteursPage() {
                 <p><strong>Erreur :</strong> {result.error}</p>
               ) : (
                 <>
-                  <p><strong>Envoi terminé</strong> — {result.data.promoteurs} promoteur(s) traité(s)</p>
+                  <p><strong>Envoi termin├®</strong> ÔÇö {result.data.managers} manager(s) trait├®(s)</p>
                   {result.data.destinations?.length > 0 && (
                     <ul className="dest-list">
                       {result.data.destinations.map((d, i) => (
                         <li key={i}>
                           <span className="dest-channel">{d.channel === 'email' ? 'Email' : 'WhatsApp'}</span>
                           <strong>{d.to}</strong>
-                          {d.promoter || d.manager ? ` (${d.promoter || d.manager})` : ''}
+                          {d.manager ? ` (${d.manager})` : ''}
                         </li>
                       ))}
                     </ul>
@@ -537,10 +537,10 @@ export default function EnvoyerPromoteursPage() {
                     {channels.includes('email') && (
                       <div className="result-stat">
                         <span className="ok">{result.data.email?.sent ?? 0}</span>
-                        <small>emails envoyés</small>
+                        <small>emails envoy├®s</small>
                         {(result.data.email?.failed > 0 || result.data.email?.skipped > 0) && (
                           <span className="result-detail">
-                            {result.data.email?.failed} échec(s), {result.data.email?.skipped} ignoré(s)
+                            {result.data.email?.failed} ├®chec(s), {result.data.email?.skipped} ignor├®(s)
                           </span>
                         )}
                       </div>
@@ -548,10 +548,10 @@ export default function EnvoyerPromoteursPage() {
                     {channels.includes('whatsapp') && (
                       <div className="result-stat">
                         <span className="ok">{result.data.whatsapp?.sent ?? 0}</span>
-                        <small>WhatsApp envoyés</small>
+                        <small>WhatsApp envoy├®s</small>
                         {(result.data.whatsapp?.failed > 0 || result.data.whatsapp?.skipped > 0) && (
                           <span className="result-detail">
-                            {result.data.whatsapp?.failed} échec(s), {result.data.whatsapp?.skipped} ignoré(s)
+                            {result.data.whatsapp?.failed} ├®chec(s), {result.data.whatsapp?.skipped} ignor├®(s)
                           </span>
                         )}
                       </div>
@@ -562,16 +562,16 @@ export default function EnvoyerPromoteursPage() {
                       <summary>{result.data.errors.length} erreur(s)</summary>
                       <ul>
                         {result.data.errors.map((e, i) => (
-                          <li key={i}>{e.promoter || e.manager} ({e.channel}) : {e.error}</li>
+                          <li key={i}>{e.manager} ({e.channel}) : {e.error}</li>
                         ))}
                       </ul>
                     </details>
                   )}
                   {result.previewHtml && (
                     <div className="sent-preview">
-                      <h4>Aperçu de l&apos;email envoyé</h4>
+                      <h4>Aper├ºu de l&apos;email envoy├®</h4>
                       <div className="preview-frame sent-preview-frame">
-                        <iframe title="Email envoyé" srcDoc={result.previewHtml} sandbox="" />
+                        <iframe title="Email envoy├®" srcDoc={result.previewHtml} sandbox="" />
                       </div>
                     </div>
                   )}
@@ -584,7 +584,7 @@ export default function EnvoyerPromoteursPage() {
         <SendSidebar
           mode={mode}
           broadcast={broadcast}
-          promoteurs={sidebarPromoteurs}
+          managers={sidebarManagers}
           audienceSummary={audienceSummary}
           previewHtml={previewHtml}
           showEmailPreview={channels.includes('email')}

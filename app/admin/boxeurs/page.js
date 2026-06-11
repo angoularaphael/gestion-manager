@@ -260,8 +260,8 @@ export default function BoxeursPage() {
           })}
         </ul>
 
-        {!loading && filtered.length > 0 && (
-          <div className="manager-pagination">
+        {!loading && filtered.length > 0 && totalPages > 1 && (
+          <div className="manager-pagination" role="navigation" aria-label="Pagination">
             <button
               type="button"
               className="btn ghost sm"
@@ -272,6 +272,9 @@ export default function BoxeursPage() {
             </button>
             <span className="manager-pagination-label">
               {safePage + 1} / {totalPages}
+              <small className="manager-pagination-count">
+                ({filtered.length})
+              </small>
             </span>
             <button
               type="button"
@@ -282,6 +285,11 @@ export default function BoxeursPage() {
               Suivant
             </button>
           </div>
+        )}
+        {!loading && filtered.length > 0 && totalPages === 1 && (
+          <p className="manager-pagination-single muted">
+            {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
+          </p>
         )}
       </section>
 
