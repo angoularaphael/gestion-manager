@@ -107,9 +107,9 @@ export default function WhatsAppPage() {
       </div>
 
       <section className="card" style={{ marginTop: '1rem' }}>
-        <h2 className="section-title">Commandes WhatsApp (style NYC)</h2>
+        <h2 className="section-title">Commandes WhatsApp</h2>
         <p className="muted" style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
-          Tapez <code>.menu</code> sur WhatsApp pour la liste courte, <code>.guide</code> pour le détail.
+          Sur WhatsApp : <code>.menu</code> ou <code>.guide</code>
         </p>
         <div className="commands-grid">
           {BOT_COMMANDS.map((group) => (

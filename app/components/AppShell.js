@@ -23,11 +23,8 @@ export default function AppShell({ user, children }) {
 
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <span className="brand-icon">🥊</span>
-          <div>
-            <h1>Boxing Center</h1>
-            <small className="brand-role">Console admin</small>
-          </div>
+          <h1>Boxing Center</h1>
+          <small className="brand-role">Administration</small>
         </div>
 
         <div className="sidebar-nav">
@@ -46,7 +43,6 @@ export default function AppShell({ user, children }) {
                       className={active ? 'active' : ''}
                       onClick={() => setOpen(false)}
                     >
-                      <span className="nav-icon">{link.icon}</span>
                       {link.text}
                     </Link>
                   );
@@ -58,7 +54,7 @@ export default function AppShell({ user, children }) {
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <span className="sidebar-user-label">Connecté</span>
+            <span className="sidebar-user-label">Session</span>
             <strong>{user?.email || '—'}</strong>
           </div>
           <form action="/api/auth/logout" method="post">
@@ -74,16 +70,13 @@ export default function AppShell({ user, children }) {
           <button
             type="button"
             className="menu-toggle"
-            aria-label="Ouvrir le menu"
+            aria-label="Menu"
             onClick={() => setOpen(true)}
           >
-            ☰
+            Menu
           </button>
-          <div className="topbar-titles">
-            <span className="topbar-eyebrow">Boxing Center</span>
-            <h2 className="topbar-title">{topbarTitle}</h2>
-          </div>
-          <div className="topbar-user">{user?.name || user?.email}</div>
+          <h2 className="topbar-title">{topbarTitle}</h2>
+          <div className="topbar-user">{user?.email}</div>
         </header>
         <main className="main">{children}</main>
       </div>
