@@ -3,6 +3,9 @@ import { createUser, deleteUser } from '../../../lib/auth';
 import { deliverCredentials } from '../../../lib/credentialsDelivery';
 import { getSession } from '../../../lib/session';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 export async function POST(request) {
   const session = await getSession();
   if (!session || session.role !== 'super_admin') {
