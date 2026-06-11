@@ -6,6 +6,7 @@ import { parseClientJson } from '../../../lib/bot';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
+import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 
 function categorieLabel(cat) {
   if (cat === 'pro') return 'Pro';
@@ -335,6 +336,7 @@ export default function EnvoyerBoxeursPage() {
 
   return (
     <div className="send-page">
+      <EnvoyerBackLink />
       <header className="page-header">
         <div>
           <h1>Envoyer aux boxeurs</h1>

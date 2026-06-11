@@ -14,9 +14,10 @@ function formatMaj(date) {
 }
 
 function headerTag(pathname) {
+  if (pathname === '/admin/envoyer') return { label: 'ENVOYER', tone: 'neutral' };
   if (pathname.includes('boxeur')) return { label: 'BOXEURS', tone: 'green' };
   if (pathname.includes('promoteur')) return { label: 'PROMOTEURS', tone: 'gold' };
-  if (pathname.includes('/admin/managers') || pathname === '/admin/envoyer') {
+  if (pathname.includes('/admin/managers') || pathname.includes('envoyer-manager')) {
     return { label: 'MANAGERS', tone: 'blue' };
   }
   return { label: 'ADMIN', tone: 'neutral' };
