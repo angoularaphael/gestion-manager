@@ -1,13 +1,5 @@
-import Link from 'next/link';
 import { getSession } from '../../lib/session';
-
-const NAV = [
-  { href: '/admin', label: 'Tableau de bord' },
-  { href: '/admin/managers', label: 'Managers' },
-  { href: '/admin/envoyer', label: 'Envoyer' },
-  { href: '/admin/whatsapp', label: 'WhatsApp' },
-  { href: '/admin/utilisateurs', label: 'Utilisateurs' },
-];
+import AdminNav from '../components/AdminNav';
 
 export default async function AdminLayout({ children }) {
   const user = await getSession();
@@ -15,14 +7,14 @@ export default async function AdminLayout({ children }) {
   return (
     <div className="shell">
       <aside className="sidebar">
-        <h1>🥊 Boxing Center</h1>
-        <nav>
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="sidebar-brand">
+          <span className="brand-icon">🥊</span>
+          <div>
+            <h1>Boxing Center</h1>
+            <small>Console managers</small>
+          </div>
+        </div>
+        <AdminNav />
         <div style={{ marginTop: '2rem', fontSize: '0.8rem', color: '#94a3b8' }}>
           {user?.email}
           <br />
