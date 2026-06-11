@@ -4,10 +4,10 @@ import BotStatus from '../components/BotStatus';
 export default function DashboardPage() {
   return (
     <div className="dashboard-page">
-      <header className="page-header">
+      <header className="page-header dashboard-page-header">
         <div>
           <h1>Tableau de bord</h1>
-          <p className="page-subtitle">Vue d&apos;ensemble Boxing Center</p>
+          <p className="page-subtitle mobile-page-subtitle">Vue d&apos;ensemble Boxing Center</p>
         </div>
       </header>
 
