@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-function StatsBlock({ title, stats, error, accent = 'default' }) {
+function StatsBlock({ title, stats, error, accent = 'default', subtitle = '' }) {
   if (error) {
     return (
       <div className="alert-banner err">
@@ -32,7 +32,10 @@ function StatsBlock({ title, stats, error, accent = 'default' }) {
 
   return (
     <div className="dashboard-stats-block">
-      <h3 className={`dashboard-stats-heading dashboard-stats-heading-${accent}`}>{title}</h3>
+      <h3 className={`dashboard-stats-heading dashboard-stats-heading-${accent}`}>
+        {title}
+        {subtitle ? <span className="dashboard-stats-subtitle">{subtitle}</span> : null}
+      </h3>
       <div className="grid stats-grid">
         <div className="card stat">
           <span className="muted">Total</span>
@@ -58,8 +61,10 @@ function StatsBlock({ title, stats, error, accent = 'default' }) {
 export default function DashboardStats() {
   const [managerStats, setManagerStats] = useState(null);
   const [promoteurStats, setPromoteurStats] = useState(null);
+  const [boxeurStats, setBoxeurStats] = useState(null);
   const [managerError, setManagerError] = useState('');
   const [promoteurError, setPromoteurError] = useState('');
+  const [boxeurError, setBoxeurError] = useState('');
 
   useEffect(() => {
     fetch('/api/managers/stats')
@@ -77,12 +82,32 @@ export default function DashboardStats() {
         setPromoteurStats(d);
       })
       .catch((e) => setPromoteurError(e.message));
+
+    fetch('/api/boxeurs/stats')
+      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok) throw new Error(d.error || 'Erreur');
+        setBoxeurStats(d);
+      })
+      .catch((e) => setBoxeurError(e.message));
   }, []);
+
+  const boxeurSubtitle =
+    boxeurStats && (boxeurStats.amateur != null || boxeurStats.pro != null)
+      ? `${boxeurStats.amateur ?? 0} amateur · ${boxeurStats.pro ?? 0} pro`
+      : '';
 
   return (
     <div className="dashboard-stats-stack">
       <StatsBlock title="Managers" stats={managerStats} error={managerError} accent="blue" />
       <StatsBlock title="Promoteurs" stats={promoteurStats} error={promoteurError} accent="gold" />
+      <StatsBlock
+        title="Boxeurs"
+        stats={boxeurStats}
+        error={boxeurError}
+        accent="green"
+        subtitle={boxeurSubtitle}
+      />
     </div>
   );
 }

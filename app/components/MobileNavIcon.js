@@ -35,6 +35,18 @@ export default function MobileNavIcon({ name, active = false }) {
           />
         </svg>
       );
+    case 'glove':
+      return (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M7 10V8a3 3 0 0 1 6 0v1.5M7 10h10a2 2 0 0 1 2 2v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4v-5a2 2 0 0 1 2-2z"
+            stroke={stroke}
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+          <path d="M10 10V8.5" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
     case 'users':
       return (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
