@@ -11,8 +11,15 @@ export default function WhatsAppPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch('/api/bot?path=/api/status');
-      setStatus(await res.json());
+      const res = await fetch('/api/bot?path=' + encodeURIComponent('/api/status'), {
+        cache: 'no-store',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus({ connected: false, error: data.error || 'Bot inaccessible' });
+        return;
+      }
+      setStatus(data);
     } catch {
       setStatus({ connected: false, error: 'Bot inaccessible' });
     }
@@ -26,16 +33,31 @@ export default function WhatsAppPage() {
 
   async function start() {
     setLoading(true);
-    await fetch('/api/bot', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        path: '/api/start',
-        body: { method, phone: method === 'pairing_code' ? phone : undefined },
-      }),
-    });
-    setLoading(false);
-    refresh();
+    try {
+      const res = await fetch('/api/bot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path: '/api/start',
+          body: { method, phone: method === 'pairing_code' ? phone : undefined },
+        }),
+        signal: AbortSignal.timeout(15000),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setStatus((s) => ({ ...s, qrError: data.error || 'Échec du démarrage' }));
+      }
+    } catch (e) {
+      setStatus((s) => ({
+        ...s,
+        qrError: String(e.message || e).includes('abort')
+          ? 'Délai dépassé — le bot Bothosting met trop de temps à répondre.'
+          : 'Impossible de joindre le bot.',
+      }));
+    } finally {
+      setLoading(false);
+      refresh();
+    }
   }
 
   async function logout() {
@@ -63,6 +85,7 @@ export default function WhatsAppPage() {
               Admin permanent : <strong>+{status.mandatoryPhone}</strong>
             </p>
           )}
+          {status.error && <p className="error">{status.error}</p>}
           {status.qrError && <p className="error">{status.qrError}</p>}
           {status.pairingCode && (
             <p>
@@ -100,7 +123,7 @@ export default function WhatsAppPage() {
           <h2 className="section-title">Réception & envoi</h2>
           <ul className="info-list">
             <li><span>Réponses managers</span><strong>{RECEPTION_EMAIL}</strong></li>
-            <li><span>Envoi Brevo</span><strong>boxingcenter31@gmail.com</strong></li>
+            <li><span>Envoi Brevo</span><strong>suzinabot@gmail.com</strong></li>
             <li><span>Console</span><strong>gestion-manager.vercel.app</strong></li>
           </ul>
         </section>

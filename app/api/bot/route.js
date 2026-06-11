@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { botFetch } from '../../../lib/bot';
 import { getSession } from '../../../lib/session';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 25;
+
 export async function GET(request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
