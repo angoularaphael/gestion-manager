@@ -4,6 +4,66 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 
+function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, countries, showCountry = true }) {
+  return (
+    <div className="filter-bar">
+      <input
+        type="search"
+        placeholder="Rechercher un nom, email, ville…"
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        className="search-input"
+      />
+      {showCountry && (
+        <select
+          value={country}
+          onChange={(e) => onCountryChange(e.target.value)}
+          className="filter-select"
+          aria-label="Filtrer par pays"
+        >
+          <option value="">Tous les pays</option>
+          {countries.map(({ name, count }) => (
+            <option key={name} value={name}>
+              {name} ({count})
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+  );
+}
+
+function SelectedManagerChips({ managers, onRemove }) {
+  if (!managers.length) return null;
+  return (
+    <div className="selected-managers">
+      <p className="selected-managers-label">
+        {managers.length} sélectionné{managers.length > 1 ? 's' : ''}
+      </p>
+      <div className="selected-chips">
+        {managers.map((m) => (
+          <span key={m.id} className="selected-chip">
+            <span className="selected-chip-name">{m.nom}</span>
+            {m.email || m.telephone ? (
+              <span className="selected-chip-meta">{m.email || m.telephone}</span>
+            ) : null}
+            {onRemove ? (
+              <button
+                type="button"
+                className="selected-chip-remove"
+                onClick={() => onRemove(m.id)}
+                aria-label={`Retirer ${m.nom}`}
+              >
+                ×
+              </button>
+            ) : null}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function EnvoyerPage() {
   const [mode, setMode] = useState('single');
   const [managers, setManagers] = useState([]);
@@ -50,6 +110,10 @@ export default function EnvoyerPage() {
   const withPhone = useMemo(() => filtered.filter((m) => m.telephone), [filtered]);
 
   const selectedManager = managers.find((m) => m.id === selectedId);
+  const selectedManagers = useMemo(
+    () => managers.filter((m) => selectedIds.has(m.id)),
+    [managers, selectedIds]
+  );
   const previewHtml = buildEmailHtml({
     subject,
     body: message || '',
@@ -172,35 +236,6 @@ export default function EnvoyerPage() {
     }
   }
 
-  function FilterBar({ showCountry = true }) {
-    return (
-      <div className="filter-bar">
-        <input
-          type="search"
-          placeholder="Rechercher un nom, email, ville…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-        {showCountry && (
-          <select
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="filter-select"
-            aria-label="Filtrer par pays"
-          >
-            <option value="">Tous les pays</option>
-            {countries.map(({ name, count }) => (
-              <option key={name} value={name}>
-                {name} ({count})
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="send-page">
       <header className="page-header">
@@ -252,7 +287,17 @@ export default function EnvoyerPage() {
 
             {mode === 'single' ? (
               <>
-                <FilterBar />
+                <ManagerFilterBar
+                  search={search}
+                  onSearchChange={setSearch}
+                  country={country}
+                  onCountryChange={setCountry}
+                  countries={countries}
+                />
+                <SelectedManagerChips
+                  managers={selectedManager ? [selectedManager] : []}
+                  onRemove={() => setSelectedId('')}
+                />
                 <div className="manager-picker">
                   {loadingManagers ? (
                     <p className="muted">Chargement</p>
@@ -329,7 +374,17 @@ export default function EnvoyerPage() {
 
                 {broadcast === 'selection' && (
                   <div className="selection-panel">
-                    <FilterBar />
+                    <ManagerFilterBar
+                      search={search}
+                      onSearchChange={setSearch}
+                      country={country}
+                      onCountryChange={setCountry}
+                      countries={countries}
+                    />
+                    <SelectedManagerChips
+                      managers={selectedManagers}
+                      onRemove={(id) => toggleSelect(id)}
+                    />
                     <div className="selection-toolbar">
                       <button type="button" className="btn ghost" onClick={selectAllFiltered}>
                         Tout sélectionner
