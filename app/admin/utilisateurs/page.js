@@ -1,6 +1,13 @@
 import { getSession } from '../../../lib/session';
 import { listUsers } from '../../../lib/auth';
+import { roleLabel } from '../../../lib/roles';
 import UserForm from './user-form';
+import { UserDeleteButton } from './user-actions';
+
+function formatPhone(phone) {
+  if (!phone) return '—';
+  return phone.startsWith('+') ? phone : `+${phone}`;
+}
 
 export default async function UtilisateursPage() {
   const session = await getSession();
@@ -15,20 +22,64 @@ export default async function UtilisateursPage() {
     return <p className="error">{e.message}</p>;
   }
 
+  const superEmail = process.env.SUPER_ADMIN_EMAIL || '—';
+
   return (
     <>
-      <h1>Utilisateurs</h1>
+      <h1>Administrateurs</h1>
+      <p className="muted page-lead">
+        Gérez les comptes équipe. Un seul super administrateur ({superEmail}) — les autres sont des
+        administrateurs.
+      </p>
+
       <UserForm />
+
       <div className="card">
-        <table>
-          <thead><tr><th>Email</th><th>Nom</th><th>Rôle</th></tr></thead>
-          <tbody>
-            <tr><td>{process.env.SUPER_ADMIN_EMAIL}</td><td>Super Admin</td><td>super_admin</td></tr>
-            {users.map((u) => (
-              <tr key={u.email}><td>{u.email}</td><td>{u.name || '—'}</td><td>{u.role}</td></tr>
-            ))}
-          </tbody>
-        </table>
+        <h2 className="section-title">Comptes actifs</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Nom</th>
+                <th>Téléphone</th>
+                <th>Rôle</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="row-super-admin">
+                <td>{superEmail}</td>
+                <td>Super administrateur</td>
+                <td>—</td>
+                <td>
+                  <span className="badge super">{roleLabel('super_admin')}</span>
+                </td>
+                <td />
+              </tr>
+              {users.map((u) => (
+                <tr key={u.email}>
+                  <td>{u.email}</td>
+                  <td>{u.name || '—'}</td>
+                  <td>{formatPhone(u.phone)}</td>
+                  <td>
+                    <span className="badge">{roleLabel(u.role)}</span>
+                  </td>
+                  <td>
+                    <UserDeleteButton email={u.email} />
+                  </td>
+                </tr>
+              ))}
+              {users.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="muted">
+                    Aucun administrateur équipe pour le moment.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createUser } from '../../../lib/auth';
+import { createUser, deleteUser } from '../../../lib/auth';
+import { deliverCredentials } from '../../../lib/credentialsDelivery';
 import { getSession } from '../../../lib/session';
 
 export async function POST(request) {
@@ -9,8 +10,47 @@ export async function POST(request) {
   }
   try {
     const body = await request.json();
-    const user = await createUser(body, session.role);
-    return NextResponse.json({ success: true, user });
+    const sendEmail = Boolean(body.send_email);
+    const sendWhatsApp = Boolean(body.send_whatsapp);
+    const password = String(body.password || '');
+
+    const user = await createUser(
+      {
+        email: body.email,
+        password,
+        name: body.name,
+        phone: body.phone,
+      },
+      session.role
+    );
+
+    let delivery = null;
+    if (sendEmail || sendWhatsApp) {
+      delivery = await deliverCredentials({
+        email: user.email,
+        password,
+        name: user.name,
+        phone: user.phone,
+        sendEmail,
+        sendWhatsApp,
+      });
+    }
+
+    return NextResponse.json({ success: true, user, delivery });
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 400 });
+  }
+}
+
+export async function DELETE(request) {
+  const session = await getSession();
+  if (!session || session.role !== 'super_admin') {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
+  }
+  try {
+    const body = await request.json();
+    const result = await deleteUser(body.email, session.email, session.role);
+    return NextResponse.json({ success: true, ...result });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 400 });
   }

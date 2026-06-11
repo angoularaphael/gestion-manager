@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import InstallPwa from '../components/InstallPwa';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,7 +48,10 @@ export default function LoginPage() {
             {loading ? 'Connexion…' : 'Se connecter'}
           </button>
         </form>
-        <p style={{ marginTop: '1rem', fontSize: '0.85rem' }}>
+        <div style={{ marginTop: '1rem' }}>
+          <InstallPwa variant="login" />
+        </div>
+        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', textAlign: 'center' }}>
           <a href="https://boxingcenter.fr/" target="_blank" rel="noreferrer">boxingcenter.fr</a>
         </p>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { BOT_COMMANDS, BOXING_CENTER_CONTACT_EMAIL, RECEPTION_EMAIL } from '../../../lib/botCommands';
+import { BOT_COMMANDS } from '../../../lib/botCommands';
 
 export default function WhatsAppPage() {
   const [status, setStatus] = useState({});
@@ -16,12 +16,12 @@ export default function WhatsAppPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setStatus({ connected: false, error: data.error || 'Bot inaccessible' });
+        setStatus({ connected: false, error: 'Service momentanément indisponible' });
         return;
       }
       setStatus(data);
     } catch {
-      setStatus({ connected: false, error: 'Bot inaccessible' });
+      setStatus({ connected: false, error: 'Service momentanément indisponible' });
     }
   }, []);
 
@@ -51,8 +51,8 @@ export default function WhatsAppPage() {
       setStatus((s) => ({
         ...s,
         qrError: String(e.message || e).includes('abort')
-          ? 'Délai dépassé — le bot Bothosting met trop de temps à répondre.'
-          : 'Impossible de joindre le bot.',
+          ? 'Délai dépassé — réessayez dans quelques instants.'
+          : 'Connexion impossible pour le moment.',
       }));
     } finally {
       setLoading(false);
@@ -71,68 +71,59 @@ export default function WhatsAppPage() {
 
   return (
     <div className="wa-page">
-      <div className="wa-grid">
-        <section className="card wa-status-card">
-          <h2 className="section-title">Connexion WhatsApp</h2>
+      <header className="page-header">
+        <div>
+          <h1>WhatsApp</h1>
+          <p className="page-subtitle">Connexion et commandes du bot</p>
+        </div>
+      </header>
+
+      <section className="card wa-status-card">
+        <h2 className="section-title">Connexion</h2>
+        <p>
+          Statut :{' '}
+          <span className={`badge ${status.connected ? 'ok' : 'err'}`}>
+            {status.connected ? 'Connecté' : status.connecting ? 'Connexion…' : 'Déconnecté'}
+          </span>
+        </p>
+        {status.error && <p className="error">{status.error}</p>}
+        {status.qrError && <p className="error">{status.qrError}</p>}
+        {status.pairingCode && (
           <p>
-            Statut :{' '}
-            <span className={`badge ${status.connected ? 'ok' : 'err'}`}>
-              {status.connected ? 'Connecté' : status.connecting ? 'Connexion…' : 'Déconnecté'}
-            </span>
+            Code appairage : <strong>{status.pairingCode}</strong>
           </p>
-          {status.mandatoryPhone && (
-            <p className="muted" style={{ fontSize: '0.88rem' }}>
-              Admin permanent : <strong>+{status.mandatoryPhone}</strong>
-            </p>
-          )}
-          {status.error && <p className="error">{status.error}</p>}
-          {status.qrError && <p className="error">{status.qrError}</p>}
-          {status.pairingCode && (
-            <p>
-              Code appairage : <strong>{status.pairingCode}</strong>
-            </p>
-          )}
-          {status.qr && !status.connected && (
-            <div className="qr-wrap">
-              <img src={status.qr} alt="QR WhatsApp" />
-            </div>
-          )}
-          <div className="wa-actions">
-            <select value={method} onChange={(e) => setMethod(e.target.value)}>
-              <option value="qr">QR Code</option>
-              <option value="pairing_code">Code appairage</option>
-            </select>
-            {method === 'pairing_code' && (
-              <input
-                placeholder="33762641473"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                style={{ width: 160, margin: 0 }}
-              />
-            )}
-            <button type="button" className="btn primary" onClick={start} disabled={loading}>
-              {loading ? 'Démarrage…' : 'Démarrer / QR'}
-            </button>
-            <button type="button" className="btn danger" onClick={logout}>
-              Déconnecter
-            </button>
+        )}
+        {status.qr && !status.connected && (
+          <div className="qr-wrap">
+            <img src={status.qr} alt="QR WhatsApp" />
           </div>
-        </section>
+        )}
+        <div className="wa-actions">
+          <select value={method} onChange={(e) => setMethod(e.target.value)} aria-label="Méthode">
+            <option value="qr">QR Code</option>
+            <option value="pairing_code">Code appairage</option>
+          </select>
+          {method === 'pairing_code' && (
+            <input
+              placeholder="33762641473"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="wa-phone-input"
+              aria-label="Numéro WhatsApp"
+            />
+          )}
+          <button type="button" className="btn primary" onClick={start} disabled={loading}>
+            {loading ? 'Démarrage…' : 'Démarrer / QR'}
+          </button>
+          <button type="button" className="btn danger" onClick={logout}>
+            Déconnecter
+          </button>
+        </div>
+      </section>
 
-        <section className="card">
-          <h2 className="section-title">Réception & envoi</h2>
-          <ul className="info-list">
-            <li><span>Contact Boxing Center</span><strong>{BOXING_CENTER_CONTACT_EMAIL}</strong></li>
-            <li><span>Réponses managers</span><strong>{RECEPTION_EMAIL}</strong></li>
-            <li><span>Expéditeur technique Brevo</span><strong className="muted">suzinabot@gmail.com</strong></li>
-            <li><span>Console</span><strong>gestion-manager.vercel.app</strong></li>
-          </ul>
-        </section>
-      </div>
-
-      <section className="card" style={{ marginTop: '1rem' }}>
+      <section className="card wa-commands-card">
         <h2 className="section-title">Commandes WhatsApp</h2>
-        <p className="muted" style={{ marginBottom: '1rem', fontSize: '0.9rem' }}>
+        <p className="muted wa-commands-lead">
           Sur WhatsApp : <code>.menu</code> ou <code>.guide</code>
         </p>
         <div className="commands-grid">

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ADMIN_NAV, titleForPath } from '../../lib/adminNav';
+import InstallPwa from './InstallPwa';
 
 export default function AppShell({ user, children }) {
   const pathname = usePathname();
@@ -34,6 +35,7 @@ export default function AppShell({ user, children }) {
               <div className="nav-section-label">{section.label}</div>
               <div className="nav-section-links">
                 {section.links.map((link) => {
+                  if (link.superAdminOnly && user?.role !== 'super_admin') return null;
                   const active =
                     pathname === link.href ||
                     (link.href !== '/admin' && pathname.startsWith(link.href));
@@ -54,6 +56,7 @@ export default function AppShell({ user, children }) {
         </div>
 
         <div className="sidebar-footer">
+          <InstallPwa />
           <div className="sidebar-user">
             <span className="sidebar-user-label">Session</span>
             <strong>{user?.email || '—'}</strong>
