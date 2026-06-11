@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
+import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 
 export default function EnvoyerPage() {
   const [mode, setMode] = useState('single');
   const [managers, setManagers] = useState([]);
   const [loadingManagers, setLoadingManagers] = useState(true);
   const [search, setSearch] = useState('');
+  const [country, setCountry] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [broadcast, setBroadcast] = useState('email');
@@ -21,12 +23,13 @@ export default function EnvoyerPage() {
   const loadManagers = useCallback(async () => {
     setLoadingManagers(true);
     try {
-      const res = await fetch('/api/bot?path=' + encodeURIComponent('/api/managers'));
+      const res = await fetch('/api/managers');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
       setManagers(data.managers || []);
     } catch (e) {
-      setResult({ error: e.message });
+      setManagers([]);
+      setResult({ error: `Liste managers : ${e.message}` });
     } finally {
       setLoadingManagers(false);
     }
@@ -36,19 +39,15 @@ export default function EnvoyerPage() {
     loadManagers();
   }, [loadManagers]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return managers;
-    return managers.filter(
-      (m) =>
-        m.nom?.toLowerCase().includes(q) ||
-        m.email?.toLowerCase().includes(q) ||
-        m.localisation?.toLowerCase().includes(q)
-    );
-  }, [managers, search]);
+  const countries = useMemo(() => listCountries(managers), [managers]);
 
-  const withEmail = useMemo(() => managers.filter((m) => m.email), [managers]);
-  const withPhone = useMemo(() => managers.filter((m) => m.telephone), [managers]);
+  const filtered = useMemo(
+    () => filterManagers(managers, { search, country }),
+    [managers, search, country]
+  );
+
+  const withEmail = useMemo(() => filtered.filter((m) => m.email), [filtered]);
+  const withPhone = useMemo(() => filtered.filter((m) => m.telephone), [filtered]);
 
   const selectedManager = managers.find((m) => m.id === selectedId);
   const previewHtml = buildEmailHtml({
@@ -61,9 +60,9 @@ export default function EnvoyerPage() {
     if (mode === 'single') return selectedManager ? 1 : 0;
     if (broadcast === 'email') return withEmail.length;
     if (broadcast === 'phone') return withPhone.length;
-    if (broadcast === 'all') return managers.length;
+    if (broadcast === 'all') return filtered.length;
     return selectedIds.size;
-  }, [mode, broadcast, withEmail, withPhone, managers, selectedIds, selectedManager]);
+  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedManager]);
 
   function toggleChannel(ch) {
     setChannels((prev) => {
@@ -94,6 +93,17 @@ export default function EnvoyerPage() {
   async function send({ testOnly = false } = {}) {
     if (!message.trim()) return;
     if (!channels.length) return;
+
+    if (!testOnly) {
+      const label =
+        mode === 'single' && selectedManager
+          ? `le manager « ${selectedManager.nom} »`
+          : `${recipientCount} manager(s) réel(s)`;
+      const ok = window.confirm(
+        `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
+      );
+      if (!ok) return;
+    }
 
     setLoading(true);
     setResult(null);
@@ -129,6 +139,19 @@ export default function EnvoyerPage() {
         return;
       }
       payload.manager_ids = [...selectedIds];
+    } else if (country) {
+      const ids =
+        broadcast === 'email'
+          ? withEmail.map((m) => m.id)
+          : broadcast === 'phone'
+            ? withPhone.map((m) => m.id)
+            : filtered.map((m) => m.id);
+      if (!ids.length) {
+        setResult({ error: 'Aucun manager pour ce pays' });
+        setLoading(false);
+        return;
+      }
+      payload.manager_ids = ids;
     } else {
       payload.broadcast = broadcast;
     }
@@ -149,11 +172,47 @@ export default function EnvoyerPage() {
     }
   }
 
+  function FilterBar({ showCountry = true }) {
+    return (
+      <div className="filter-bar">
+        <input
+          type="search"
+          placeholder="Rechercher un nom, email, ville…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
+        {showCountry && (
+          <select
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="filter-select"
+            aria-label="Filtrer par pays"
+          >
+            <option value="">Tous les pays</option>
+            {countries.map(({ name, count }) => (
+              <option key={name} value={name}>
+                {name} ({count})
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="send-page">
-      <p className="page-meta muted">
-        {withEmail.length} avec email · {withPhone.length} avec téléphone
-      </p>
+      <header className="page-header">
+        <div>
+          <h1>Envoyer</h1>
+          <p className="page-subtitle">
+            {country ? `Filtre : ${country} · ` : ''}
+            {withEmail.length} email · {withPhone.length} téléphone
+            {filtered.length !== managers.length ? ` · ${filtered.length} affiché(s)` : ''}
+          </p>
+        </div>
+      </header>
 
       <div className="mode-tabs">
         <button type="button" className={mode === 'single' ? 'active' : ''} onClick={() => setMode('single')}>
@@ -168,23 +227,21 @@ export default function EnvoyerPage() {
         <div className="send-main">
           <section className="card send-card">
             <h2 className="section-title">Canaux</h2>
-            <div className="channel-row">
-              <label className="channel-check">
-                <input
-                  type="checkbox"
-                  checked={channels.includes('email')}
-                  onChange={() => toggleChannel('email')}
-                />
+            <div className="channel-pills">
+              <button
+                type="button"
+                className={`channel-pill email ${channels.includes('email') ? 'on' : ''}`}
+                onClick={() => toggleChannel('email')}
+              >
                 Email
-              </label>
-              <label className="channel-check">
-                <input
-                  type="checkbox"
-                  checked={channels.includes('whatsapp')}
-                  onChange={() => toggleChannel('whatsapp')}
-                />
+              </button>
+              <button
+                type="button"
+                className={`channel-pill wa ${channels.includes('whatsapp') ? 'on' : ''}`}
+                onClick={() => toggleChannel('whatsapp')}
+              >
                 WhatsApp
-              </label>
+              </button>
             </div>
           </section>
 
@@ -195,13 +252,7 @@ export default function EnvoyerPage() {
 
             {mode === 'single' ? (
               <>
-                <input
-                  type="search"
-                  placeholder="Rechercher"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="search-input"
-                />
+                <FilterBar />
                 <div className="manager-picker">
                   {loadingManagers ? (
                     <p className="muted">Chargement</p>
@@ -215,6 +266,7 @@ export default function EnvoyerPage() {
                       >
                         <span className="manager-name">{m.nom}</span>
                         <span className="manager-meta">
+                          <span className="country-pill sm">{extractCountry(m)}</span>
                           {m.email && <span className="tag email-tag">{m.email}</span>}
                           {m.telephone && <span className="tag phone-tag">{m.telephone}</span>}
                           {!m.email && !m.telephone && <span className="tag muted-tag">Sans contact</span>}
@@ -231,21 +283,21 @@ export default function EnvoyerPage() {
                     <input type="radio" name="broadcast" value="email" checked={broadcast === 'email'} onChange={() => setBroadcast('email')} />
                     <div>
                       <strong>Tous avec email</strong>
-                      <span>{withEmail.length} managers</span>
+                      <span>{withEmail.length} manager(s){country ? ` · ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'phone' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="phone" checked={broadcast === 'phone'} onChange={() => setBroadcast('phone')} />
                     <div>
                       <strong>Tous avec téléphone</strong>
-                      <span>{withPhone.length} managers</span>
+                      <span>{withPhone.length} manager(s){country ? ` · ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'all' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="all" checked={broadcast === 'all'} onChange={() => setBroadcast('all')} />
                     <div>
                       <strong>Tous les managers</strong>
-                      <span>{managers.length} managers</span>
+                      <span>{filtered.length} manager(s){country ? ` · ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'selection' ? 'active' : ''}`}>
@@ -257,16 +309,28 @@ export default function EnvoyerPage() {
                   </label>
                 </div>
 
+                {broadcast !== 'selection' && (
+                  <div className="country-filter-bulk">
+                    <label htmlFor="bulk-country">Limiter par pays (optionnel)</label>
+                    <select
+                      id="bulk-country"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                    >
+                      <option value="">Tous les pays</option>
+                      {countries.map(({ name, count }) => (
+                        <option key={name} value={name}>
+                          {name} ({count})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 {broadcast === 'selection' && (
                   <div className="selection-panel">
+                    <FilterBar />
                     <div className="selection-toolbar">
-                      <input
-                        type="search"
-                        placeholder="Filtrer"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="search-input"
-                      />
                       <button type="button" className="btn ghost" onClick={selectAllFiltered}>
                         Tout sélectionner
                       </button>
@@ -331,8 +395,9 @@ export default function EnvoyerPage() {
               className="btn secondary"
               onClick={() => send({ testOnly: true })}
               disabled={loading || !message.trim()}
+              title="Envoie uniquement au manager test Atangana — jamais aux vrais managers"
             >
-              {loading ? 'Envoi' : 'Test atangana'}
+              {loading ? 'Envoi' : 'Test atangana (seul)'}
             </button>
             <button
               type="button"
