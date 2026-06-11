@@ -70,53 +70,63 @@ export default function UserForm() {
       <form className="card" onSubmit={onSubmit}>
         <h2>Ajouter un administrateur</h2>
 
-        <label htmlFor="user-email">Email</label>
-        <input id="user-email" name="email" type="email" required placeholder="collaborateur@exemple.fr" />
+        <div className="form-field">
+          <label htmlFor="user-email">Email</label>
+          <input id="user-email" name="email" type="email" required placeholder="collaborateur@exemple.fr" />
+        </div>
 
-        <label htmlFor="user-name">Nom</label>
-        <input id="user-name" name="name" type="text" placeholder="Prénom Nom" />
+        <div className="form-field">
+          <label htmlFor="user-name">Nom</label>
+          <input id="user-name" name="name" type="text" placeholder="Prénom Nom" />
+        </div>
 
-        <label htmlFor="user-phone">Téléphone WhatsApp</label>
-        <input
-          id="user-phone"
-          name="phone"
-          type="tel"
-          placeholder="33612345678"
-          inputMode="numeric"
-        />
-        <p className="field-hint">Format international sans + (ex. 33612345678). Requis pour l&apos;envoi WhatsApp.</p>
-
-        <label htmlFor="user-password">Mot de passe (min. 8)</label>
-        <div className="password-field">
+        <div className="form-field">
+          <label htmlFor="user-phone">Téléphone WhatsApp</label>
           <input
-            id="user-password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            minLength={8}
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
+            id="user-phone"
+            name="phone"
+            type="tel"
+            placeholder="33612345678"
+            inputMode="numeric"
           />
-          <button
-            type="button"
-            className="btn ghost sm"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-          >
-            {showPassword ? 'Masquer' : 'Voir'}
-          </button>
-          <button
-            type="button"
-            className="btn ghost sm"
-            onClick={() => {
-              const next = generatePassword();
-              setPassword(next);
-              setShowPassword(true);
-            }}
-          >
-            Générer
-          </button>
+          <p className="field-hint">
+            Format international sans + (ex. 33612345678). Requis pour l&apos;envoi WhatsApp.
+          </p>
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="user-password">Mot de passe (min. 8)</label>
+          <div className="password-field">
+            <input
+              id="user-password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              minLength={8}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              className="btn ghost sm"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            >
+              {showPassword ? 'Masquer' : 'Voir'}
+            </button>
+            <button
+              type="button"
+              className="btn ghost sm"
+              onClick={() => {
+                const next = generatePassword();
+                setPassword(next);
+                setShowPassword(true);
+              }}
+            >
+              Générer
+            </button>
+          </div>
         </div>
 
         <fieldset className="send-credentials-fieldset">
