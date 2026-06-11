@@ -24,7 +24,7 @@ export async function GET() {
   };
 
   if (!config.configured) {
-    summary.whatsapp.error = 'URL du bot non configurée sur Vercel (WHATSAPP_BOT_URL).';
+    summary.whatsapp.error = 'URL du bot non configurée sur Vercel (NEXT_PUBLIC_WHATSAPP_BOT_URL).';
     summary.email.error = 'Configuration incomplète sur Vercel.';
     return NextResponse.json(summary);
   }

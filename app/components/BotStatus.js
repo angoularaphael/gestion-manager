@@ -47,7 +47,7 @@ export default function BotStatus() {
             <p>La liste des managers reste accessible. Réessayez l&apos;envoi plus tard.</p>
             {showBotHint && (
               <p className="alert-banner-detail">
-                Vérifiez sur Vercel : <code>WHATSAPP_BOT_URL</code>, <code>SITE_API_SECRET</code> et que
+                Vérifiez sur Vercel : <code>NEXT_PUBLIC_WHATSAPP_BOT_URL</code>, <code>SITE_API_SECRET</code> et que
                 le bot Bothosting est démarré.
               </p>
             )}
