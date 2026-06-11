@@ -1,20 +1,46 @@
 # Gestion Manager — Boxing Center
 
-Console web (login, dashboard, envoi WhatsApp / email aux managers boxe).
+Console Next.js (style **NYC Cookies**) pour gérer les managers et envoyer WhatsApp / emails Brevo.
 
-## Déploiement Vercel
+## Architecture
 
-1. Importer ce repo sur [Vercel](https://vercel.com)
-2. Variable d'environnement :
-   - `BC_API_BASE` = URL du bot (ex. `https://bot.votredomaine.com`)
-3. Le build génère `config.js` automatiquement
-4. Sur le bot, définir `CORS_ORIGIN` = URL Vercel de cette app
+```
+Vercel (ce site)  ←── SITE_API_SECRET ──→  Bot Bothosting (boxing-center-bot)
+       ↓                                          ↓
+   Supabase                                  WhatsApp + Brevo
+```
 
-## Connexion
+## Variables Vercel
 
-- Super admin : configuré via `SUPER_ADMIN_EMAIL` / `SUPER_ADMIN_PASSWORD` sur le **bot**
-- Création d'accès : Paramètres → Gestion des accès (super admin)
+Copier `.env.local.example` → variables d'environnement Vercel :
 
-## Bot backend
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | URL du bot Bothosting (`http://IP:3002`) |
+| `SITE_API_SECRET` | Secret partagé avec le bot |
+| `SESSION_SECRET` | Signature session (peut = SITE_API_SECRET) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clé service role |
+| `SUPER_ADMIN_EMAIL` | `angoularaphael05@gmail.com` |
+| `SUPER_ADMIN_PASSWORD` | `#Fareno12` |
+| `NEXT_PUBLIC_SITE_URL` | URL Vercel de ce site |
 
-[Dépôt boxing-center-bot](https://github.com/angoularaphael/boxing-center-bot)
+## Supabase
+
+Exécuter dans le SQL Editor :
+1. `001_boxing_center.sql` (managers)
+2. `002_app_users.sql` (comptes console)
+
+## Local
+
+```bash
+npm install
+cp .env.local.example .env.local
+npm run dev
+```
+
+Login : `/login` — super admin via variables d'env.
+
+## Bot
+
+[Dépôt boxing-center-bot](https://github.com/angoularaphael/boxing-center-bot) — voir `bootstrap.js` pour Bothosting.
