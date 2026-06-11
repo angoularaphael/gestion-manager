@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ActionButton from './ActionButton';
 import MobileNavIcon from './MobileNavIcon';
@@ -13,10 +13,20 @@ function formatMaj(date) {
   return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
+function headerTag(pathname) {
+  if (pathname.includes('promoteur')) return { label: 'PROMOTEURS', tone: 'gold' };
+  if (pathname.includes('/admin/managers') || pathname === '/admin/envoyer') {
+    return { label: 'MANAGERS', tone: 'blue' };
+  }
+  return { label: 'ADMIN', tone: 'neutral' };
+}
+
 export default function MobileAppHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const [maj, setMaj] = useState('');
   const { run, pending: refreshing } = useSingleAction();
+  const tag = headerTag(pathname);
 
   useEffect(() => {
     setMaj(formatMaj(new Date()));
@@ -35,7 +45,7 @@ export default function MobileAppHeader() {
     <header className="mobile-app-header">
       <div className="mobile-app-brand">
         <Image src="/logo.png" alt="Boxing Center" width={110} height={28} className="mobile-brand-logo" priority />
-        <span className="mobile-brand-tag">MANAGERS</span>
+        <span className={`mobile-brand-tag mobile-brand-tag-${tag.tone}`}>{tag.label}</span>
       </div>
 
       <div className="mobile-app-actions">
