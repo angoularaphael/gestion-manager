@@ -1,39 +1,44 @@
 'use client';
 
-import { useState } from 'react';
 import MobileNavIcon from './MobileNavIcon';
+import ActionButton from './ActionButton';
+import { useSingleAction } from '../../lib/useSingleAction';
 
 export default function LogoutButton({ variant = 'full' }) {
-  const [loading, setLoading] = useState(false);
+  const { run, pending: loading } = useSingleAction();
 
   async function onLogout() {
-    setLoading(true);
-    try {
-      sessionStorage.removeItem('bc_splash_seen');
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch {
-      /* redirection même en cas d'erreur réseau */
-    }
-    window.location.href = '/login';
+    if (loading) return;
+    await run(
+      async () => {
+        try {
+          sessionStorage.removeItem('bc_splash_seen');
+          await fetch('/api/auth/logout', { method: 'POST' });
+        } catch {
+          /* redirection même en cas d'erreur réseau */
+        }
+        window.location.href = '/login';
+      },
+      { resetOnSuccess: false }
+    );
   }
 
   if (variant === 'icon') {
     return (
-      <button
-        type="button"
+      <ActionButton
         className="mobile-icon-btn mobile-icon-btn--danger"
         aria-label="Déconnexion"
         onClick={onLogout}
-        disabled={loading}
+        loading={loading}
       >
         <MobileNavIcon name="logout" />
-      </button>
+      </ActionButton>
     );
   }
 
   return (
-    <button type="button" className="btn-logout" onClick={onLogout} disabled={loading}>
+    <ActionButton className="btn-logout" onClick={onLogout} loading={loading}>
       {loading ? 'Déconnexion…' : 'Déconnexion'}
-    </button>
+    </ActionButton>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ActionButton from '../../components/ActionButton';
 import {
   contactLabel,
   extractCountry,
@@ -20,8 +21,11 @@ export default function ManagersPage() {
   const [country, setCountry] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
+  const loadLockRef = useRef(false);
 
   const loadManagers = useCallback(async () => {
+    if (loadLockRef.current) return;
+    loadLockRef.current = true;
     setLoading(true);
     setError('');
     try {
@@ -32,6 +36,7 @@ export default function ManagersPage() {
     } catch (e) {
       setError(e.message);
     } finally {
+      loadLockRef.current = false;
       setLoading(false);
     }
   }, []);
@@ -158,9 +163,9 @@ export default function ManagersPage() {
               Réinitialiser
             </button>
           )}
-          <button type="button" className="btn ghost btn-sm" onClick={loadManagers}>
-            Actualiser
-          </button>
+          <ActionButton className="btn ghost btn-sm" onClick={loadManagers} loading={loading}>
+            {loading ? 'Actualisation…' : 'Actualiser'}
+          </ActionButton>
         </div>
       </section>
 
@@ -170,9 +175,9 @@ export default function ManagersPage() {
             <strong>Impossible de charger les managers</strong>
             <p>{error}</p>
           </div>
-          <button type="button" className="btn btn-sm" onClick={loadManagers}>
-            Réessayer
-          </button>
+          <ActionButton className="btn btn-sm" onClick={loadManagers} loading={loading}>
+            {loading ? 'Chargement…' : 'Réessayer'}
+          </ActionButton>
         </div>
       )}
 

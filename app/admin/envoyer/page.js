@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import ActionButton from '../../components/ActionButton';
 import { parseClientJson } from '../../../lib/bot';
+import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 
@@ -110,7 +112,7 @@ export default function EnvoyerPage() {
   const [subject, setSubject] = useState('Message Boxing Center');
   const [message, setMessage] = useState('');
   const [channels, setChannels] = useState(['email']);
-  const [loading, setLoading] = useState(false);
+  const { run: runSend, pending: sending } = useSingleAction();
   const [result, setResult] = useState(null);
 
   const loadManagers = useCallback(async () => {
@@ -218,64 +220,62 @@ export default function EnvoyerPage() {
   }
 
   async function send({ testOnly = false } = {}) {
-    if (!message.trim()) return;
-    if (!channels.length) return;
+    if (sending) return;
 
-    if (!testOnly) {
-      const label =
-        mode === 'single' && selectedManager
-          ? `le manager « ${selectedManager.nom} »`
-          : `${recipientCount} manager(s) réel(s)`;
-      const ok = window.confirm(
-        `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
-      );
-      if (!ok) return;
-    }
+    await runSend(async () => {
+      if (!message.trim()) return;
+      if (!channels.length) return;
 
-    setLoading(true);
-    setResult(null);
-
-    const payload = {
-      message,
-      subject,
-      channels,
-      test_only: testOnly,
-    };
-
-    if (testOnly) {
-      // test only
-    } else if (mode === 'single') {
-      if (!selectedId) {
-        setResult({ error: 'Sélectionnez un manager' });
-        setLoading(false);
-        return;
+      if (!testOnly) {
+        const label =
+          mode === 'single' && selectedManager
+            ? `le manager « ${selectedManager.nom} »`
+            : `${recipientCount} manager(s) réel(s)`;
+        const ok = window.confirm(
+          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
+        );
+        if (!ok) return;
       }
-      payload.manager_ids = [selectedId];
-    } else if (broadcast === 'selection') {
-      if (!selectedIds.size) {
-        setResult({ error: 'Sélectionnez au moins un manager' });
-        setLoading(false);
-        return;
-      }
-      payload.manager_ids = [...selectedIds];
-    } else if (country) {
-      const ids =
-        broadcast === 'email'
-          ? withEmail.map((m) => m.id)
-          : broadcast === 'phone'
-            ? withPhone.map((m) => m.id)
-            : filtered.map((m) => m.id);
-      if (!ids.length) {
-        setResult({ error: 'Aucun manager pour ce pays' });
-        setLoading(false);
-        return;
-      }
-      payload.manager_ids = ids;
-    } else {
-      payload.broadcast = broadcast;
-    }
 
-    try {
+      setResult(null);
+
+      const payload = {
+        message,
+        subject,
+        channels,
+        test_only: testOnly,
+      };
+
+      if (testOnly) {
+        // test only
+      } else if (mode === 'single') {
+        if (!selectedId) {
+          setResult({ error: 'Sélectionnez un manager' });
+          return;
+        }
+        payload.manager_ids = [selectedId];
+      } else if (broadcast === 'selection') {
+        if (!selectedIds.size) {
+          setResult({ error: 'Sélectionnez au moins un manager' });
+          return;
+        }
+        payload.manager_ids = [...selectedIds];
+      } else if (country) {
+        const ids =
+          broadcast === 'email'
+            ? withEmail.map((m) => m.id)
+            : broadcast === 'phone'
+              ? withPhone.map((m) => m.id)
+              : filtered.map((m) => m.id);
+        if (!ids.length) {
+          setResult({ error: 'Aucun manager pour ce pays' });
+          return;
+        }
+        payload.manager_ids = ids;
+      } else {
+        payload.broadcast = broadcast;
+      }
+
       const res = await fetch('/api/bot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -295,11 +295,7 @@ export default function EnvoyerPage() {
               })
             : null,
       });
-    } catch (e) {
-      setResult({ error: e.message });
-    } finally {
-      setLoading(false);
-    }
+    }).catch((e) => setResult({ error: e.message }));
   }
 
   return (
@@ -498,23 +494,23 @@ export default function EnvoyerPage() {
           </section>
 
           <div className="send-actions">
-            <button
-              type="button"
+            <ActionButton
               className="btn secondary"
               onClick={() => send({ testOnly: true })}
-              disabled={loading || !message.trim()}
+              loading={sending}
+              disabled={!message.trim()}
               title="Envoie uniquement au manager test Atangana — jamais aux vrais managers"
             >
-              {loading ? 'Envoi' : 'Test atangana (seul)'}
-            </button>
-            <button
-              type="button"
+              {sending ? 'Envoi…' : 'Test atangana (seul)'}
+            </ActionButton>
+            <ActionButton
               className="btn primary"
               onClick={() => send({ testOnly: false })}
-              disabled={loading || !message.trim() || recipientCount === 0}
+              loading={sending}
+              disabled={!message.trim() || recipientCount === 0}
             >
-              {loading ? 'Envoi' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
-            </button>
+              {sending ? 'Envoi…' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
+            </ActionButton>
           </div>
 
           {result && (

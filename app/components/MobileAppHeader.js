@@ -3,9 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import ActionButton from './ActionButton';
 import MobileNavIcon from './MobileNavIcon';
 import LogoutButton from './LogoutButton';
+import { useSingleAction } from '../../lib/useSingleAction';
 
 function formatMaj(date) {
   return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -13,14 +15,20 @@ function formatMaj(date) {
 
 export default function MobileAppHeader() {
   const router = useRouter();
-  const [maj, setMaj] = useState(() => formatMaj(new Date()));
-  const [refreshing, setRefreshing] = useState(false);
+  const [maj, setMaj] = useState('');
+  const { run, pending: refreshing } = useSingleAction();
+
+  useEffect(() => {
+    setMaj(formatMaj(new Date()));
+  }, []);
 
   async function onRefresh() {
-    setRefreshing(true);
-    setMaj(formatMaj(new Date()));
-    router.refresh();
-    setTimeout(() => setRefreshing(false), 500);
+    if (refreshing) return;
+    await run(async () => {
+      setMaj(formatMaj(new Date()));
+      router.refresh();
+      await new Promise((r) => setTimeout(r, 500));
+    });
   }
 
   return (
@@ -31,16 +39,15 @@ export default function MobileAppHeader() {
       </div>
 
       <div className="mobile-app-actions">
-        <span className="mobile-maj-pill">Maj {maj}</span>
-        <button
-          type="button"
+        <span className="mobile-maj-pill">Maj {maj || '—'}</span>
+        <ActionButton
           className="mobile-icon-btn"
           aria-label="Actualiser"
           onClick={onRefresh}
-          disabled={refreshing}
+          loading={refreshing}
         >
           <MobileNavIcon name="refresh" />
-        </button>
+        </ActionButton>
         <Link href="/admin" className="mobile-icon-btn" aria-label="Accueil">
           <MobileNavIcon name="home" />
         </Link>

@@ -1,42 +1,38 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import InstallPwa from '../components/InstallPwa';
+import ActionButton from '../components/ActionButton';
+import { useSingleAction } from '../../lib/useSingleAction';
 
 export default function LoginPage() {
   const router = useRouter();
-  const submittingRef = useRef(false);
+  const { run, pending: loading } = useSingleAction();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (submittingRef.current || loading) return;
+    if (loading) return;
 
-    submittingRef.current = true;
     setError('');
-    setLoading(true);
-
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur');
-      router.push('/admin');
-      router.refresh();
-      return;
-    } catch (err) {
-      submittingRef.current = false;
-      setError(err.message);
-      setLoading(false);
-    }
+    await run(
+      async () => {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur');
+        router.push('/admin');
+        router.refresh();
+      },
+      { resetOnSuccess: false }
+    ).catch((err) => setError(err.message));
   }
 
   return (
@@ -64,9 +60,9 @@ export default function LoginPage() {
             required
           />
           {error && <p className="error">{error}</p>}
-          <button type="submit" className="btn" style={{ width: '100%' }} disabled={loading} aria-busy={loading}>
+          <ActionButton type="submit" className="btn" style={{ width: '100%' }} loading={loading}>
             {loading ? 'Connexion…' : 'Se connecter'}
-          </button>
+          </ActionButton>
         </form>
         <div style={{ marginTop: '1rem' }}>
           <InstallPwa variant="login" />
