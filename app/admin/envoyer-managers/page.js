@@ -7,7 +7,10 @@ import { parseClientJson } from '../../../lib/bot';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
+import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../lib/sendPageHelpers';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
+import SendCountryModePanel from '../../components/SendCountryModePanel';
+import { useCountryFromUrl } from '../../components/useCountryFromUrl';
 
 function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, countries, showCountry = true }) {
   return (
@@ -136,6 +139,8 @@ export default function EnvoyerPage() {
     loadManagers();
   }, [loadManagers]);
 
+  useCountryFromUrl({ setMode, setCountry, setBroadcast });
+
   const countries = useMemo(() => listCountries(managers), [managers]);
 
   const filtered = useMemo(
@@ -158,6 +163,24 @@ export default function EnvoyerPage() {
   }, [mode, broadcast, selectedManager, selectedManagers]);
 
   const audienceSummary = useMemo(() => {
+    if (mode === 'country' && country) {
+      const count =
+        broadcast === 'email'
+          ? withEmail.length
+          : broadcast === 'phone'
+            ? withPhone.length
+            : filtered.length;
+      return {
+        count,
+        label:
+          broadcast === 'email'
+            ? 'managers avec email'
+            : broadcast === 'phone'
+              ? 'managers avec téléphone'
+              : 'managers au total',
+        country,
+      };
+    }
     if (mode !== 'bulk' || broadcast === 'selection') return null;
     const count =
       broadcast === 'email'
@@ -189,11 +212,17 @@ export default function EnvoyerPage() {
 
   const recipientCount = useMemo(() => {
     if (mode === 'single') return selectedManager ? 1 : 0;
+    if (mode === 'country') {
+      if (!country) return 0;
+      if (broadcast === 'email') return withEmail.length;
+      if (broadcast === 'phone') return withPhone.length;
+      return filtered.length;
+    }
     if (broadcast === 'email') return withEmail.length;
     if (broadcast === 'phone') return withPhone.length;
     if (broadcast === 'all') return filtered.length;
     return selectedIds.size;
-  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedManager]);
+  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedManager, country]);
 
   function toggleChannel(ch) {
     setChannels((prev) => {
@@ -221,20 +250,8 @@ export default function EnvoyerPage() {
     setSelectedIds(new Set(eligible.map((m) => m.id)));
   }
 
-  function mergeSendResults(target, source) {
-    target.managers = Math.max(target.managers || 0, source.managers || 0);
-    for (const ch of ['email', 'whatsapp']) {
-      if (!source[ch]) continue;
-      if (!target[ch]) target[ch] = { sent: 0, failed: 0, skipped: 0 };
-      target[ch].sent += source[ch].sent || 0;
-      target[ch].failed += source[ch].failed || 0;
-      target[ch].skipped += source[ch].skipped || 0;
-    }
-    target.errors = [...(target.errors || []), ...(source.errors || [])];
-    target.destinations = [...(target.destinations || []), ...(source.destinations || [])];
-    if (source.warnings?.length) {
-      target.warnings = [...(target.warnings || []), ...source.warnings];
-    }
+  function mergeSendResultsLocal(target, source) {
+    mergeSendResults(target, source);
   }
 
   async function send({ testOnly = false } = {}) {
@@ -272,6 +289,17 @@ export default function EnvoyerPage() {
           return;
         }
         payload.manager_ids = [selectedId];
+      } else if (mode === 'country') {
+        if (!country) {
+          setResult({ error: 'Sélectionnez un pays' });
+          return;
+        }
+        const ids = idsForCountrySend({ broadcast, withEmail, withPhone, filtered });
+        if (!ids.length) {
+          setResult({ error: `Aucun manager pour ${country}` });
+          return;
+        }
+        payload.manager_ids = ids;
       } else if (broadcast === 'selection') {
         if (!selectedIds.size) {
           setResult({ error: 'Sélectionnez au moins un manager' });
@@ -294,14 +322,7 @@ export default function EnvoyerPage() {
         payload.broadcast = broadcast;
       }
 
-      const data = {
-        managers: 0,
-        email: { sent: 0, failed: 0, skipped: 0 },
-        whatsapp: { sent: 0, failed: 0, skipped: 0 },
-        errors: [],
-        destinations: [],
-        warnings: [],
-      };
+      const data = emptySendResult('managers');
 
       if (channels.includes('whatsapp')) {
         const waRes = await fetch('/api/bot', {
@@ -314,7 +335,7 @@ export default function EnvoyerPage() {
         });
         const waData = await parseClientJson(waRes);
         if (!waRes.ok) throw new Error(waData.error || 'Erreur envoi WhatsApp');
-        mergeSendResults(data, waData);
+        mergeSendResultsLocal(data, waData);
       }
 
       if (channels.includes('email')) {
@@ -326,7 +347,7 @@ export default function EnvoyerPage() {
         });
         const emData = await parseApiJson(emRes);
         if (!emRes.ok) throw new Error(emData.error || 'Erreur envoi email');
-        mergeSendResults(data, emData);
+        mergeSendResultsLocal(data, emData);
       }
       setResult({
         success: true,
@@ -360,6 +381,9 @@ export default function EnvoyerPage() {
       <div className="mode-tabs">
         <button type="button" className={mode === 'single' ? 'active' : ''} onClick={() => setMode('single')}>
           Un seul manager
+        </button>
+        <button type="button" className={mode === 'country' ? 'active' : ''} onClick={() => setMode('country')}>
+          Par pays
         </button>
         <button type="button" className={mode === 'bulk' ? 'active' : ''} onClick={() => setMode('bulk')}>
           Diffusion
@@ -425,6 +449,18 @@ export default function EnvoyerPage() {
                   )}
                 </div>
               </>
+            ) : mode === 'country' ? (
+              <SendCountryModePanel
+                entityLabel="managers"
+                country={country}
+                onCountryChange={setCountry}
+                countries={countries}
+                broadcast={broadcast}
+                onBroadcastChange={setBroadcast}
+                withEmail={withEmail}
+                withPhone={withPhone}
+                filtered={filtered}
+              />
             ) : (
               <>
                 <div className="broadcast-options">

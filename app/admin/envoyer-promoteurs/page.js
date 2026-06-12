@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
 import { parseClientJson } from '../../../lib/bot';
+import { parseApiJson } from '../../../lib/apiJson';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
+import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../lib/sendPageHelpers';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
+import SendCountryModePanel from '../../components/SendCountryModePanel';
+import { useCountryFromUrl } from '../../components/useCountryFromUrl';
 
 function PromoteurFilterBar({ search, onSearchChange, country, onCountryChange, countries, showCountry = true }) {
   return (
@@ -135,6 +139,8 @@ export default function EnvoyerPromoteursPage() {
     loadPromoteurs();
   }, [loadPromoteurs]);
 
+  useCountryFromUrl({ setMode, setCountry, setBroadcast });
+
   const countries = useMemo(() => listCountries(promoteurs), [promoteurs]);
 
   const filtered = useMemo(
@@ -152,11 +158,30 @@ export default function EnvoyerPromoteursPage() {
   );
   const sidebarPromoteurs = useMemo(() => {
     if (mode === 'single') return selectedPromoteur ? [selectedPromoteur] : [];
+    if (mode === 'country' || (mode === 'bulk' && broadcast !== 'selection')) return [];
     if (broadcast === 'selection') return selectedPromoteurs;
     return [];
   }, [mode, broadcast, selectedPromoteur, selectedPromoteurs]);
 
   const audienceSummary = useMemo(() => {
+    if (mode === 'country' && country) {
+      const count =
+        broadcast === 'email'
+          ? withEmail.length
+          : broadcast === 'phone'
+            ? withPhone.length
+            : filtered.length;
+      return {
+        count,
+        label:
+          broadcast === 'email'
+            ? 'promoteurs avec email'
+            : broadcast === 'phone'
+              ? 'promoteurs avec téléphone'
+              : 'promoteurs au total',
+        country,
+      };
+    }
     if (mode !== 'bulk' || broadcast === 'selection') return null;
     const count =
       broadcast === 'email'
@@ -188,11 +213,17 @@ export default function EnvoyerPromoteursPage() {
 
   const recipientCount = useMemo(() => {
     if (mode === 'single') return selectedPromoteur ? 1 : 0;
+    if (mode === 'country') {
+      if (!country) return 0;
+      if (broadcast === 'email') return withEmail.length;
+      if (broadcast === 'phone') return withPhone.length;
+      return filtered.length;
+    }
     if (broadcast === 'email') return withEmail.length;
     if (broadcast === 'phone') return withPhone.length;
     if (broadcast === 'all') return filtered.length;
     return selectedIds.size;
-  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedPromoteur]);
+  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedPromoteur, country]);
 
   function toggleChannel(ch) {
     setChannels((prev) => {
@@ -255,6 +286,17 @@ export default function EnvoyerPromoteursPage() {
           return;
         }
         payload.promoter_ids = [selectedId];
+      } else if (mode === 'country') {
+        if (!country) {
+          setResult({ error: 'Sélectionnez un pays' });
+          return;
+        }
+        const ids = idsForCountrySend({ broadcast, withEmail, withPhone, filtered });
+        if (!ids.length) {
+          setResult({ error: `Aucun promoteur pour ${country}` });
+          return;
+        }
+        payload.promoter_ids = ids;
       } else if (broadcast === 'selection') {
         if (!selectedIds.size) {
           setResult({ error: 'Sélectionnez au moins un promoteur' });
@@ -277,13 +319,34 @@ export default function EnvoyerPromoteursPage() {
         payload.broadcast = broadcast;
       }
 
-      const res = await fetch('/api/bot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/api/send-to-promoteurs', body: payload }),
-      });
-      const data = await parseClientJson(res);
-      if (!res.ok) throw new Error(data.error || 'Erreur envoi');
+      const data = emptySendResult('promoteurs');
+
+      if (channels.includes('whatsapp')) {
+        const waRes = await fetch('/api/bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: '/api/send-to-promoteurs',
+            body: { ...payload, channels: ['whatsapp'] },
+          }),
+        });
+        const waData = await parseClientJson(waRes);
+        if (!waRes.ok) throw new Error(waData.error || 'Erreur envoi WhatsApp');
+        mergeSendResults(data, waData);
+      }
+
+      if (channels.includes('email')) {
+        const { channels: _c, ...emailPayload } = payload;
+        const emRes = await fetch('/api/promoteurs/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailPayload),
+        });
+        const emData = await parseApiJson(emRes);
+        if (!emRes.ok) throw new Error(emData.error || 'Erreur envoi email');
+        mergeSendResults(data, emData);
+      }
+
       setResult({
         success: true,
         data,
@@ -316,6 +379,9 @@ export default function EnvoyerPromoteursPage() {
       <div className="mode-tabs">
         <button type="button" className={mode === 'single' ? 'active' : ''} onClick={() => setMode('single')}>
           Un seul promoteur
+        </button>
+        <button type="button" className={mode === 'country' ? 'active' : ''} onClick={() => setMode('country')}>
+          Par pays
         </button>
         <button type="button" className={mode === 'bulk' ? 'active' : ''} onClick={() => setMode('bulk')}>
           Diffusion
@@ -381,6 +447,18 @@ export default function EnvoyerPromoteursPage() {
                   )}
                 </div>
               </>
+            ) : mode === 'country' ? (
+              <SendCountryModePanel
+                entityLabel="promoteurs"
+                country={country}
+                onCountryChange={setCountry}
+                countries={countries}
+                broadcast={broadcast}
+                onBroadcastChange={setBroadcast}
+                withEmail={withEmail}
+                withPhone={withPhone}
+                filtered={filtered}
+              />
             ) : (
               <>
                 <div className="broadcast-options">
