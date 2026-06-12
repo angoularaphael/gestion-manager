@@ -10,6 +10,7 @@ import {
   listCountries,
 } from '../../../lib/managerCountry';
 import ContactDetailSheet from '../../components/ContactDetailSheet';
+import CountryMultiPicker from '../../components/CountryMultiPicker';
 import CountrySendLink from '../../components/CountrySendLink';
 
 const PAGE_SIZE = 10;
@@ -20,7 +21,7 @@ export default function BoxeursPage() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
-  const [country, setCountry] = useState('');
+  const [selectedCountries, setSelectedCountries] = useState([]);
   const [categorie, setCategorie] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -51,7 +52,7 @@ export default function BoxeursPage() {
 
   useEffect(() => {
     setPage(0);
-  }, [search, type, country, categorie]);
+  }, [search, type, selectedCountries, categorie]);
 
   useEffect(() => {
     if (!selected) return undefined;
@@ -69,12 +70,12 @@ export default function BoxeursPage() {
   const countries = useMemo(() => listCountries(boxeurs), [boxeurs]);
 
   const filtered = useMemo(() => {
-    let rows = filterManagers(boxeurs, { search, type, country });
+    let rows = filterManagers(boxeurs, { search, type, countries: selectedCountries });
     if (categorie) {
       rows = rows.filter((m) => m.categorie === categorie);
     }
     return rows;
-  }, [boxeurs, search, type, country, categorie]);
+  }, [boxeurs, search, type, selectedCountries, categorie]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);
@@ -95,11 +96,11 @@ export default function BoxeursPage() {
   function resetFilters() {
     setSearch('');
     setType('');
-    setCountry('');
+    setSelectedCountries([]);
     setCategorie('');
   }
 
-  const hasFilters = search || type || country || categorie;
+  const hasFilters = search || type || selectedCountries.length > 0 || categorie;
 
   function categorieLabel(cat) {
     if (cat === 'pro') return 'Pro';
@@ -183,9 +184,8 @@ export default function BoxeursPage() {
       </div>
 
       <CountrySendLink
-        country={country}
+        countries={selectedCountries}
         sendPath="/admin/envoyer-boxeurs"
-        label={`Envoyer email / WhatsApp — ${country}`}
       />
 
       <section className="filter-panel card">
@@ -200,21 +200,14 @@ export default function BoxeursPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="filter-field">
-            <label htmlFor="mgr-country">Pays</label>
-            <select
-              id="mgr-country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            >
-              <option value="">Tous les pays</option>
-              {countries.map(({ name, count }) => (
-                <option key={name} value={name}>
-                  {name} ({count})
-                </option>
-              ))}
-            </select>
-          </div>
+          <CountryMultiPicker
+            selected={selectedCountries}
+            onChange={setSelectedCountries}
+            countries={countries}
+            id="box-country-multi"
+            label="Pays"
+            hint="Un ou plusieurs pays"
+          />
           <div className="filter-field">
             <label htmlFor="mgr-type">Contact</label>
             <select id="mgr-type" value={type} onChange={(e) => setType(e.target.value)}>

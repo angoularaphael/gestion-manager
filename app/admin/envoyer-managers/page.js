@@ -7,14 +7,16 @@ import { parseClientJson } from '../../../lib/bot';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
+import { formatCountriesLabel } from '../../../lib/countryFilter';
 import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../lib/sendPageHelpers';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import SendCountryModePanel from '../../components/SendCountryModePanel';
+import CountryMultiPicker from '../../components/CountryMultiPicker';
 import { useCountryFromUrl } from '../../components/useCountryFromUrl';
 
-function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, countries, showCountry = true }) {
+function ManagerFilterBar({ search, onSearchChange, selectedCountries, onCountriesChange, countries, showCountry = true }) {
   return (
-    <div className="filter-bar">
+    <div className="filter-bar filter-bar-stack">
       <input
         type="search"
         placeholder="Rechercher un nom, email, ville…"
@@ -23,19 +25,14 @@ function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, co
         className="search-input"
       />
       {showCountry && (
-        <select
-          value={country}
-          onChange={(e) => onCountryChange(e.target.value)}
-          className="filter-select"
-          aria-label="Filtrer par pays"
-        >
-          <option value="">Tous les pays</option>
-          {countries.map(({ name, count }) => (
-            <option key={name} value={name}>
-              {name} ({count})
-            </option>
-          ))}
-        </select>
+        <CountryMultiPicker
+          selected={selectedCountries}
+          onChange={onCountriesChange}
+          countries={countries}
+          id="manager-filter-countries"
+          label="Pays"
+          hint="Filtrer par un ou plusieurs pays"
+        />
       )}
     </div>
   );
@@ -73,7 +70,9 @@ function SendSidebar({ mode, broadcast, managers, audienceSummary, previewHtml, 
           <div className="sidebar-audience-summary">
             <strong>{audienceSummary.count}</strong>
             <span>{audienceSummary.label}</span>
-            {audienceSummary.country ? <small>Pays : {audienceSummary.country}</small> : null}
+            {audienceSummary.countriesLabel ? (
+              <small>Pays : {audienceSummary.countriesLabel}</small>
+            ) : null}
           </div>
         ) : (
           <p className="muted sidebar-empty">
@@ -110,7 +109,7 @@ export default function EnvoyerPage() {
   const [managers, setManagers] = useState([]);
   const [loadingManagers, setLoadingManagers] = useState(true);
   const [search, setSearch] = useState('');
-  const [country, setCountry] = useState('');
+  const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedId, setSelectedId] = useState('');
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [broadcast, setBroadcast] = useState('email');
@@ -139,13 +138,13 @@ export default function EnvoyerPage() {
     loadManagers();
   }, [loadManagers]);
 
-  useCountryFromUrl({ setMode, setCountry, setBroadcast });
+  useCountryFromUrl({ setMode, setSelectedCountries, setBroadcast });
 
   const countries = useMemo(() => listCountries(managers), [managers]);
 
   const filtered = useMemo(
-    () => filterManagers(managers, { search, country }),
-    [managers, search, country]
+    () => filterManagers(managers, { search, countries: selectedCountries }),
+    [managers, search, selectedCountries]
   );
 
   const withEmail = useMemo(() => filtered.filter((m) => m.email), [filtered]);
@@ -163,7 +162,7 @@ export default function EnvoyerPage() {
   }, [mode, broadcast, selectedManager, selectedManagers]);
 
   const audienceSummary = useMemo(() => {
-    if (mode === 'country' && country) {
+    if (mode === 'country' && selectedCountries.length) {
       const count =
         broadcast === 'email'
           ? withEmail.length
@@ -178,7 +177,7 @@ export default function EnvoyerPage() {
             : broadcast === 'phone'
               ? 'managers avec téléphone'
               : 'managers au total',
-        country,
+        countriesLabel: formatCountriesLabel(selectedCountries),
       };
     }
     if (mode !== 'bulk' || broadcast === 'selection') return null;
@@ -196,9 +195,9 @@ export default function EnvoyerPage() {
     return {
       count,
       label: labels[broadcast] || 'managers',
-      country: country || null,
+      countriesLabel: selectedCountries.length ? formatCountriesLabel(selectedCountries) : null,
     };
-  }, [mode, broadcast, withEmail.length, withPhone.length, filtered.length, country]);
+  }, [mode, broadcast, withEmail.length, withPhone.length, filtered.length, selectedCountries]);
 
   const previewRecipient =
     sidebarManagers[0]?.nom ||
@@ -213,7 +212,7 @@ export default function EnvoyerPage() {
   const recipientCount = useMemo(() => {
     if (mode === 'single') return selectedManager ? 1 : 0;
     if (mode === 'country') {
-      if (!country) return 0;
+      if (!selectedCountries.length) return 0;
       if (broadcast === 'email') return withEmail.length;
       if (broadcast === 'phone') return withPhone.length;
       return filtered.length;
@@ -222,7 +221,7 @@ export default function EnvoyerPage() {
     if (broadcast === 'phone') return withPhone.length;
     if (broadcast === 'all') return filtered.length;
     return selectedIds.size;
-  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedManager, country]);
+  }, [mode, broadcast, withEmail, withPhone, filtered, selectedIds, selectedManager, selectedCountries]);
 
   function toggleChannel(ch) {
     setChannels((prev) => {
@@ -290,13 +289,13 @@ export default function EnvoyerPage() {
         }
         payload.manager_ids = [selectedId];
       } else if (mode === 'country') {
-        if (!country) {
-          setResult({ error: 'Sélectionnez un pays' });
+        if (!selectedCountries.length) {
+          setResult({ error: 'Sélectionnez au moins un pays' });
           return;
         }
         const ids = idsForCountrySend({ broadcast, withEmail, withPhone, filtered });
         if (!ids.length) {
-          setResult({ error: `Aucun manager pour ${country}` });
+          setResult({ error: `Aucun manager pour ${formatCountriesLabel(selectedCountries)}` });
           return;
         }
         payload.manager_ids = ids;
@@ -306,7 +305,7 @@ export default function EnvoyerPage() {
           return;
         }
         payload.manager_ids = [...selectedIds];
-      } else if (country) {
+      } else if (selectedCountries.length) {
         const ids =
           broadcast === 'email'
             ? withEmail.map((m) => m.id)
@@ -371,7 +370,7 @@ export default function EnvoyerPage() {
         <div>
           <h1>Envoyer aux managers</h1>
           <p className="page-subtitle">
-            {country ? `Filtre : ${country} · ` : ''}
+            {selectedCountries.length ? `Pays : ${formatCountriesLabel(selectedCountries)} · ` : ''}
             {withEmail.length} email · {withPhone.length} téléphone
             {filtered.length !== managers.length ? ` · ${filtered.length} affiché(s)` : ''}
           </p>
@@ -422,8 +421,8 @@ export default function EnvoyerPage() {
                 <ManagerFilterBar
                   search={search}
                   onSearchChange={setSearch}
-                  country={country}
-                  onCountryChange={setCountry}
+                  selectedCountries={selectedCountries}
+                  onCountriesChange={setSelectedCountries}
                   countries={countries}
                 />
                 <div className="manager-picker">
@@ -452,8 +451,8 @@ export default function EnvoyerPage() {
             ) : mode === 'country' ? (
               <SendCountryModePanel
                 entityLabel="managers"
-                country={country}
-                onCountryChange={setCountry}
+                selectedCountries={selectedCountries}
+                onCountriesChange={setSelectedCountries}
                 countries={countries}
                 broadcast={broadcast}
                 onBroadcastChange={setBroadcast}
@@ -468,21 +467,21 @@ export default function EnvoyerPage() {
                     <input type="radio" name="broadcast" value="email" checked={broadcast === 'email'} onChange={() => setBroadcast('email')} />
                     <div>
                       <strong>Tous avec email</strong>
-                      <span>{withEmail.length} manager(s){country ? ` · ${country}` : ''}</span>
+                      <span>{withEmail.length} manager(s){selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'phone' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="phone" checked={broadcast === 'phone'} onChange={() => setBroadcast('phone')} />
                     <div>
                       <strong>Tous avec téléphone</strong>
-                      <span>{withPhone.length} manager(s){country ? ` · ${country}` : ''}</span>
+                      <span>{withPhone.length} manager(s){selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'all' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="all" checked={broadcast === 'all'} onChange={() => setBroadcast('all')} />
                     <div>
                       <strong>Tous les managers</strong>
-                      <span>{filtered.length} manager(s){country ? ` · ${country}` : ''}</span>
+                      <span>{filtered.length} manager(s){selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'selection' ? 'active' : ''}`}>
@@ -495,21 +494,14 @@ export default function EnvoyerPage() {
                 </div>
 
                 {broadcast !== 'selection' && (
-                  <div className="country-filter-bulk">
-                    <label htmlFor="bulk-country">Limiter par pays (optionnel)</label>
-                    <select
-                      id="bulk-country"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      <option value="">Tous les pays</option>
-                      {countries.map(({ name, count }) => (
-                        <option key={name} value={name}>
-                          {name} ({count})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <CountryMultiPicker
+                    selected={selectedCountries}
+                    onChange={setSelectedCountries}
+                    countries={countries}
+                    id="bulk-country-multi"
+                    label="Limiter par pays (optionnel)"
+                    hint="Un ou plusieurs pays"
+                  />
                 )}
 
                 {broadcast === 'selection' && (
@@ -517,8 +509,8 @@ export default function EnvoyerPage() {
                     <ManagerFilterBar
                       search={search}
                       onSearchChange={setSearch}
-                      country={country}
-                      onCountryChange={setCountry}
+                      selectedCountries={selectedCountries}
+                      onCountriesChange={setSelectedCountries}
                       countries={countries}
                     />
                     <div className="selection-toolbar">

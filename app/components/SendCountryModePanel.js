@@ -1,9 +1,12 @@
 'use client';
 
+import CountryMultiPicker from './CountryMultiPicker';
+import { formatCountriesLabel } from '../../lib/countryFilter';
+
 export default function SendCountryModePanel({
   entityLabel,
-  country,
-  onCountryChange,
+  selectedCountries,
+  onCountriesChange,
   countries,
   broadcast,
   onBroadcastChange,
@@ -11,33 +14,27 @@ export default function SendCountryModePanel({
   withPhone,
   filtered,
 }) {
+  const label = formatCountriesLabel(selectedCountries);
+
   return (
     <div className="country-send-panel">
       <div className="country-send-panel-intro">
         <strong>Envoi par pays</strong>
         <p className="muted">
-          Choisissez un pays, puis email et/ou WhatsApp aux contacts de ce pays uniquement.
+          Sélectionnez un ou plusieurs pays, puis envoyez par email et/ou WhatsApp.
         </p>
       </div>
 
-      <div className="filter-field">
-        <label htmlFor="country-mode-select">Pays *</label>
-        <select
-          id="country-mode-select"
-          value={country}
-          onChange={(e) => onCountryChange(e.target.value)}
-          className="filter-select"
-        >
-          <option value="">— Choisir un pays —</option>
-          {countries.map(({ name, count }) => (
-            <option key={name} value={name}>
-              {name} ({count} {entityLabel})
-            </option>
-          ))}
-        </select>
-      </div>
+      <CountryMultiPicker
+        selected={selectedCountries}
+        onChange={onCountriesChange}
+        countries={countries}
+        id="country-mode-multi"
+        label="Pays *"
+        hint="Cochez un ou plusieurs pays"
+      />
 
-      {country ? (
+      {selectedCountries.length > 0 ? (
         <div className="broadcast-options country-mode-audience">
           <label className={`broadcast-opt ${broadcast === 'email' ? 'active' : ''}`}>
             <input
@@ -50,7 +47,7 @@ export default function SendCountryModePanel({
             <div>
               <strong>Avec email</strong>
               <span>
-                {withEmail.length} {entityLabel} · {country}
+                {withEmail.length} {entityLabel} · {label}
               </span>
             </div>
           </label>
@@ -65,7 +62,7 @@ export default function SendCountryModePanel({
             <div>
               <strong>Avec téléphone (WhatsApp)</strong>
               <span>
-                {withPhone.length} {entityLabel} · {country}
+                {withPhone.length} {entityLabel} · {label}
               </span>
             </div>
           </label>
@@ -78,15 +75,15 @@ export default function SendCountryModePanel({
               onChange={() => onBroadcastChange('all')}
             />
             <div>
-              <strong>Tous les contacts du pays</strong>
+              <strong>Tous les contacts sélectionnés</strong>
               <span>
-                {filtered.length} {entityLabel} · {country}
+                {filtered.length} {entityLabel} · {label}
               </span>
             </div>
           </label>
         </div>
       ) : (
-        <p className="muted country-send-hint">Sélectionnez un pays pour voir les destinataires.</p>
+        <p className="muted country-send-hint">Sélectionnez au moins un pays.</p>
       )}
     </div>
   );
