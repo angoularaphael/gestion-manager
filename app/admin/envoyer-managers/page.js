@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
+import { parseApiJson } from '../../../lib/apiJson';
 import { parseClientJson } from '../../../lib/bot';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
@@ -220,6 +221,22 @@ export default function EnvoyerPage() {
     setSelectedIds(new Set(eligible.map((m) => m.id)));
   }
 
+  function mergeSendResults(target, source) {
+    target.managers = Math.max(target.managers || 0, source.managers || 0);
+    for (const ch of ['email', 'whatsapp']) {
+      if (!source[ch]) continue;
+      if (!target[ch]) target[ch] = { sent: 0, failed: 0, skipped: 0 };
+      target[ch].sent += source[ch].sent || 0;
+      target[ch].failed += source[ch].failed || 0;
+      target[ch].skipped += source[ch].skipped || 0;
+    }
+    target.errors = [...(target.errors || []), ...(source.errors || [])];
+    target.destinations = [...(target.destinations || []), ...(source.destinations || [])];
+    if (source.warnings?.length) {
+      target.warnings = [...(target.warnings || []), ...source.warnings];
+    }
+  }
+
   async function send({ testOnly = false } = {}) {
     if (sending) return;
 
@@ -277,13 +294,40 @@ export default function EnvoyerPage() {
         payload.broadcast = broadcast;
       }
 
-      const res = await fetch('/api/bot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/api/send-to-managers', body: payload }),
-      });
-      const data = await parseClientJson(res);
-      if (!res.ok) throw new Error(data.error || 'Erreur envoi');
+      const data = {
+        managers: 0,
+        email: { sent: 0, failed: 0, skipped: 0 },
+        whatsapp: { sent: 0, failed: 0, skipped: 0 },
+        errors: [],
+        destinations: [],
+        warnings: [],
+      };
+
+      if (channels.includes('whatsapp')) {
+        const waRes = await fetch('/api/bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: '/api/send-to-managers',
+            body: { ...payload, channels: ['whatsapp'] },
+          }),
+        });
+        const waData = await parseClientJson(waRes);
+        if (!waRes.ok) throw new Error(waData.error || 'Erreur envoi WhatsApp');
+        mergeSendResults(data, waData);
+      }
+
+      if (channels.includes('email')) {
+        const { channels: _c, ...emailPayload } = payload;
+        const emRes = await fetch('/api/managers/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailPayload),
+        });
+        const emData = await parseApiJson(emRes);
+        if (!emRes.ok) throw new Error(emData.error || 'Erreur envoi email');
+        mergeSendResults(data, emData);
+      }
       setResult({
         success: true,
         data,
@@ -566,6 +610,16 @@ export default function EnvoyerPage() {
                         ))}
                       </ul>
                     </details>
+                  )}
+                  {result.data.warnings?.length > 0 && (
+                    <div className="delivery-warnings">
+                      {result.data.warnings.map((w, i) => (
+                        <p key={i} className="muted">
+                          {w.manager ? `${w.manager} : ` : ''}
+                          {w.hint}
+                        </p>
+                      ))}
+                    </div>
                   )}
                   {result.previewHtml && (
                     <div className="sent-preview">
