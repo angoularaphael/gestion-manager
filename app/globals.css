@@ -2046,6 +2046,56 @@ html.manager-sheet-open body {
   line-height: 1;
 }
 
+.envoyer-hub-country-card {
+  margin-bottom: 1.25rem;
+}
+
+.envoyer-hub-country-hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.9rem;
+}
+
+.envoyer-hub-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.country-send-cta {
+  margin: 0 0 1rem;
+}
+
+.country-send-cta-btn {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.country-send-panel {
+  text-align: left;
+}
+
+.country-send-panel-intro {
+  margin-bottom: 1rem;
+}
+
+.country-send-panel-intro strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.country-mode-audience {
+  margin-top: 1rem;
+}
+
+.country-send-hint {
+  margin-top: 0.75rem;
+}
+
+.country-mode-categorie {
+  margin-top: 1rem;
+}
+
 /* Mobile */
 @media (max-width: 1023px) {
   .managers-mobile-list { display: block; }

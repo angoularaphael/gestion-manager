@@ -10,6 +10,7 @@ import {
   listCountries,
 } from '../../../lib/managerCountry';
 import ContactDetailSheet from '../../components/ContactDetailSheet';
+import CountrySendLink from '../../components/CountrySendLink';
 
 const PAGE_SIZE = 10;
 
@@ -138,6 +139,12 @@ export default function PromoteursPage() {
           onCancel={() => setShowAdd(false)}
         />
       )}
+
+      <CountrySendLink
+        country={country}
+        sendPath="/admin/envoyer-promoteurs"
+        label={`Envoyer email / WhatsApp — ${country}`}
+      />
 
       <section className="filter-panel card">
         <div className="filter-grid">
