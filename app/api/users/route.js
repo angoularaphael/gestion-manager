@@ -4,6 +4,7 @@ import { deliverCredentials } from '../../../lib/credentialsDelivery';
 import { getSession } from '../../../lib/session';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export async function POST(request) {
@@ -11,13 +12,21 @@ export async function POST(request) {
   if (!session || session.role !== 'super_admin') {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
   }
-  try {
-    const body = await request.json();
-    const sendEmail = Boolean(body.send_email);
-    const sendWhatsApp = Boolean(body.send_whatsapp);
-    const password = String(body.password || '');
 
-    const user = await createUser(
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Corps de requête invalide' }, { status: 400 });
+  }
+
+  const sendEmail = Boolean(body.send_email);
+  const sendWhatsApp = Boolean(body.send_whatsapp);
+  const password = String(body.password || '');
+
+  let user;
+  try {
+    user = await createUser(
       {
         email: body.email,
         password,
@@ -26,9 +35,13 @@ export async function POST(request) {
       },
       session.role
     );
+  } catch (e) {
+    return NextResponse.json({ error: e.message || 'Erreur création' }, { status: 400 });
+  }
 
-    let delivery = null;
-    if (sendEmail || sendWhatsApp) {
+  let delivery = null;
+  if (sendEmail || sendWhatsApp) {
+    try {
       delivery = await deliverCredentials({
         email: user.email,
         password,
@@ -37,12 +50,16 @@ export async function POST(request) {
         sendEmail,
         sendWhatsApp,
       });
+    } catch (e) {
+      delivery = {
+        email: null,
+        whatsapp: null,
+        errors: [{ channel: 'delivery', error: e.message || 'Envoi impossible' }],
+      };
     }
-
-    return NextResponse.json({ success: true, user, delivery });
-  } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
   }
+
+  return NextResponse.json({ success: true, user, delivery });
 }
 
 export async function DELETE(request) {
