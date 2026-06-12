@@ -9,7 +9,7 @@ import {
   filterManagers,
   listCountries,
 } from '../../../lib/managerCountry';
-import PromoteurDetailSheet from './PromoteurDetailSheet';
+import ContactDetailSheet from '../../components/ContactDetailSheet';
 
 const PAGE_SIZE = 10;
 
@@ -305,7 +305,11 @@ export default function PromoteursPage() {
               {filtered.map((m) => {
                 const pays = extractCountry(m);
                 return (
-                  <tr key={m.id}>
+                  <tr
+                    key={m.id}
+                    className="data-row-clickable"
+                    onClick={() => setSelected(m)}
+                  >
                     <td className="cell-name">{m.nom}</td>
                     <td>
                       <span className="country-pill">{pays}</span>
@@ -324,7 +328,17 @@ export default function PromoteursPage() {
         </div>
       </section>
 
-      <PromoteurDetailSheet promoteur={selected} onClose={() => setSelected(null)} />
+      <ContactDetailSheet
+        contact={selected}
+        apiPath="/api/promoteurs"
+        entityLabel="le promoteur"
+        onClose={() => setSelected(null)}
+        onUpdated={(data) => {
+          loadPromoteurs();
+          if (data?.promoteur) setSelected(data.promoteur);
+        }}
+        onDeleted={loadPromoteurs}
+      />
     </div>
   );
 }

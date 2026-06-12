@@ -1945,6 +1945,22 @@ html.manager-sheet-open body {
   }
 }
 
+.contact-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.25rem;
+}
+
+.data-row-clickable {
+  cursor: pointer;
+}
+
+.data-row-clickable:hover td {
+  background: rgba(37, 99, 235, 0.04);
+}
+
 .envoyer-back-link {
   display: none;
 }

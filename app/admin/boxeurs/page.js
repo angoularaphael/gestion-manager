@@ -9,7 +9,7 @@ import {
   filterManagers,
   listCountries,
 } from '../../../lib/managerCountry';
-import BoxeurDetailSheet from './BoxeurDetailSheet';
+import ContactDetailSheet from '../../components/ContactDetailSheet';
 
 const PAGE_SIZE = 10;
 
@@ -349,7 +349,11 @@ export default function BoxeursPage() {
               {filtered.map((m) => {
                 const pays = extractCountry(m);
                 return (
-                  <tr key={m.id}>
+                  <tr
+                    key={m.id}
+                    className="data-row-clickable"
+                    onClick={() => setSelected(m)}
+                  >
                     <td className="cell-name">{m.nom}</td>
                     <td>
                       <span className={`categorie-pill categorie-pill-${m.categorie}`}>
@@ -373,7 +377,18 @@ export default function BoxeursPage() {
         </div>
       </section>
 
-      <BoxeurDetailSheet boxeur={selected} onClose={() => setSelected(null)} />
+      <ContactDetailSheet
+        contact={selected}
+        apiPath="/api/boxeurs"
+        entityLabel="le boxeur"
+        showCategorie
+        onClose={() => setSelected(null)}
+        onUpdated={(data) => {
+          loadBoxeurs();
+          if (data?.boxeur) setSelected(data.boxeur);
+        }}
+        onDeleted={loadBoxeurs}
+      />
     </div>
   );
 }

@@ -9,7 +9,7 @@ import {
   filterManagers,
   listCountries,
 } from '../../../lib/managerCountry';
-import ManagerDetailSheet from './ManagerDetailSheet';
+import ContactDetailSheet from '../../components/ContactDetailSheet';
 
 const PAGE_SIZE = 10;
 
@@ -305,7 +305,11 @@ export default function ManagersPage() {
               {filtered.map((m) => {
                 const pays = extractCountry(m);
                 return (
-                  <tr key={m.id}>
+                  <tr
+                    key={m.id}
+                    className="data-row-clickable"
+                    onClick={() => setSelected(m)}
+                  >
                     <td className="cell-name">{m.nom}</td>
                     <td>
                       <span className="country-pill">{pays}</span>
@@ -324,7 +328,17 @@ export default function ManagersPage() {
         </div>
       </section>
 
-      <ManagerDetailSheet manager={selected} onClose={() => setSelected(null)} />
+      <ContactDetailSheet
+        contact={selected}
+        apiPath="/api/managers"
+        entityLabel="le manager"
+        onClose={() => setSelected(null)}
+        onUpdated={(data) => {
+          loadManagers();
+          if (data?.manager) setSelected(data.manager);
+        }}
+        onDeleted={loadManagers}
+      />
     </div>
   );
 }
