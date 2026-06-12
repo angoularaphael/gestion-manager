@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ActionButton from '../../components/ActionButton';
 import { useSingleAction } from '../../../lib/useSingleAction';
+import { parseApiJson } from '../../../lib/apiJson';
 
 function generatePassword() {
   const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -51,7 +52,7 @@ export default function UserForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error || 'Erreur');
 
       setCreated({
@@ -193,7 +194,13 @@ export default function UserForm() {
               )}
               {created.delivery.errors?.map((err) => (
                 <p key={err.channel} className="error">
-                  {err.channel === 'email' ? 'Email' : 'WhatsApp'} : {err.error}
+                  {err.channel === 'email'
+                    ? 'Email'
+                    : err.channel === 'whatsapp'
+                      ? 'WhatsApp'
+                      : 'Envoi'}
+                  {' : '}
+                  {err.error}
                 </p>
               ))}
             </div>

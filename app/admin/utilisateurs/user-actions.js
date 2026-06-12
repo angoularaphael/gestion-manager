@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import ActionButton from '../../components/ActionButton';
 import { useSingleAction } from '../../../lib/useSingleAction';
+import { parseApiJson } from '../../../lib/apiJson';
 
 export function UserDeleteButton({ email }) {
   const router = useRouter();
@@ -17,7 +18,7 @@ export function UserDeleteButton({ email }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
+      const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error || 'Erreur');
       router.refresh();
     }).catch((e) => alert(e.message || 'Suppression impossible'));
