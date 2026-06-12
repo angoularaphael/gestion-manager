@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import MobileNavIcon from '../../components/MobileNavIcon';
+import CountryMultiPicker from '../../components/CountryMultiPicker';
 import { filterManagers, listCountries } from '../../../lib/managerCountry';
+import { buildCountriesQuery, formatCountriesLabel } from '../../../lib/countryFilter';
 
 const ENTITY_TYPES = [
   {
@@ -40,7 +42,7 @@ function countWithContact(rows, field) {
 }
 
 export default function EnvoyerHubPage() {
-  const [country, setCountry] = useState('');
+  const [selectedCountries, setSelectedCountries] = useState([]);
   const [data, setData] = useState({ managers: [], promoteurs: [], boxeurs: [] });
   const [loading, setLoading] = useState(true);
 
@@ -76,22 +78,26 @@ export default function EnvoyerHubPage() {
 
   const countries = useMemo(() => listCountries(allRows), [allRows]);
 
+  const countriesLabel = formatCountriesLabel(selectedCountries);
+
   const entityStats = useMemo(() => {
+    const query = buildCountriesQuery(selectedCountries);
     return ENTITY_TYPES.map((entity) => {
-      const rows = country
-        ? filterManagers(data[entity.key], { country })
+      const rows = selectedCountries.length
+        ? filterManagers(data[entity.key], { countries: selectedCountries })
         : data[entity.key];
+      const sendHref = query
+        ? `${entity.sendPath}?mode=country&${query}`
+        : `${entity.sendPath}?mode=country`;
       return {
         ...entity,
         total: rows.length,
         emails: countWithContact(rows, 'email'),
         phones: countWithContact(rows, 'telephone'),
-        sendHref: country
-          ? `${entity.sendPath}?mode=country&country=${encodeURIComponent(country)}`
-          : `${entity.sendPath}?mode=country`,
+        sendHref,
       };
     });
-  }, [data, country]);
+  }, [data, selectedCountries]);
 
   return (
     <div className="envoyer-hub-page">
@@ -99,36 +105,27 @@ export default function EnvoyerHubPage() {
         <div>
           <h1>Envoyer par pays</h1>
           <p className="page-subtitle">
-            Sélectionnez un pays, puis envoyez un email et/ou WhatsApp aux managers, promoteurs ou boxeurs de ce pays.
+            Sélectionnez un ou plusieurs pays, puis envoyez un email et/ou WhatsApp aux managers, promoteurs ou boxeurs concernés.
           </p>
         </div>
       </header>
 
       <section className="card envoyer-hub-country-card">
-        <div className="filter-field">
-          <label htmlFor="hub-country">Pays</label>
-          <select
-            id="hub-country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="filter-select"
-            disabled={loading}
-          >
-            <option value="">— Choisir un pays —</option>
-            {countries.map(({ name, count }) => (
-              <option key={name} value={name}>
-                {name} ({count} contact{count > 1 ? 's' : ''})
-              </option>
-            ))}
-          </select>
-        </div>
-        {country ? (
+        <CountryMultiPicker
+          selected={selectedCountries}
+          onChange={setSelectedCountries}
+          countries={countries}
+          id="hub-country-multi"
+          label="Pays"
+          hint="Cochez un ou plusieurs pays"
+        />
+        {selectedCountries.length > 0 ? (
           <p className="muted envoyer-hub-country-hint">
-            Contacts détectés pour <strong>{country}</strong> (email / téléphone selon les fiches).
+            Contacts détectés pour <strong>{countriesLabel}</strong> (email / téléphone selon les fiches).
           </p>
         ) : (
           <p className="muted envoyer-hub-country-hint">
-            Choisissez un pays pour voir les volumes et lancer un envoi ciblé.
+            Choisissez un ou plusieurs pays pour voir les volumes et lancer un envoi ciblé.
           </p>
         )}
       </section>
@@ -148,7 +145,7 @@ export default function EnvoyerHubPage() {
               <span>
                 {loading
                   ? 'Chargement…'
-                  : country
+                  : selectedCountries.length
                     ? `${entity.emails} email · ${entity.phones} tél. · ${entity.total} au total`
                     : `${data[entity.key].length} contacts — mode par pays`}
               </span>

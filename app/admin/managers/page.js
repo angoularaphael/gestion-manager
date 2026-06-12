@@ -10,6 +10,7 @@ import {
   listCountries,
 } from '../../../lib/managerCountry';
 import ContactDetailSheet from '../../components/ContactDetailSheet';
+import CountryMultiPicker from '../../components/CountryMultiPicker';
 import CountrySendLink from '../../components/CountrySendLink';
 
 const PAGE_SIZE = 10;
@@ -20,7 +21,7 @@ export default function ManagersPage() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
-  const [country, setCountry] = useState('');
+  const [selectedCountries, setSelectedCountries] = useState([]);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
@@ -50,7 +51,7 @@ export default function ManagersPage() {
 
   useEffect(() => {
     setPage(0);
-  }, [search, type, country]);
+  }, [search, type, selectedCountries]);
 
   useEffect(() => {
     if (!selected) return undefined;
@@ -68,8 +69,8 @@ export default function ManagersPage() {
   const countries = useMemo(() => listCountries(managers), [managers]);
 
   const filtered = useMemo(
-    () => filterManagers(managers, { search, type, country }),
-    [managers, search, type, country]
+    () => filterManagers(managers, { search, type, countries: selectedCountries }),
+    [managers, search, type, selectedCountries]
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -89,10 +90,10 @@ export default function ManagersPage() {
   function resetFilters() {
     setSearch('');
     setType('');
-    setCountry('');
+    setSelectedCountries([]);
   }
 
-  const hasFilters = search || type || country;
+  const hasFilters = search || type || selectedCountries.length > 0;
 
   return (
     <div className="managers-page">
@@ -141,9 +142,8 @@ export default function ManagersPage() {
       )}
 
       <CountrySendLink
-        country={country}
+        countries={selectedCountries}
         sendPath="/admin/envoyer-managers"
-        label={`Envoyer email / WhatsApp — ${country}`}
       />
 
       <section className="filter-panel card">
@@ -158,21 +158,14 @@ export default function ManagersPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="filter-field">
-            <label htmlFor="mgr-country">Pays</label>
-            <select
-              id="mgr-country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            >
-              <option value="">Tous les pays</option>
-              {countries.map(({ name, count }) => (
-                <option key={name} value={name}>
-                  {name} ({count})
-                </option>
-              ))}
-            </select>
-          </div>
+          <CountryMultiPicker
+            selected={selectedCountries}
+            onChange={setSelectedCountries}
+            countries={countries}
+            id="mgr-country-multi"
+            label="Pays"
+            hint="Un ou plusieurs pays"
+          />
           <div className="filter-field">
             <label htmlFor="mgr-type">Contact</label>
             <select id="mgr-type" value={type} onChange={(e) => setType(e.target.value)}>
