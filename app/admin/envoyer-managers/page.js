@@ -277,10 +277,10 @@ export default function EnvoyerPage() {
         payload.broadcast = broadcast;
       }
 
-      const res = await fetch('/api/bot', {
+      const res = await fetch('/api/managers/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/api/send-to-managers', body: payload }),
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(payload),
       });
       const data = await parseClientJson(res);
       if (!res.ok) throw new Error(data.error || 'Erreur envoi');
