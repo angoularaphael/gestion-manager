@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { parseApiJson } from '../../lib/apiJson';
 import { useSingleAction } from '../../lib/useSingleAction';
 import ActionButton from './ActionButton';
+import ContactFormFields, { readContactFormPayload } from './ContactFormFields';
 
 export default function AddContactForm({
   apiPath,
@@ -21,16 +22,7 @@ export default function AddContactForm({
     if (saving) return;
 
     setError('');
-    const fd = new FormData(e.target);
-    const payload = {
-      nom: fd.get('nom'),
-      email: fd.get('email'),
-      telephone: fd.get('telephone'),
-      localisation: fd.get('localisation'),
-      adresse: fd.get('adresse'),
-      url_profil: fd.get('url_profil'),
-    };
-    if (showCategorie) payload.categorie = categorie;
+    const payload = readContactFormPayload(e.target, { showCategorie, categorie });
 
     await run(async () => {
       const res = await fetch(apiPath, {
@@ -57,58 +49,12 @@ export default function AddContactForm({
         ) : null}
       </div>
 
-      <div className="add-contact-form-grid">
-        <div className="form-field">
-          <label htmlFor="add-nom">Nom *</label>
-          <input id="add-nom" name="nom" type="text" required placeholder="Prénom Nom" />
-        </div>
-
-        {showCategorie ? (
-          <div className="form-field">
-            <label htmlFor="add-categorie">Catégorie *</label>
-            <select
-              id="add-categorie"
-              value={categorie}
-              onChange={(e) => setCategorie(e.target.value)}
-            >
-              <option value="amateur">Amateur</option>
-              <option value="pro">Pro</option>
-            </select>
-          </div>
-        ) : null}
-
-        <div className="form-field">
-          <label htmlFor="add-email">Email</label>
-          <input id="add-email" name="email" type="email" placeholder="contact@exemple.fr" />
-        </div>
-
-        <div className="form-field">
-          <label htmlFor="add-telephone">Téléphone WhatsApp</label>
-          <input
-            id="add-telephone"
-            name="telephone"
-            type="tel"
-            placeholder="33612345678"
-            inputMode="numeric"
-          />
-          <p className="field-hint">Format international sans + (ex. 33612345678)</p>
-        </div>
-
-        <div className="form-field">
-          <label htmlFor="add-localisation">Localisation / Pays</label>
-          <input id="add-localisation" name="localisation" type="text" placeholder="France, Paris…" />
-        </div>
-
-        <div className="form-field">
-          <label htmlFor="add-adresse">Adresse / Organisation</label>
-          <input id="add-adresse" name="adresse" type="text" placeholder="Club, salle…" />
-        </div>
-
-        <div className="form-field add-contact-form-wide">
-          <label htmlFor="add-url">URL profil</label>
-          <input id="add-url" name="url_profil" type="url" placeholder="https://…" />
-        </div>
-      </div>
+      <ContactFormFields
+        idPrefix="add"
+        showCategorie={showCategorie}
+        categorie={categorie}
+        onCategorieChange={setCategorie}
+      />
 
       {error && <p className="error">{error}</p>}
 
