@@ -13,7 +13,7 @@ function ManagerFilterBar({ search, onSearchChange, country, onCountryChange, co
     <div className="filter-bar">
       <input
         type="search"
-        placeholder="Rechercher un nom, email, villeÔÇª"
+        placeholder="Rechercher un nom, email, ville…"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         className="search-input"
@@ -41,7 +41,7 @@ function SendSidebar({ mode, broadcast, managers, audienceSummary, previewHtml, 
   return (
     <aside className="send-sidebar">
       <section className="send-sidebar-card">
-        <h3 className="send-sidebar-title">S├®lection</h3>
+        <h3 className="send-sidebar-title">Sélection</h3>
         {managers.length > 0 ? (
           <ul className="sidebar-manager-list">
             {managers.map((m) => (
@@ -59,7 +59,7 @@ function SendSidebar({ mode, broadcast, managers, audienceSummary, previewHtml, 
                     onClick={() => onRemove(m.id)}
                     aria-label={`Retirer ${m.nom}`}
                   >
-                    ├ù
+                    ×
                   </button>
                 ) : null}
               </li>
@@ -90,10 +90,10 @@ function SendSidebar({ mode, broadcast, managers, audienceSummary, previewHtml, 
       {showEmailPreview && (
         <section className="send-preview">
           <div className="preview-header">
-            <h3>Aper├ºu email</h3>
+            <h3>Aperçu email</h3>
           </div>
           <div className="preview-frame">
-            <iframe title="Aper├ºu email" srcDoc={previewHtml} sandbox="" />
+            <iframe title="Aperçu email" srcDoc={previewHtml} sandbox="" />
           </div>
         </section>
       )}
@@ -166,7 +166,7 @@ export default function EnvoyerPage() {
           : filtered.length;
     const labels = {
       email: 'managers avec email',
-      phone: 'managers avec t├®l├®phone',
+      phone: 'managers avec téléphone',
       all: 'managers au total',
     };
     return {
@@ -230,10 +230,10 @@ export default function EnvoyerPage() {
       if (!testOnly) {
         const label =
           mode === 'single' && selectedManager
-            ? `le manager ┬½ ${selectedManager.nom} ┬╗`
-            : `${recipientCount} manager(s) r├®el(s)`;
+            ? `le manager « ${selectedManager.nom} »`
+            : `${recipientCount} manager(s) réel(s)`;
         const ok = window.confirm(
-          `Confirmer l'envoi ├á ${label} ?\n\nSeul le bouton ┬½ Test atangana ┬╗ envoie au compte de test.`
+          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
         );
         if (!ok) return;
       }
@@ -251,13 +251,13 @@ export default function EnvoyerPage() {
         // test only
       } else if (mode === 'single') {
         if (!selectedId) {
-          setResult({ error: 'S├®lectionnez un manager' });
+          setResult({ error: 'Sélectionnez un manager' });
           return;
         }
         payload.manager_ids = [selectedId];
       } else if (broadcast === 'selection') {
         if (!selectedIds.size) {
-          setResult({ error: 'S├®lectionnez au moins un manager' });
+          setResult({ error: 'Sélectionnez au moins un manager' });
           return;
         }
         payload.manager_ids = [...selectedIds];
@@ -306,9 +306,9 @@ export default function EnvoyerPage() {
         <div>
           <h1>Envoyer aux managers</h1>
           <p className="page-subtitle">
-            {country ? `Filtre : ${country} ┬À ` : ''}
-            {withEmail.length} email ┬À {withPhone.length} t├®l├®phone
-            {filtered.length !== managers.length ? ` ┬À ${filtered.length} affich├®(s)` : ''}
+            {country ? `Filtre : ${country} · ` : ''}
+            {withEmail.length} email · {withPhone.length} téléphone
+            {filtered.length !== managers.length ? ` · ${filtered.length} affiché(s)` : ''}
           </p>
         </div>
       </header>
@@ -388,28 +388,28 @@ export default function EnvoyerPage() {
                     <input type="radio" name="broadcast" value="email" checked={broadcast === 'email'} onChange={() => setBroadcast('email')} />
                     <div>
                       <strong>Tous avec email</strong>
-                      <span>{withEmail.length} manager(s){country ? ` ┬À ${country}` : ''}</span>
+                      <span>{withEmail.length} manager(s){country ? ` · ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'phone' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="phone" checked={broadcast === 'phone'} onChange={() => setBroadcast('phone')} />
                     <div>
-                      <strong>Tous avec t├®l├®phone</strong>
-                      <span>{withPhone.length} manager(s){country ? ` ┬À ${country}` : ''}</span>
+                      <strong>Tous avec téléphone</strong>
+                      <span>{withPhone.length} manager(s){country ? ` · ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'all' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="all" checked={broadcast === 'all'} onChange={() => setBroadcast('all')} />
                     <div>
                       <strong>Tous les managers</strong>
-                      <span>{filtered.length} manager(s){country ? ` ┬À ${country}` : ''}</span>
+                      <span>{filtered.length} manager(s){country ? ` · ${country}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'selection' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="selection" checked={broadcast === 'selection'} onChange={() => setBroadcast('selection')} />
                     <div>
-                      <strong>S├®lection manuelle</strong>
-                      <span>{selectedIds.size} s├®lectionn├®(s)</span>
+                      <strong>Sélection manuelle</strong>
+                      <span>{selectedIds.size} sélectionné(s)</span>
                     </div>
                   </label>
                 </div>
@@ -443,7 +443,7 @@ export default function EnvoyerPage() {
                     />
                     <div className="selection-toolbar">
                       <button type="button" className="btn ghost" onClick={selectAllFiltered}>
-                        Tout s├®lectionner
+                        Tout sélectionner
                       </button>
                       <button type="button" className="btn ghost" onClick={() => setSelectedIds(new Set())}>
                         Effacer
@@ -459,7 +459,7 @@ export default function EnvoyerPage() {
                           />
                           <span className="checkbox-label">
                             <strong>{m.nom}</strong>
-                            <small>{m.email || m.telephone || 'ÔÇö'}</small>
+                            <small>{m.email || m.telephone || '—'}</small>
                           </span>
                         </label>
                       ))}
@@ -501,9 +501,9 @@ export default function EnvoyerPage() {
               onClick={() => send({ testOnly: true })}
               loading={sending}
               disabled={!message.trim()}
-              title="Envoie uniquement au manager test Atangana ÔÇö jamais aux vrais managers"
+              title="Envoie uniquement au manager test Atangana — jamais aux vrais managers"
             >
-              {sending ? 'EnvoiÔÇª' : 'Test atangana (seul)'}
+              {sending ? 'Envoi…' : 'Test atangana (seul)'}
             </ActionButton>
             <ActionButton
               className="btn primary"
@@ -511,7 +511,7 @@ export default function EnvoyerPage() {
               loading={sending}
               disabled={!message.trim() || recipientCount === 0}
             >
-              {sending ? 'EnvoiÔÇª' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
+              {sending ? 'Envoi…' : `Envoyer${recipientCount ? ` (${recipientCount})` : ''}`}
             </ActionButton>
           </div>
 
@@ -521,7 +521,7 @@ export default function EnvoyerPage() {
                 <p><strong>Erreur :</strong> {result.error}</p>
               ) : (
                 <>
-                  <p><strong>Envoi termin├®</strong> ÔÇö {result.data.managers} manager(s) trait├®(s)</p>
+                  <p><strong>Envoi terminé</strong> — {result.data.managers} manager(s) traité(s)</p>
                   {result.data.destinations?.length > 0 && (
                     <ul className="dest-list">
                       {result.data.destinations.map((d, i) => (
@@ -537,10 +537,10 @@ export default function EnvoyerPage() {
                     {channels.includes('email') && (
                       <div className="result-stat">
                         <span className="ok">{result.data.email?.sent ?? 0}</span>
-                        <small>emails envoy├®s</small>
+                        <small>emails envoyés</small>
                         {(result.data.email?.failed > 0 || result.data.email?.skipped > 0) && (
                           <span className="result-detail">
-                            {result.data.email?.failed} ├®chec(s), {result.data.email?.skipped} ignor├®(s)
+                            {result.data.email?.failed} échec(s), {result.data.email?.skipped} ignoré(s)
                           </span>
                         )}
                       </div>
@@ -548,10 +548,10 @@ export default function EnvoyerPage() {
                     {channels.includes('whatsapp') && (
                       <div className="result-stat">
                         <span className="ok">{result.data.whatsapp?.sent ?? 0}</span>
-                        <small>WhatsApp envoy├®s</small>
+                        <small>WhatsApp envoyés</small>
                         {(result.data.whatsapp?.failed > 0 || result.data.whatsapp?.skipped > 0) && (
                           <span className="result-detail">
-                            {result.data.whatsapp?.failed} ├®chec(s), {result.data.whatsapp?.skipped} ignor├®(s)
+                            {result.data.whatsapp?.failed} échec(s), {result.data.whatsapp?.skipped} ignoré(s)
                           </span>
                         )}
                       </div>
@@ -569,9 +569,9 @@ export default function EnvoyerPage() {
                   )}
                   {result.previewHtml && (
                     <div className="sent-preview">
-                      <h4>Aper├ºu de l&apos;email envoy├®</h4>
+                      <h4>Aperçu de l&apos;email envoyé</h4>
                       <div className="preview-frame sent-preview-frame">
-                        <iframe title="Email envoy├®" srcDoc={result.previewHtml} sandbox="" />
+                        <iframe title="Email envoyé" srcDoc={result.previewHtml} sandbox="" />
                       </div>
                     </div>
                   )}
