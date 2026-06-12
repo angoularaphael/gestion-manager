@@ -7,7 +7,8 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
 
   try {
-    return NextResponse.json(await fetchManagerStatsFromDb());
+    const stats = await fetchManagerStatsFromDb();
+    return NextResponse.json(stats);
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

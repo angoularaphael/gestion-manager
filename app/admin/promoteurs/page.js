@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
+import AddContactForm from '../../components/AddContactForm';
 import {
   contactLabel,
   extractCountry,
@@ -21,6 +22,7 @@ export default function PromoteursPage() {
   const [country, setCountry] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
   const loadLockRef = useRef(false);
 
   const loadPromoteurs = useCallback(async () => {
@@ -100,6 +102,15 @@ export default function PromoteursPage() {
             Liste des promoteurs — séparée des managers et coaches
           </p>
         </div>
+        <div className="header-actions">
+          <button
+            type="button"
+            className={`btn ${showAdd ? 'secondary' : ''}`}
+            onClick={() => setShowAdd((v) => !v)}
+          >
+            {showAdd ? 'Fermer le formulaire' : 'Ajouter un promoteur'}
+          </button>
+        </div>
         <div className="header-stats">
           <div className="mini-stat">
             <span>{stats.total}</span>
@@ -115,6 +126,18 @@ export default function PromoteursPage() {
           </div>
         </div>
       </header>
+
+      {showAdd && (
+        <AddContactForm
+          apiPath="/api/promoteurs"
+          title="Ajouter un promoteur"
+          onSuccess={() => {
+            loadPromoteurs();
+            setShowAdd(false);
+          }}
+          onCancel={() => setShowAdd(false)}
+        />
+      )}
 
       <section className="filter-panel card">
         <div className="filter-grid">
