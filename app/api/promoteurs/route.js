@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchPromoteursFromDb } from '../../../lib/promoteurs';
+import { createPromoteurInDb, fetchPromoteursFromDb } from '../../../lib/promoteurs';
 import { getSession } from '../../../lib/session';
 
 export async function GET(request) {
@@ -15,5 +15,24 @@ export async function GET(request) {
     return NextResponse.json({ promoteurs });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
+
+export async function POST(request) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Corps de requête invalide' }, { status: 400 });
+  }
+
+  try {
+    const promoteur = await createPromoteurInDb(body);
+    return NextResponse.json({ success: true, promoteur });
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }

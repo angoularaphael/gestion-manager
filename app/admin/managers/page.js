@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
+import AddContactForm from '../../components/AddContactForm';
 import {
   contactLabel,
   extractCountry,
@@ -21,6 +22,7 @@ export default function ManagersPage() {
   const [country, setCountry] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
   const loadLockRef = useRef(false);
 
   const loadManagers = useCallback(async () => {
@@ -100,6 +102,15 @@ export default function ManagersPage() {
             Recherche, filtres par pays et type de contact
           </p>
         </div>
+        <div className="header-actions">
+          <button
+            type="button"
+            className={`btn ${showAdd ? 'secondary' : ''}`}
+            onClick={() => setShowAdd((v) => !v)}
+          >
+            {showAdd ? 'Fermer le formulaire' : 'Ajouter un manager'}
+          </button>
+        </div>
         <div className="header-stats">
           <div className="mini-stat">
             <span>{stats.total}</span>
@@ -115,6 +126,18 @@ export default function ManagersPage() {
           </div>
         </div>
       </header>
+
+      {showAdd && (
+        <AddContactForm
+          apiPath="/api/managers"
+          title="Ajouter un manager"
+          onSuccess={() => {
+            loadManagers();
+            setShowAdd(false);
+          }}
+          onCancel={() => setShowAdd(false)}
+        />
+      )}
 
       <section className="filter-panel card">
         <div className="filter-grid">

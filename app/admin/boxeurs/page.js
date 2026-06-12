@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
+import AddContactForm from '../../components/AddContactForm';
 import {
   contactLabel,
   extractCountry,
@@ -22,6 +23,7 @@ export default function BoxeursPage() {
   const [categorie, setCategorie] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
   const loadLockRef = useRef(false);
 
   const loadBoxeurs = useCallback(async () => {
@@ -113,6 +115,15 @@ export default function BoxeursPage() {
             Boxeurs amateur et professionnel — séparés des managers et promoteurs
           </p>
         </div>
+        <div className="header-actions">
+          <button
+            type="button"
+            className={`btn ${showAdd ? 'secondary' : ''}`}
+            onClick={() => setShowAdd((v) => !v)}
+          >
+            {showAdd ? 'Fermer le formulaire' : 'Ajouter un boxeur'}
+          </button>
+        </div>
         <div className="header-stats">
           <div className="mini-stat">
             <span>{stats.total}</span>
@@ -132,6 +143,19 @@ export default function BoxeursPage() {
           </div>
         </div>
       </header>
+
+      {showAdd && (
+        <AddContactForm
+          apiPath="/api/boxeurs"
+          title="Ajouter un boxeur"
+          showCategorie
+          onSuccess={() => {
+            loadBoxeurs();
+            setShowAdd(false);
+          }}
+          onCancel={() => setShowAdd(false)}
+        />
+      )}
 
       <div className="categorie-tabs">
         <button
