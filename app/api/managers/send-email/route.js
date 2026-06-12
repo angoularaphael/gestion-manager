@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { deliverEmail } from '../../../../lib/emailDelivery';
 import { buildEmailHtml } from '../../../../lib/emailTemplate';
+import { describeBrevoKeyIssue, getBrevoConfig } from '../../../../lib/brevoSend';
 import { resolveManagersForSend } from '../../../../lib/managers';
 import { getSession } from '../../../../lib/session';
 
@@ -56,7 +57,12 @@ export async function POST(request) {
     };
 
     const mailSubject = subject || 'Message Boxing Center';
-    const apiKeyOnVercel = Boolean((process.env.BREVO_API_KEY || '').trim().startsWith('xkeysib-'));
+    const brevo = getBrevoConfig();
+    const keyIssue = describeBrevoKeyIssue();
+
+    if (brevo.onVercel && keyIssue) {
+      return json({ error: keyIssue }, 400);
+    }
 
     for (const mgr of managers) {
       if (!mgr.email) {
@@ -77,20 +83,15 @@ export async function POST(request) {
           text: message,
           html: emailHtml,
           recipientName: mgr.nom,
+          allowBotFallback: false,
         });
         results.email.sent++;
         results.destinations.push({
           channel: 'email',
           to: mgr.email,
           manager: mgr.nom,
+          via: delivery?.via || 'brevo-api',
         });
-        if (!apiKeyOnVercel || delivery?.via !== 'brevo-api') {
-          results.warnings.push({
-            manager: mgr.nom,
-            hint:
-              'Email transmis via le bot (SMTP). Pour une meilleure délivrabilité Gmail, ajoutez BREVO_API_KEY (xkeysib-…) sur Vercel.',
-          });
-        }
       } catch (err) {
         results.email.failed++;
         results.errors.push({ manager: mgr.nom, channel: 'email', error: err.message });
