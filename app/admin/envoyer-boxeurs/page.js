@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
-import { parseClientJson } from '../../../lib/bot';
 import { parseApiJson } from '../../../lib/apiJson';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
@@ -365,7 +364,7 @@ export default function EnvoyerBoxeursPage() {
             body: { ...payload, channels: ['whatsapp'] },
           }),
         });
-        const waData = await parseClientJson(waRes);
+        const waData = await parseApiJson(waRes);
         if (!waRes.ok) throw new Error(waData.error || 'Erreur envoi WhatsApp');
         mergeSendResults(data, waData);
       }
