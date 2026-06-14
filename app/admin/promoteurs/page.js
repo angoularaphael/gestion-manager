@@ -279,11 +279,11 @@ export default function PromoteursPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Pays</th>
-                <th>Email</th>
-                <th>Téléphone</th>
-                <th>Localisation</th>
+                <th className="col-name">Nom</th>
+                <th className="col-country">Pays</th>
+                <th className="col-email">Email</th>
+                <th className="col-phone">Téléphone</th>
+                <th className="col-localisation">Localisation</th>
                 <th>Contact</th>
               </tr>
             </thead>
@@ -310,13 +310,13 @@ export default function PromoteursPage() {
                     className="data-row-clickable"
                     onClick={() => setSelected(m)}
                   >
-                    <td className="cell-name">{m.nom}</td>
-                    <td>
+                    <td className="cell-name col-name">{m.nom}</td>
+                    <td className="col-country">
                       <span className="country-pill">{pays}</span>
                     </td>
-                    <td className="cell-muted">{m.email || '—'}</td>
-                    <td className="cell-muted">{m.telephone || '—'}</td>
-                    <td className="cell-muted">{m.localisation || '—'}</td>
+                    <td className="cell-muted col-email">{m.email || '—'}</td>
+                    <td className="cell-muted col-phone">{m.telephone || '—'}</td>
+                    <td className="cell-localisation col-localisation">{m.localisation || '—'}</td>
                     <td>
                       <span className="contact-badge">{contactLabel(m)}</span>
                     </td>
