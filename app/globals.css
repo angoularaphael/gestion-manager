@@ -1837,12 +1837,44 @@ html.manager-sheet-open body {
 }
 
 .data-table {
-  min-width: 720px;
+  min-width: 960px;
+  table-layout: auto;
+}
+
+.data-table .col-name {
+  min-width: 9rem;
+  max-width: 14rem;
+}
+
+.data-table .col-email {
+  min-width: 11rem;
+  max-width: 20rem;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.data-table .col-phone {
+  min-width: 7.5rem;
+  white-space: nowrap;
+}
+
+.data-table .col-localisation {
+  min-width: 10rem;
+  max-width: 24rem;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.data-table .col-country {
+  min-width: 5.5rem;
 }
 
 .data-table tbody tr:hover { background: #f8fafc; }
 
-.cell-name { font-weight: 600; white-space: nowrap; }
+.cell-name { font-weight: 600; white-space: normal; }
+.cell-localisation { color: #475569; font-size: 0.86rem; }
+
 .cell-muted { color: #475569; font-size: 0.86rem; }
 
 .empty-cell {
