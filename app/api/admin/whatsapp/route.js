@@ -3,6 +3,7 @@ import { botFetch } from '../../../../lib/bot';
 import { getSession } from '../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 /** Proxy Vercel → bot (même modèle que NYC Cookies /api/admin/whatsapp). */
@@ -13,10 +14,15 @@ export async function GET() {
   try {
     return NextResponse.json(await botFetch('/api/status'));
   } catch (e) {
-    return NextResponse.json(
-      { error: e.message || 'Bot inaccessible' },
-      { status: 502 }
-    );
+    const message = e.message || 'Bot inaccessible';
+    return NextResponse.json({
+      connected: false,
+      connecting: false,
+      qr: null,
+      pairingCode: null,
+      qrError: null,
+      error: message,
+    });
   }
 }
 
