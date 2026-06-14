@@ -3,6 +3,7 @@ import { botFetch } from '../../../lib/bot';
 import { getSession } from '../../../lib/session';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export async function GET(request) {
