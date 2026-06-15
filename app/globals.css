@@ -2771,3 +2771,27 @@ html.manager-sheet-open body {
 .badge--gold { background: #fef3c7; color: #b45309; }
 .badge--blue { background: #dbeafe; color: #1e40af; }
 
+/* Chatbot Portet — admin */
+.chatbot-admin-page .page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.chatbot-stats-grid { margin-bottom: 1.25rem; }
+
+.chatbot-reset-card { margin-bottom: 1.25rem; }
+
+.chatbot-reset-msg { margin-top: 0.75rem; font-size: 0.9rem; }
+.chatbot-reset-locked { margin: 1rem 0; }
+
+.chatbot-message-cell {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+

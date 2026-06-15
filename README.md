@@ -31,6 +31,7 @@ Exécuter dans le SQL Editor :
 1. `001_boxing_center.sql` (managers)
 2. `002_app_users.sql` (comptes console)
 3. `007_offre_ete_events.sql` (tracking Offre Été 2026 — voir `infobox/supabase/migrations/`)
+4. `008_chatbot.sql` (leads & stats chatbot Portet)
 
 ## Local
 
