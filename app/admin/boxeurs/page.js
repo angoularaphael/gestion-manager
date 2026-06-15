@@ -215,7 +215,6 @@ export default function BoxeursPage() {
               <option value="both">Email + téléphone</option>
               <option value="phone_only">Téléphone seul</option>
               <option value="email_only">Email seul</option>
-              <option value="none">Sans contact</option>
             </select>
           </div>
         </div>
