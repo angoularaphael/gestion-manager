@@ -2710,3 +2710,64 @@ html.manager-sheet-open body {
     font-size: 0.72rem;
   }
 }
+
+/* Offre Été 2026 — admin */
+.offre-ete-admin-page .page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.offre-ete-stats-grid { margin-bottom: 1.25rem; }
+
+.stat--gold strong { color: #b45309; }
+.stat--blue strong { color: var(--accent); }
+
+.offre-ete-links-card,
+.offre-ete-reset-card { margin-bottom: 1.25rem; }
+
+.card-title {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.offre-ete-dl { margin: 0; }
+
+.offre-ete-dl > div {
+  margin-bottom: 1rem;
+}
+
+.offre-ete-dl dt {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.offre-ete-dl dd { margin: 0; }
+
+.offre-ete-code {
+  display: block;
+  padding: 0.65rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  word-break: break-all;
+}
+
+.offre-ete-reset-msg { margin-top: 0.75rem; font-size: 0.9rem; }
+.offre-ete-reset-locked { margin: 1rem 0; }
+
+.offre-ete-referrer {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.badge--gold { background: #fef3c7; color: #b45309; }
+.badge--blue { background: #dbeafe; color: #1e40af; }
+
