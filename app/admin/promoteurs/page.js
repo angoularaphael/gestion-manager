@@ -7,6 +7,7 @@ import {
   contactLabel,
   extractCountry,
   filterManagers,
+  hasUsableContact,
   listCountries,
 } from '../../../lib/managerCountry';
 import ContactDetailSheet from '../../components/ContactDetailSheet';
@@ -69,7 +70,13 @@ export default function PromoteursPage() {
   const countries = useMemo(() => listCountries(promoteurs), [promoteurs]);
 
   const filtered = useMemo(
-    () => filterManagers(promoteurs, { search, type, countries: selectedCountries }),
+    () =>
+      filterManagers(promoteurs, {
+        search,
+        type,
+        countries: selectedCountries,
+        excludeNoContact: true,
+      }),
     [promoteurs, search, type, selectedCountries]
   );
 
@@ -82,9 +89,10 @@ export default function PromoteursPage() {
   );
 
   const stats = useMemo(() => {
-    const withEmail = promoteurs.filter((m) => m.email).length;
-    const withPhone = promoteurs.filter((m) => m.telephone).length;
-    return { total: promoteurs.length, withEmail, withPhone, shown: filtered.length };
+    const usable = promoteurs.filter(hasUsableContact);
+    const withEmail = usable.filter((m) => m.email).length;
+    const withPhone = usable.filter((m) => m.telephone).length;
+    return { total: usable.length, withEmail, withPhone, shown: filtered.length };
   }, [promoteurs, filtered]);
 
   function resetFilters() {
@@ -173,7 +181,6 @@ export default function PromoteursPage() {
               <option value="both">Email + téléphone</option>
               <option value="phone_only">Téléphone seul</option>
               <option value="email_only">Email seul</option>
-              <option value="none">Sans contact</option>
             </select>
           </div>
         </div>

@@ -142,7 +142,12 @@ export default function EnvoyerPromoteursPage() {
   const countries = useMemo(() => listCountries(promoteurs), [promoteurs]);
 
   const filtered = useMemo(
-    () => filterManagers(promoteurs, { search, countries: selectedCountries }),
+    () =>
+      filterManagers(promoteurs, {
+        search,
+        countries: selectedCountries,
+        excludeNoContact: true,
+      }),
     [promoteurs, search, selectedCountries]
   );
 

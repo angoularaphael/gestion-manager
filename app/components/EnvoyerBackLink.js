@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 
-export default function EnvoyerBackLink() {
+export default function EnvoyerBackLink({ href = '/admin/envoyer', label = "← Choix de l'envoi" }) {
   return (
-    <Link href="/admin/envoyer" className="envoyer-back-link">
-      ← Choix de l&apos;envoi
+    <Link href={href} className="envoyer-back-link">
+      {label}
     </Link>
   );
 }
