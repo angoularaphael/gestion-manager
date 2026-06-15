@@ -1,0 +1,32 @@
+[
+  {
+    "id": "location",
+    "question": "Où se trouve Boxing Center Portet ?",
+    "answer": "Au 61 route d'Espagne, 31120 Portet-sur-Garonne — la plus grande salle du groupe Boxing Center, 800 m².",
+    "keywords": ["où", "adresse", "localisation", "trouver", "portet", "salle", "club"]
+  },
+  {
+    "id": "essai",
+    "question": "Combien coûte une séance d'essai ?",
+    "answer": "La séance d'essai est à 10€, toutes disciplines, sans engagement.",
+    "keywords": ["essai", "prix", "coût", "tarif", "10", "première", "seance", "séance"]
+  },
+  {
+    "id": "disciplines",
+    "question": "Quelles disciplines sont proposées ?",
+    "answer": "Boxe anglaise, muay thaï, kick / K1, MMA & grappling, cross training, boxing training, Lady Punch et boxe éducative (dès 7 ans).",
+    "keywords": ["discipline", "activité", "boxe", "muay", "mma", "kick", "grappling", "lady punch"]
+  },
+  {
+    "id": "horaires",
+    "question": "Quels sont les horaires d'ouverture ?",
+    "answer": "Du lundi au samedi, de 10h00 à 21h30. Accès illimité 7j/7 pour les abonnés.",
+    "keywords": ["horaire", "heure", "ouvert", "fermé", "lundi", "samedi", "accès"]
+  },
+  {
+    "id": "debutant",
+    "question": "Faut-il de l'expérience pour commencer la boxe ?",
+    "answer": "Non. Tous les niveaux sont accueillis, avec des créneaux débutants et des coachs diplômés FFBoxe, FFKMDA et FMMAF.",
+    "keywords": ["débutant", "debutant", "expérience", "niveau", "commencer", "débuter", "novice"]
+  }
+]
