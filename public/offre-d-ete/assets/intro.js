@@ -262,9 +262,18 @@
     });
   }
 
+  function gloveTravel() {
+    const short = Math.min(width, height);
+    return Math.min(short * 0.48, width * 0.42, 380);
+  }
+
   function computeMeetOffset() {
-    const gloveW = leftGlove?.offsetWidth || Math.min(width * 0.82, 720);
-    return Math.max(gloveW * 0.3, Math.min(width * 0.38, 340));
+    const gloveW = leftGlove?.offsetWidth || clamp(200, width * 0.52, 480);
+    return Math.max(gloveW * 0.22, Math.min(gloveTravel() * 0.55, 200));
+  }
+
+  function clamp(min, val, max) {
+    return Math.max(min, Math.min(val, max));
   }
 
   function computeLogoLayout(imgW, imgH) {
@@ -538,32 +547,33 @@
     }
 
     gsap.set(stage, { x: 0, y: 0 });
+    const travel = gloveTravel();
     gsap.set(leftGlove, {
       xPercent: -50,
       yPercent: -50,
-      x: -width * 0.75,
-      rotation: 10,
-      scale: 1.12,
+      x: -travel,
+      rotation: 8,
+      scale: 1,
       opacity: 0,
       visibility: 'hidden',
-      transformOrigin: '82% 50%',
+      transformOrigin: '78% 52%',
     });
     gsap.set(rightGlove, {
       xPercent: -50,
       yPercent: -50,
-      x: width * 0.75,
-      rotation: -10,
-      scale: 1.12,
+      x: travel,
+      rotation: -8,
+      scale: 1,
       opacity: 0,
       visibility: 'hidden',
-      transformOrigin: '18% 50%',
+      transformOrigin: '22% 52%',
     });
     gsap.set(logoOverlay, { opacity: 0, visibility: 'hidden' });
 
     const tl = gsap.timeline({ delay: 0.15 });
     tl.set([leftGlove, rightGlove], { visibility: 'visible', opacity: 1 })
-      .to(leftGlove, { x: -meetOffset, rotation: 14, scale: 1.15, duration: 0.85, ease: 'power4.in' })
-      .to(rightGlove, { x: meetOffset, rotation: -14, scale: 1.15, duration: 0.85, ease: 'power4.in' }, '<')
+      .to(leftGlove, { x: -meetOffset, rotation: 12, scale: 1.05, duration: 0.85, ease: 'power4.in' })
+      .to(rightGlove, { x: meetOffset, rotation: -12, scale: 1.05, duration: 0.85, ease: 'power4.in' }, '<')
       .add(() => {
         animationPhase = 'sparks';
         spawnSparks(150);
