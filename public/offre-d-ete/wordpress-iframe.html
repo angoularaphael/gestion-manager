@@ -4,15 +4,6 @@
 
 <style>
   .offre-ete-wp { margin: 0; padding: 0; }
-  .offre-ete-wp__seo {
-    max-width: 800px;
-    margin: 0 auto 1.25rem;
-    padding: 0 1rem;
-    font-family: system-ui, sans-serif;
-    line-height: 1.55;
-    color: #1a1a1a;
-  }
-  .offre-ete-wp__seo h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
   .offre-ete-wp__frame-wrap {
     width: 100vw;
     max-width: 100vw;
@@ -28,17 +19,15 @@
     height: 900px;
     overflow: hidden;
   }
+  /* Pied de page WordPress sous l'iframe */
+  .site-footer,
+  #colophon,
+  footer.elementor-location-footer {
+    display: none !important;
+  }
 </style>
 
 <div class="offre-ete-wp">
-  <div class="offre-ete-wp__seo">
-    <h1>Offre Été 2026 — Boxing Center Toulouse</h1>
-    <p>
-      <strong>3 mois d'accès illimité à 89€</strong> au lieu de 150€. Boxe anglaise, boxe thaï,
-      MMA, kickboxing et cross training dans nos 5 salles à Toulouse et en agglomération.
-      Coaches diplômés, cours tous niveaux, accès libre 6 jours sur 7.
-    </p>
-  </div>
   <div class="offre-ete-wp__frame-wrap">
     <iframe
       id="offre-ete-frame"
