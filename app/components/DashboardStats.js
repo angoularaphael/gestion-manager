@@ -102,7 +102,7 @@ export default function DashboardStats() {
       <StatsBlock title="Managers" stats={managerStats} error={managerError} accent="blue" />
       <StatsBlock title="Promoteurs" stats={promoteurStats} error={promoteurError} accent="gold" />
       <StatsBlock
-        title="Boxeurs"
+        title="Entraîneurs"
         stats={boxeurStats}
         error={boxeurError}
         accent="green"

@@ -1,0 +1,76 @@
+{
+  "updated_at": "2026-06-16",
+  "site": "https://www.boxing-center-portet.fr",
+  "entraineurs": [
+    {
+      "id": "1",
+      "name": "Salomon Kitoko",
+      "role": "Boxe anglaise · Ring",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/salomon-kitoko.webp",
+      "initials": "SK",
+      "desc": "Vitesse de mains et lecture du combat. Il t'apprend à penser le ring avant de frapper.",
+      "ordre": 1
+    },
+    {
+      "id": "2",
+      "name": "Elyasse Azap",
+      "role": "Boxe anglaise · Technique",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/elyasse-azap.webp",
+      "initials": "EA",
+      "desc": "Puissance et sang-froid round après round. La rigueur technique au service de ta progression.",
+      "ordre": 2
+    },
+    {
+      "id": "3",
+      "name": "Johnson Suffo",
+      "role": "Boxe anglaise · Intensité",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/johnson-suffo.webp",
+      "initials": "JS",
+      "desc": "Explosivité et placement. Un style direct qui te pousse à donner le meilleur de toi-même.",
+      "ordre": 3
+    },
+    {
+      "id": "4",
+      "name": "Coach Dadi",
+      "role": "Coach diplômé FFBoxe",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/coach-dadi.webp",
+      "initials": "DA",
+      "desc": "Du premier jab jusqu'au ring. Exigeant sur la technique, présent à chaque round.",
+      "ordre": 4
+    },
+    {
+      "id": "5",
+      "name": "Coach Mehdi",
+      "role": "Coach diplômé FFKMDA",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/coach-mehdi.webp",
+      "initials": "ME",
+      "desc": "Il lit le combat avant toi. Tactique, timing, le détail qui fait la différence.",
+      "ordre": 5
+    },
+    {
+      "id": "6",
+      "name": "Coach Valentin",
+      "role": "Préparation physique",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/coach-valentin.webp",
+      "initials": "VA",
+      "desc": "Force, cardio, condition — il te construit pour tenir la distance.",
+      "ordre": 6
+    },
+    {
+      "id": "7",
+      "name": "Coach Brice",
+      "role": "Pédagogie & débutants",
+      "kind": "Entraîneur",
+      "img": "https://www.boxing-center-portet.fr/img/coaches/coach-brice.webp",
+      "initials": "BR",
+      "desc": "Pédagogue avant tout. Il accueille les débutants et n'en laisse aucun sur le banc.",
+      "ordre": 7
+    }
+  ]
+}

@@ -108,9 +108,9 @@ function SendSidebar({ mode, broadcast, boxeurs, audienceSummary, previewHtml, s
         ) : (
           <p className="muted sidebar-empty">
             {mode === 'single'
-              ? 'Choisissez un boxeur dans la liste.'
+              ? 'Choisissez un entraîneur dans la liste.'
               : broadcast === 'selection'
-                ? 'Cochez des boxeurs dans la liste.'
+                ? 'Cochez des entraîneurs dans la liste.'
                 : 'Choisissez une audience.'}
           </p>
         )}
@@ -207,10 +207,10 @@ export default function EnvoyerBoxeursPage() {
         count,
         label:
           broadcast === 'email'
-            ? 'boxeurs avec email'
+            ? 'entraîneurs avec email'
             : broadcast === 'phone'
-              ? 'boxeurs avec téléphone'
-              : 'boxeurs au total',
+              ? 'entraîneurs avec téléphone'
+              : 'entraîneurs au total',
         countriesLabel: formatCountriesLabel(selectedCountries),
         categorie: categorie ? categorieLabel(categorie) : null,
       };
@@ -223,13 +223,13 @@ export default function EnvoyerBoxeursPage() {
           ? withPhone.length
           : filtered.length;
     const labels = {
-      email: 'boxeurs avec email',
-      phone: 'boxeurs avec téléphone',
-      all: 'boxeurs au total',
+      email: 'entraîneurs avec email',
+      phone: 'entraîneurs avec téléphone',
+      all: 'entraîneurs au total',
     };
     return {
       count,
-      label: labels[broadcast] || 'boxeurs',
+      label: labels[broadcast] || 'entraîneurs',
       countriesLabel: selectedCountries.length ? formatCountriesLabel(selectedCountries) : null,
       categorie: categorie ? categorieLabel(categorie) : null,
     };
@@ -295,8 +295,8 @@ export default function EnvoyerBoxeursPage() {
       if (!testOnly) {
         const label =
           mode === 'single' && selectedBoxeur
-            ? `le boxeur « ${selectedBoxeur.nom} »`
-            : `${recipientCount} boxeur(s) réel(s)`;
+            ? `l'entraîneur « ${selectedBoxeur.nom} »`
+            : `${recipientCount} entraîneur(s) réel(s)`;
         const ok = window.confirm(
           `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
         );
@@ -316,7 +316,7 @@ export default function EnvoyerBoxeursPage() {
         // test only
       } else if (mode === 'single') {
         if (!selectedId) {
-          setResult({ error: 'Sélectionnez un boxeur' });
+          setResult({ error: 'Sélectionnez un entraîneur' });
           return;
         }
         payload.boxeur_ids = [selectedId];
@@ -327,13 +327,13 @@ export default function EnvoyerBoxeursPage() {
         }
         const ids = idsForCountrySend({ broadcast, withEmail, withPhone, filtered });
         if (!ids.length) {
-          setResult({ error: `Aucun boxeur pour ${formatCountriesLabel(selectedCountries)}` });
+          setResult({ error: `Aucun entraîneur pour ${formatCountriesLabel(selectedCountries)}` });
           return;
         }
         payload.boxeur_ids = ids;
       } else if (broadcast === 'selection') {
         if (!selectedIds.size) {
-          setResult({ error: 'Sélectionnez au moins un boxeur' });
+          setResult({ error: 'Sélectionnez au moins un entraîneur' });
           return;
         }
         payload.boxeur_ids = [...selectedIds];
@@ -345,7 +345,7 @@ export default function EnvoyerBoxeursPage() {
               ? withPhone.map((m) => m.id)
               : filtered.map((m) => m.id);
         if (!ids.length) {
-          setResult({ error: 'Aucun boxeur pour ces filtres' });
+          setResult({ error: 'Aucun entraîneur pour ces filtres' });
           return;
         }
         payload.boxeur_ids = ids;
@@ -401,7 +401,7 @@ export default function EnvoyerBoxeursPage() {
       <EnvoyerBackLink />
       <header className="page-header">
         <div>
-          <h1>Envoyer aux boxeurs</h1>
+          <h1>Envoyer aux entraîneurs</h1>
           <p className="page-subtitle">
             {categorie ? `Catégorie : ${categorieLabel(categorie)} · ` : ''}
             {selectedCountries.length ? `Pays : ${formatCountriesLabel(selectedCountries)} · ` : ''}
@@ -413,7 +413,7 @@ export default function EnvoyerBoxeursPage() {
 
       <div className="mode-tabs">
         <button type="button" className={mode === 'single' ? 'active' : ''} onClick={() => setMode('single')}>
-          Un seul boxeur
+          Un seul entraîneur
         </button>
         <button type="button" className={mode === 'country' ? 'active' : ''} onClick={() => setMode('country')}>
           Par pays
@@ -490,7 +490,7 @@ export default function EnvoyerBoxeursPage() {
             ) : mode === 'country' ? (
               <>
                 <SendCountryModePanel
-                  entityLabel="boxeurs"
+                  entityLabel="entraîneurs"
                   selectedCountries={selectedCountries}
                   onCountriesChange={setSelectedCountries}
                   countries={countries}
@@ -521,21 +521,21 @@ export default function EnvoyerBoxeursPage() {
                     <input type="radio" name="broadcast" value="email" checked={broadcast === 'email'} onChange={() => setBroadcast('email')} />
                     <div>
                       <strong>Tous avec email</strong>
-                      <span>{withEmail.length} boxeur(s){categorie ? ` · ${categorieLabel(categorie)}` : ''}{selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
+                      <span>{withEmail.length} entraîneur(s){categorie ? ` · ${categorieLabel(categorie)}` : ''}{selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'phone' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="phone" checked={broadcast === 'phone'} onChange={() => setBroadcast('phone')} />
                     <div>
                       <strong>Tous avec téléphone</strong>
-                      <span>{withPhone.length} boxeur(s){categorie ? ` · ${categorieLabel(categorie)}` : ''}{selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
+                      <span>{withPhone.length} entraîneur(s){categorie ? ` · ${categorieLabel(categorie)}` : ''}{selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'all' ? 'active' : ''}`}>
                     <input type="radio" name="broadcast" value="all" checked={broadcast === 'all'} onChange={() => setBroadcast('all')} />
                     <div>
-                      <strong>Tous les boxeurs</strong>
-                      <span>{filtered.length} boxeur(s){categorie ? ` · ${categorieLabel(categorie)}` : ''}{selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
+                      <strong>Tous les entraîneurs</strong>
+                      <span>{filtered.length} entraîneur(s){categorie ? ` · ${categorieLabel(categorie)}` : ''}{selectedCountries.length ? ` · ${formatCountriesLabel(selectedCountries)}` : ''}</span>
                     </div>
                   </label>
                   <label className={`broadcast-opt ${broadcast === 'selection' ? 'active' : ''}`}>
@@ -643,7 +643,7 @@ export default function EnvoyerBoxeursPage() {
               onClick={() => send({ testOnly: true })}
               loading={sending}
               disabled={!message.trim()}
-              title="Envoie uniquement au compte test Atangana — jamais aux vrais boxeurs"
+              title="Envoie uniquement au compte test Atangana — jamais aux vrais entraîneurs"
             >
               {sending ? 'Envoi…' : 'Test atangana (seul)'}
             </ActionButton>
@@ -663,7 +663,7 @@ export default function EnvoyerBoxeursPage() {
                 <p><strong>Erreur :</strong> {result.error}</p>
               ) : (
                 <>
-                  <p><strong>Envoi terminé</strong> — {result.data.boxeurs} boxeur(s) traité(s)</p>
+                  <p><strong>Envoi terminé</strong> — {result.data.boxeurs} entraîneur(s) traité(s)</p>
                   {result.data.destinations?.length > 0 && (
                     <ul className="dest-list">
                       {result.data.destinations.map((d, i) => (
