@@ -410,8 +410,15 @@
     mainSite.classList.remove('main-site--hidden');
     wakePromoAnimations();
     trackView();
+    notifyParentHeight();
+    window.setTimeout(notifyParentHeight, 400);
+    window.setTimeout(notifyParentHeight, 1200);
+    if (!window.__offreEteResizeInterval) {
+      window.__offreEteResizeInterval = window.setInterval(notifyParentHeight, 1500);
+    }
     window.setTimeout(() => {
       stage.remove();
+      notifyParentHeight();
       window.dispatchEvent(new CustomEvent('offre-ete-intro-done'));
     }, 900);
   }
@@ -578,6 +585,8 @@
     window.addEventListener('resize', resize);
     initThree();
     requestAnimationFrame(drawParticles);
+    window.addEventListener('resize', notifyParentHeight);
+    window.setTimeout(notifyParentHeight, 800);
 
     Promise.all([
       loadImage(leftGlove, ASSETS.gloveRightPng, ASSETS.gloveRightSvg),
