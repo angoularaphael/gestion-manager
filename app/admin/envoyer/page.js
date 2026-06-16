@@ -28,8 +28,8 @@ const ENTITY_TYPES = [
   },
   {
     key: 'boxeurs',
-    label: 'Entraîneurs',
-    sendPath: '/admin/envoyer-entraineurs',
+    label: 'Boxeurs',
+    sendPath: '/admin/envoyer-boxeurs',
     api: '/api/boxeurs',
     listKey: 'boxeurs',
     icon: 'glove',
@@ -105,7 +105,7 @@ export default function EnvoyerHubPage() {
         <div>
           <h1>Envoyer par pays</h1>
           <p className="page-subtitle">
-            Sélectionnez un ou plusieurs pays, puis envoyez un email et/ou WhatsApp aux managers, promoteurs ou entraîneurs concernés.
+            Sélectionnez un ou plusieurs pays, puis envoyez un email et/ou WhatsApp aux managers, promoteurs ou boxeurs concernés.
           </p>
         </div>
       </header>
