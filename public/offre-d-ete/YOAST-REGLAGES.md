@@ -1,6 +1,6 @@
 # Yoast SEO — Page Offre d'été (WordPress)
 
-Yoast ne lit **pas** le contenu de l'iframe. Il faut remplir les champs Yoast **et** garder le petit texte SEO au-dessus de l'iframe (déjà dans `wordpress-iframe.html`).
+Yoast ne lit **pas** le contenu de l'iframe. Remplis uniquement les **champs Yoast** (titre SEO, meta description, mot-clé).
 
 ---
 
@@ -46,15 +46,9 @@ ou
 
 ---
 
-## 4. Iframe pleine largeur (ne plus couper le site)
+## 4. Iframe pleine largeur
 
-Remplace ton ancien code par **tout** le contenu du fichier :
-`wordpress-iframe.html`
-
-Il inclut :
-- texte SEO pour Yoast
-- iframe pleine largeur
-- hauteur automatique (plus de petite fenêtre avec ascenseur)
+Remplace ton code par **tout** le contenu du fichier `wordpress-iframe.html` (iframe seule, sans texte au-dessus).
 
 ---
 
@@ -71,7 +65,6 @@ Dans la colonne droite **Page** → **Modèle** :
 - [ ] Mot-clé dans le titre SEO
 - [ ] Mot-clé dans la meta description
 - [ ] Mot-clé dans le slug (`offre-d-ete` contient "offre")
-- [ ] Texte visible sur la page (bloc SEO au-dessus de l'iframe)
 - [ ] Image mise en avant définie
 - [ ] Lien interne depuis l'accueil vers `/offre-d-ete`
 

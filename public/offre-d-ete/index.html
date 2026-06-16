@@ -676,50 +676,6 @@ html.in-iframe #hero { min-height: 0; }
   position: relative; z-index: 2;
 }
 
-/* FOOTER */
-footer {
-  background: var(--bc-navy-2);
-  border-top: 1px solid rgba(27,42,90,0.5);
-  padding: 64px 64px 32px;
-}
-.ft-grid {
-  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 60px; margin-bottom: 60px;
-}
-.ft-logo-img { width: 110px; height: auto; margin-bottom: 20px; filter: brightness(0) invert(1); }
-.ft-brand p {
-  font-size: 12px; font-weight: 300; color: var(--bc-grey);
-  line-height: 1.7; max-width: 260px; margin-bottom: 24px;
-}
-.ft-socials { display: flex; gap: 10px; }
-.ft-soc {
-  width: 38px; height: 38px;
-  border: 1px solid rgba(27,42,90,0.6);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--bc-grey); font-size: 11px; text-decoration: none;
-  font-family: 'Oswald', sans-serif; font-weight: 600;
-  transition: all .3s ease; letter-spacing: 0;
-}
-.ft-soc:hover { background: var(--bc-red); border-color: var(--bc-red); color: var(--bc-white); }
-.ft-col h4 {
-  font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600;
-  letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px;
-}
-.ft-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.ft-col ul a {
-  text-decoration: none; color: var(--bc-grey);
-  font-size: 12px; font-weight: 300;
-  transition: color .3s;
-}
-.ft-col ul a:hover { color: var(--bc-red); }
-.ft-bottom {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 28px; border-top: 1px solid rgba(27,42,90,0.3);
-  font-size: 11px; color: var(--bc-grey); flex-wrap: wrap; gap: 12px;
-}
-.ft-bottom a { color: var(--bc-grey); text-decoration: none; }
-.ft-bottom a:hover { color: var(--bc-red); }
-
 /* SCROLL REVEAL */
 .reveal, .reveal-l, .reveal-r {
   opacity: 0; transition: opacity .8s var(--transition), transform .8s var(--transition);
@@ -739,7 +695,6 @@ footer {
   .disc-grid { grid-template-columns: repeat(3, 1fr); }
   .salles-grid { grid-template-columns: repeat(3, 1fr); }
   .avt-grid { grid-template-columns: repeat(2, 1fr); }
-  .ft-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
 }
 @media (max-width: 768px) {
   body { cursor: auto; }
@@ -756,9 +711,6 @@ footer {
   .steps-grid { grid-template-columns: 1fr; }
   .steps-grid::before { display: none; }
   .cd-grid { grid-template-columns: repeat(2, 1fr); }
-  footer { padding: 48px 24px 24px; }
-  .ft-grid { grid-template-columns: 1fr; gap: 36px; }
-  .ft-bottom { flex-direction: column; text-align: center; }
   .hero-actions { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 480px) {
@@ -1126,57 +1078,6 @@ footer {
 
   <p class="cta-note reveal">Sans engagement longue durée — boxingcenter.fr</p>
 </section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="ft-grid">
-    <div class="ft-brand">
-      <img src="assets/logo.png" alt="Boxing Center" class="ft-logo-img"
-           onerror="this.outerHTML='<div style=\'font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:0.15em;margin-bottom:20px\'>BOXING <span style=\'color:#C8102E\'>CENTER</span></div>'">
-      <p>Le réseau de salles de sports de combat de référence à Toulouse. Boxe anglaise, Muay Thai, MMA, Grappling, Crosstraining — pour tous les niveaux.</p>
-      <div class="ft-socials">
-        <a href="https://www.facebook.com/BoxingCenterToulouse/" target="_blank" class="ft-soc">f</a>
-        <a href="https://www.instagram.com/boxingcentertoulouse/" target="_blank" class="ft-soc">in</a>
-        <a href="https://www.youtube.com/@boxingcentertoulouse6983/" target="_blank" class="ft-soc">yt</a>
-        <a href="https://fr.linkedin.com/company/boxing-center" target="_blank" class="ft-soc">li</a>
-      </div>
-    </div>
-    <div class="ft-col">
-      <h4>Disciplines</h4>
-      <ul>
-        <li><a href="https://boxingcenter.fr/club-de-boxe-anglaise-toulouse/" target="_blank">Boxe Anglaise</a></li>
-        <li><a href="https://boxingcenter.fr/boxe-thai-muay-thai-et-kick-boxing-toulouse/" target="_blank">Boxe Thaï</a></li>
-        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/le-grappling-toulouse/" target="_blank">MMA / Grappling</a></li>
-        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/cross-training/" target="_blank">Crosstraining</a></li>
-        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/hyrox-toulouse/" target="_blank">Hyrox</a></li>
-        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/boxing-camp/" target="_blank">Boxing Camp</a></li>
-      </ul>
-    </div>
-    <div class="ft-col">
-      <h4>Nos Salles</h4>
-      <ul>
-        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-minimes/" target="_blank">Toulouse Minimes</a></li>
-        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-ramonville/" target="_blank">Ramonville</a></li>
-        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-saint-cyprien/" target="_blank">Saint-Cyprien</a></li>
-        <li><a href="https://www.boxing-center-portet.fr/" target="_blank">Portet-sur-Garonne</a></li>
-        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-etats-unis/" target="_blank">États-Unis</a></li>
-      </ul>
-    </div>
-    <div class="ft-col">
-      <h4>Contact</h4>
-      <ul>
-        <li><a href="tel:0562244682">05 62 24 46 82</a></li>
-        <li><a href="https://boxingcenter.fr" target="_blank">boxingcenter.fr</a></li>
-        <li><a href="https://boxingcenter.fr/coachs-2/" target="_blank">Nos coaches</a></li>
-        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/" target="_blank">Toutes les activités</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="ft-bottom">
-    <span>© 2026 Boxing Center. Tous droits réservés.</span>
-    <span><a href="#">Mentions légales</a> — <a href="#">CGV</a> — <a href="#">Confidentialité</a></span>
-  </div>
-</footer>
 
 </div><!-- /#main-site -->
 
