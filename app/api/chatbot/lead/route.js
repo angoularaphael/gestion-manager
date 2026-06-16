@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createChatbotLead, trackChatbotEvent } from '../../../../lib/chatbot';
+import { sendChatbotEscalationEmail, chatbotTopicLabel } from '../../../../lib/chatbotEscalationEmail';
 import { chatbotCorsHeaders } from '../../../../lib/chatbotConfig';
 
 function clientIp(request) {
@@ -59,16 +60,39 @@ export async function POST(request) {
       body.name || body.email || body.phone || body.metier || body.message || body.recontactRequested;
 
     if (hasLeadFields) {
+      const topic = body.topic ? String(body.topic).slice(0, 64) : null;
+      const rawMessage = body.message ? String(body.message) : '';
+      const message =
+        topic && rawMessage
+          ? `[${chatbotTopicLabel(topic)}]\n${rawMessage}`
+          : rawMessage || null;
+
       const lead = await createChatbotLead({
         sessionId,
         name: body.name,
         email: body.email,
         phone: body.phone,
         metier: body.metier,
-        message: body.message,
+        message,
         recontactRequested: body.recontactRequested,
         source: body.source || 'portet',
       });
+
+      if (body.event === 'escalation' && rawMessage) {
+        try {
+          await sendChatbotEscalationEmail({
+            name: body.name,
+            email: body.email,
+            phone: body.phone,
+            metier: body.metier,
+            topic,
+            message: rawMessage,
+            source: body.source || 'portet',
+          });
+        } catch (mailErr) {
+          console.error('[chatbot] escalation email failed:', mailErr);
+        }
+      }
 
       if (body.event !== 'lead_collected' && body.event !== 'escalation') {
         await trackChatbotEvent({ eventType: 'lead_collected', ...meta });

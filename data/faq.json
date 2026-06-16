@@ -1,32 +1,194 @@
 [
   {
-    "id": "location",
+    "id": "portet-location",
     "question": "Où se trouve Boxing Center Portet ?",
     "answer": "Au 61 route d'Espagne, 31120 Portet-sur-Garonne — la plus grande salle du groupe Boxing Center, 800 m².",
-    "keywords": ["où", "adresse", "localisation", "trouver", "portet", "salle", "club"]
+    "keywords": ["où", "adresse", "localisation", "trouver", "portet", "salle", "club", "route espagne"]
   },
   {
-    "id": "essai",
-    "question": "Combien coûte une séance d'essai ?",
-    "answer": "La séance d'essai est à 10€, toutes disciplines, sans engagement.",
-    "keywords": ["essai", "prix", "coût", "tarif", "10", "première", "seance", "séance"]
+    "id": "portet-essai",
+    "question": "Combien coûte une séance d'essai à Portet ?",
+    "answer": "La séance d'essai est à 10€, toutes disciplines, sans engagement. Réservation sur boxingcenter.fr (page Séance d'essai ou boutique).",
+    "keywords": ["essai", "prix", "coût", "tarif", "10", "première", "seance", "séance", "portet"]
   },
   {
-    "id": "disciplines",
-    "question": "Quelles disciplines sont proposées ?",
-    "answer": "Boxe anglaise, muay thaï, kick / K1, MMA & grappling, cross training, boxing training, Lady Punch et boxe éducative (dès 7 ans).",
-    "keywords": ["discipline", "activité", "boxe", "muay", "mma", "kick", "grappling", "lady punch"]
+    "id": "portet-disciplines",
+    "question": "Quelles disciplines sont proposées à Portet ?",
+    "answer": "Boxe anglaise, muay thaï, kick / K1, MMA et grappling, cross training, boxing training, Lady Punch et boxe éducative (dès 7 ans).",
+    "keywords": ["discipline", "activité", "boxe", "muay", "mma", "kick", "grappling", "lady punch", "portet"]
   },
   {
-    "id": "horaires",
-    "question": "Quels sont les horaires d'ouverture ?",
+    "id": "portet-horaires",
+    "question": "Quels sont les horaires d'ouverture à Portet ?",
     "answer": "Du lundi au samedi, de 10h00 à 21h30. Accès illimité 7j/7 pour les abonnés.",
-    "keywords": ["horaire", "heure", "ouvert", "fermé", "lundi", "samedi", "accès"]
+    "keywords": ["horaire", "heure", "ouvert", "fermé", "lundi", "samedi", "accès", "portet"]
   },
   {
-    "id": "debutant",
+    "id": "portet-debutant",
     "question": "Faut-il de l'expérience pour commencer la boxe ?",
-    "answer": "Non. Tous les niveaux sont accueillis, avec des créneaux débutants et des coachs diplômés FFBoxe, FFKMDA et FMMAF.",
+    "answer": "Non. Tous les niveaux sont accueillis à Portet, avec des créneaux débutants et des coachs diplômés FFBoxe, FFKMDA et FMMAF.",
     "keywords": ["débutant", "debutant", "expérience", "niveau", "commencer", "débuter", "novice"]
+  },
+  {
+    "id": "contact-essai",
+    "question": "Puis-je essayer un cours ou commencer dès maintenant ?",
+    "answer": "Oui, à tout moment. Inscrivez-vous sur la page « Séance d'essai » ou directement dans la boutique en ligne sur boxingcenter.fr.",
+    "keywords": ["essai", "commencer", "maintenant", "cours", "essayer", "inscription"]
+  },
+  {
+    "id": "contact-joindre",
+    "question": "Quels sont les horaires pour vous joindre ?",
+    "answer": "Par téléphone au 05 62 24 46 82 : du lundi au jeudi de 10h à 17h. En salle : du lundi au vendredi de 12h à 14h et de 17h à 20h30.",
+    "keywords": ["joindre", "téléphone", "appeler", "contact", "horaire", "disponible"]
+  },
+  {
+    "id": "contact-avant-inscription",
+    "question": "Puis-je essayer la salle avant de m'inscrire ?",
+    "answer": "Oui, réservez votre séance d'essai. Le matériel peut être prêté. Choisissez le cours selon votre objectif : remise en forme (Training ou Lady), technique (Boxe Thaï, Boxe Anglaise, MMA). Plannings sur boxingcenter.fr.",
+    "keywords": ["essayer", "avant", "inscrire", "séance", "tester", "visite"]
+  },
+  {
+    "id": "contact-inscription-en-ligne",
+    "question": "L'inscription se fait-elle uniquement en salle ?",
+    "answer": "Non, vous pouvez aussi vous inscrire directement sur le site internet boxingcenter.fr.",
+    "keywords": ["inscription", "en ligne", "internet", "salle", "sur place"]
+  },
+  {
+    "id": "contact-pieces",
+    "question": "Quelles pièces fournir pour m'inscrire ?",
+    "answer": "Formulaire d'inscription (sur place ou en ligne), un RIB pour le prélèvement mensuel ou règlement comptant (espèces, chèque, PayPal en ligne), et un certificat médical d'aptitude à la boxe.",
+    "keywords": ["pièces", "documents", "inscrire", "rib", "certificat", "médical"]
+  },
+  {
+    "id": "contact-frais",
+    "question": "Dois-je payer des frais lors de mon inscription ?",
+    "answer": "À l'inscription : 34€ pour votre badge magnétique donnant accès aux salles Boxing Center. Aucun autre frais de dossier.",
+    "keywords": ["frais", "badge", "34", "inscription", "dossier", "coût"]
+  },
+  {
+    "id": "contact-age",
+    "question": "À partir de quel âge puis-je m'inscrire ?",
+    "answer": "Dès 8 ans dans la catégorie Boxe Éducative.",
+    "keywords": ["âge", "age", "enfant", "boxe éducative", "minimum", "8 ans"]
+  },
+  {
+    "id": "contact-cheque-vacances",
+    "question": "Puis-je régler en chèque vacances ou coupon sport ?",
+    "answer": "Nous ne sommes pas affiliés ANCV, mais nous éditons des factures sur demande pour vous faire rembourser.",
+    "keywords": ["chèque vacances", "ancv", "coupon sport", "ce", "règlement", "paiement"]
+  },
+  {
+    "id": "membre-sections",
+    "question": "Avez-vous une section amateur / confirmé / compétiteur ?",
+    "answer": "Oui. Chaque salle propose deux groupes distincts pour les cours loisirs et confirmés.",
+    "keywords": ["amateur", "confirmé", "compétiteur", "niveau", "groupe", "section"]
+  },
+  {
+    "id": "membre-communication",
+    "question": "Comment me tenir au courant de l'actualité ?",
+    "answer": "Suivez Boxing Center sur Facebook et Instagram, ou renseignez-vous en salle pour les programmes et événements.",
+    "keywords": ["actualité", "facebook", "instagram", "réseaux", "communication", "info"]
+  },
+  {
+    "id": "membre-competition",
+    "question": "Les adhérents peuvent-ils participer à des compétitions ?",
+    "answer": "Oui. Nous sommes affiliés aux fédérations (FFB, FFKMDA). Certains adhérents représentent Boxing Center en compétitions régionales et nationales.",
+    "keywords": ["compétition", "competition", "ffb", "ffkmda", "tournoi", "combat"]
+  },
+  {
+    "id": "membre-commencer-apres-inscription",
+    "question": "Puis-je commencer tout de suite après mon inscription ?",
+    "answer": "Oui, une fois l'inscription validée et l'abonnement réglé (ou RIB communiqué pour le prélèvement).",
+    "keywords": ["commencer", "inscription", "validée", "débuter", "abonnement"]
+  },
+  {
+    "id": "membre-acces-salles",
+    "question": "Comment accéder aux salles de boxe ?",
+    "answer": "Hors séance d'essai ou événement, il faut être inscrit à Boxing Center et posséder votre carte d'accès (badge).",
+    "keywords": ["accéder", "accès", "badge", "carte", "entrée", "salle"]
+  },
+  {
+    "id": "membre-cours-semaine",
+    "question": "Puis-je venir à tous les cours de la semaine ?",
+    "answer": "Avec la formule Accès libre + Cours illimité, vous pouvez participer à tous les cours du programme dans les salles Boxing Center.",
+    "keywords": ["cours", "semaine", "illimité", "formule", "accès libre", "tous"]
+  },
+  {
+    "id": "membre-toutes-salles",
+    "question": "Puis-je accéder à toutes les salles avec mon badge ?",
+    "answer": "Oui, votre carte d'adhérent permet d'accéder à toutes les salles Boxing Center.",
+    "keywords": ["badge", "toutes", "salles", "réseau", "accès", "adhérent"]
+  },
+  {
+    "id": "membre-mma",
+    "question": "Proposez-vous des cours de Grappling, JJB ou MMA ?",
+    "answer": "Oui, des cours de MMA et grappling sont dispensés sur plusieurs salles de la métropole toulousaine, dont Portet-sur-Garonne.",
+    "keywords": ["mma", "grappling", "jjb", "jiu", "lutte", "combat"]
+  },
+  {
+    "id": "membre-plannings",
+    "question": "Où consulter les horaires de cours ?",
+    "answer": "Les plannings des salles Boxing Center sont disponibles sur boxingcenter.fr (rubrique Plannings des salles).",
+    "keywords": ["planning", "horaire", "cours", "emploi du temps", "calendrier"]
+  },
+  {
+    "id": "cours-disciplines",
+    "question": "Quelles disciplines sont proposées chez Boxing Center ?",
+    "answer": "Boxe anglaise, boxe thaïlandaise (muay thaï), kick boxing, MMA, grappling, cross training, Hyrox, boxe éducative, Boxing Lady et plus selon les salles.",
+    "keywords": ["discipline", "activité", "boxe", "muay", "kick", "hyrox", "lady"]
+  },
+  {
+    "id": "cours-debutants",
+    "question": "Les cours sont-ils adaptés aux débutants ?",
+    "answer": "Oui, nos coachs accompagnent tous les niveaux, du débutant au compétiteur, dans chacune de nos salles.",
+    "keywords": ["débutant", "niveau", "adapté", "commencer", "novice"]
+  },
+  {
+    "id": "cours-activites",
+    "question": "Où voir le détail des activités ?",
+    "answer": "Consultez la rubrique activités sur boxingcenter.fr/activites-sportives-boxe-toulouse/",
+    "keywords": ["activités", "détail", "programme", "liste", "disciplines"]
+  },
+  {
+    "id": "resiliation-arret",
+    "question": "Comment arrêter mon abonnement ?",
+    "answer": "Contactez le service par mail à boxingcenter31@gmail.com ou par téléphone au 05 62 24 46 82, du lundi au jeudi de 10h à 17h.",
+    "keywords": ["arrêter", "résilier", "resilier", "abonnement", "fin", "stop"]
+  },
+  {
+    "id": "resiliation-modifier",
+    "question": "Puis-je modifier ma formule d'abonnement ?",
+    "answer": "Oui, à tout moment par mail à boxingcenter31@gmail.com ou par téléphone.",
+    "keywords": ["modifier", "changer", "formule", "abonnement", "upgrade"]
+  },
+  {
+    "id": "abo-tarifs",
+    "question": "Quels sont vos tarifs ?",
+    "answer": "Tous les tarifs et offres en cours sont sur boxingcenter.fr (rubrique Offres d'abonnements). Un manager de salle peut aussi vous renseigner.",
+    "keywords": ["tarif", "prix", "coût", "abonnement", "formule", "combien"]
+  },
+  {
+    "id": "abo-illimite",
+    "question": "En quoi consiste la formule cours illimités + accès libre ?",
+    "answer": "Accès 7j/7 aux salles pour l'entraînement libre, plus tous les cours techniques (boxe anglaise, thaïlandaise, MMA) et cours de préparation physique.",
+    "keywords": ["illimité", "accès libre", "formule", "cours", "7j"]
+  },
+  {
+    "id": "abo-engagement",
+    "question": "Un abonnement sur 12 mois est-il obligatoire ?",
+    "answer": "Non : abonnements sans engagement de durée et sans préavis en cas de résiliation.",
+    "keywords": ["engagement", "12 mois", "durée", "sans engagement", "préavis"]
+  },
+  {
+    "id": "abo-ring",
+    "question": "Peut-on utiliser les rings des salles ?",
+    "answer": "Oui, dans les règles de chaque salle, sous surveillance d'un responsable et avec les protections nécessaires.",
+    "keywords": ["ring", "utiliser", "boxer", "règles", "protections"]
+  },
+  {
+    "id": "abo-equipements",
+    "question": "Quels équipements retrouve-t-on chez Boxing Center ?",
+    "answer": "Matériel de musculation, partenariats Metal Boxe, Adidas et Rinkage pour sacs, gants et protections, avec tarifs préférentiels en salle.",
+    "keywords": ["équipement", "matériel", "sacs", "gants", "musculation", "metal boxe"]
   }
 ]
