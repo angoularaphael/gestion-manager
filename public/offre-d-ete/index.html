@@ -377,23 +377,19 @@ html.in-iframe #hero { min-height: 0; }
   transition: all .4s var(--transition) .06s;
 }
 .disc-card:hover .disc-sub { opacity: 1; transform: translateY(0); }
-/* Colored bg for each discipline */
-.dc1 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/boxe-anglaise.webp') center/cover; }
-.dc2 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/muay-thai.webp') center/cover; }
-.dc3 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/mma.webp') center/cover; }
-.dc4 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/cross.webp') center/cover; }
-.dc5 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/gym-21.jpg') center/cover; }
-.disc-visual-text { display: none; }
-.disc-visual-text {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Bebas Neue', sans-serif; font-size: 64px;
-  letter-spacing: 0.05em; opacity: 0.07;
-  transition: opacity .4s ease, transform .4s ease;
-  white-space: nowrap;
-  color: var(--bc-white);
+/* Colored bg for each discipline — emplacements réservés (visuels IA à venir) */
+.dc1, .dc2, .dc3, .dc4, .dc5 {
+  background: linear-gradient(145deg, #1c1c1c 0%, #0a0a0a 50%, #222 100%);
 }
-.disc-card:hover .disc-visual-text { opacity: 0; transform: translate(-50%, -70%); }
+.disc-card-bg::after {
+  content: 'Visuel à venir';
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 400;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(255,255,255,0.32); pointer-events: none;
+}
+.disc-visual-text { display: none !important; }
 
 /* OFFRE */
 #offre {
@@ -576,8 +572,8 @@ html.in-iframe #hero { min-height: 0; }
   border: 1px solid rgba(255,255,255,0.3);
   padding: 28px 22px 24px;
   position: relative; overflow: hidden;
-  text-decoration: none; color: inherit;
-  display: block;
+  color: inherit;
+  display: flex; flex-direction: column;
   transition: background .35s ease, border-color .35s ease;
 }
 .salle-card:hover {
@@ -604,56 +600,15 @@ html.in-iframe #hero { min-height: 0; }
   font-size: 11px; font-weight: 300;
   color: var(--bc-grey); line-height: 1.6;
 }
-.salle-arrow {
-  position: absolute; bottom: 20px; right: 20px;
-  width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.4);
+.salle-thumb {
+  margin-top: auto; padding-top: 18px;
+  width: 100%; aspect-ratio: 16 / 10;
+  border: 1px dashed rgba(255,255,255,0.28);
+  background: rgba(0,0,0,0.22);
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; color: var(--bc-grey);
-  transition: all .3s ease;
   font-family: 'Oswald', sans-serif;
-}
-.salle-card:hover .salle-arrow {
-  background: var(--bc-red); border-color: var(--bc-red);
-  color: var(--bc-white);
-}
-
-/* STEPS */
-#steps {
-  padding: 120px 64px;
-  position: relative;
-}
-.steps-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 0; margin-top: 60px; position: relative;
-}
-.steps-grid::before {
-  content: ''; position: absolute; top: 40px;
-  left: 16.66%; right: 16.66%; height: 1px;
-  background: linear-gradient(to right, var(--bc-red), rgba(227,6,19,0.2), var(--bc-red));
-}
-.step {
-  padding: 44px 36px; text-align: center;
-}
-.step-bul {
-  width: 80px; height: 80px;
-  border: 1px solid rgba(255,255,255,0.8);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 28px; background: var(--bc-dark); position: relative;
-}
-.step-bul::before {
-  content: ''; position: absolute; inset: -5px;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-.step-n {
-  font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: var(--bc-red);
-}
-.step-title {
-  font-family: 'Oswald', sans-serif; font-size: 18px;
-  font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px;
-}
-.step-txt {
-  font-size: 13px; font-weight: 300;
-  color: var(--bc-grey); line-height: 1.7;
+  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38); text-align: center;
 }
 
 /* CTA FINAL */
@@ -720,14 +675,12 @@ html.in-iframe #hero { min-height: 0; }
   #hero { padding: 60px 24px 80px; }
   .hero-visual { display: none; }
   .hero-floats, .hero-scroll { display: none; }
-  #disciplines, #offre, #avantages, #salles, #steps, #cta { padding: 80px 24px; }
+  #disciplines, #offre, #avantages, #salles, #cta { padding: 80px 24px; }
   .disc-grid { grid-template-columns: repeat(2, 1fr); }
   .offre-grid { grid-template-columns: 1fr; gap: 48px; }
   .avt-grid { grid-template-columns: 1fr; }
   .salles-head { grid-template-columns: 1fr; }
   .salles-grid { grid-template-columns: repeat(2, 1fr); }
-  .steps-grid { grid-template-columns: 1fr; }
-  .steps-grid::before { display: none; }
   .cd-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-actions { flex-direction: column; align-items: flex-start; }
 }
@@ -799,11 +752,10 @@ html.in-iframe #hero { min-height: 0; }
     </p>
 
     <div class="hero-actions">
-      <a href="https://boxingcenter.fr" target="_blank" class="btn-primary">
+      <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener">
         Je profite de l'offre
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </a>
-      <a href="#salles" class="btn-ghost">Voir les salles</a>
     </div>
   </div>
 
@@ -860,9 +812,7 @@ html.in-iframe #hero { min-height: 0; }
 
   <div class="disc-grid">
     <div class="disc-card reveal" data-d="1">
-      <div class="disc-card-bg dc1">
-        <div class="disc-visual-text">B.A.</div>
-      </div>
+      <div class="disc-card-bg dc1"></div>
       <div class="disc-card-grd"></div>
       <div class="disc-stripe"></div>
       <div class="disc-body">
@@ -871,9 +821,7 @@ html.in-iframe #hero { min-height: 0; }
       </div>
     </div>
     <div class="disc-card reveal" data-d="2">
-      <div class="disc-card-bg dc2">
-        <div class="disc-visual-text">B.T.</div>
-      </div>
+      <div class="disc-card-bg dc2"></div>
       <div class="disc-card-grd"></div>
       <div class="disc-stripe"></div>
       <div class="disc-body">
@@ -882,9 +830,7 @@ html.in-iframe #hero { min-height: 0; }
       </div>
     </div>
     <div class="disc-card reveal" data-d="3">
-      <div class="disc-card-bg dc3">
-        <div class="disc-visual-text">MMA</div>
-      </div>
+      <div class="disc-card-bg dc3"></div>
       <div class="disc-card-grd"></div>
       <div class="disc-stripe"></div>
       <div class="disc-body">
@@ -893,9 +839,7 @@ html.in-iframe #hero { min-height: 0; }
       </div>
     </div>
     <div class="disc-card reveal" data-d="4">
-      <div class="disc-card-bg dc4">
-        <div class="disc-visual-text">C.T.</div>
-      </div>
+      <div class="disc-card-bg dc4"></div>
       <div class="disc-card-grd"></div>
       <div class="disc-stripe"></div>
       <div class="disc-body">
@@ -904,9 +848,7 @@ html.in-iframe #hero { min-height: 0; }
       </div>
     </div>
     <div class="disc-card reveal" data-d="5">
-      <div class="disc-card-bg dc5">
-        <div class="disc-visual-text">A.L.</div>
-      </div>
+      <div class="disc-card-bg dc5"></div>
       <div class="disc-card-grd"></div>
       <div class="disc-stripe"></div>
       <div class="disc-body">
@@ -926,7 +868,7 @@ html.in-iframe #hero { min-height: 0; }
       <div class="offre-big">89<sup>€</sup></div>
       <div class="offre-ghost">au lieu de 150€</div>
       <p class="offre-meta">Inscription avant le 30 juin 2026</p>
-      <a href="https://boxingcenter.fr" target="_blank" class="btn-primary">
+      <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener">
         Je profite de l'offre
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </a>
@@ -1025,60 +967,36 @@ html.in-iframe #hero { min-height: 0; }
   </div>
 
   <div class="salles-grid">
-    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-minimes/" target="_blank" class="salle-card reveal" data-d="1">
+    <article class="salle-card reveal" data-d="1">
       <div class="salle-idx">01 / 05</div>
       <span class="salle-name">MINIMES</span>
       <p class="salle-addr">Toulouse Centre<br>Quartier des Minimes</p>
-      <div class="salle-arrow">&#8599;</div>
-    </a>
-    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-ramonville/" target="_blank" class="salle-card reveal" data-d="2">
+      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+    </article>
+    <article class="salle-card reveal" data-d="2">
       <div class="salle-idx">02 / 05</div>
       <span class="salle-name">RAMONVILLE</span>
       <p class="salle-addr">Ramonville-Saint-Agne<br>Sud de Toulouse</p>
-      <div class="salle-arrow">&#8599;</div>
-    </a>
-    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-saint-cyprien/" target="_blank" class="salle-card reveal" data-d="3">
+      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+    </article>
+    <article class="salle-card reveal" data-d="3">
       <div class="salle-idx">03 / 05</div>
       <span class="salle-name">SAINT-CYPRIEN</span>
       <p class="salle-addr">Toulouse<br>Quartier Saint-Cyprien</p>
-      <div class="salle-arrow">&#8599;</div>
-    </a>
-    <a href="https://www.boxing-center-portet.fr/" target="_blank" class="salle-card reveal" data-d="4">
+      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+    </article>
+    <article class="salle-card reveal" data-d="4">
       <div class="salle-idx">04 / 05</div>
       <span class="salle-name">PORTET-SUR-GARONNE</span>
       <p class="salle-addr">Portet-sur-Garonne<br>Sud Toulouse</p>
-      <div class="salle-arrow">&#8599;</div>
-    </a>
-    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-etats-unis/" target="_blank" class="salle-card reveal" data-d="5">
+      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+    </article>
+    <article class="salle-card reveal" data-d="5">
       <div class="salle-idx">05 / 05</div>
       <span class="salle-name">ÉTATS-UNIS</span>
       <p class="salle-addr">Toulouse<br>Quartier États-Unis</p>
-      <div class="salle-arrow">&#8599;</div>
-    </a>
-  </div>
-</section>
-
-<!-- STEPS -->
-<section id="steps">
-  <div class="s-label reveal" style="justify-content:center">Comment rejoindre</div>
-  <h2 class="s-title reveal" style="text-align:center">EN 3 ÉTAPES<br><em>C'EST PARTI</em></h2>
-
-  <div class="steps-grid">
-    <div class="step reveal" data-d="1">
-      <div class="step-bul"><span class="step-n">01</span></div>
-      <h3 class="step-title">RÉSERVEZ EN LIGNE</h3>
-      <p class="step-txt">Rendez-vous sur boxingcenter.fr, sélectionnez l'offre été 3 mois et finalisez votre inscription en quelques clics.</p>
-    </div>
-    <div class="step reveal" data-d="2">
-      <div class="step-bul"><span class="step-n">02</span></div>
-      <h3 class="step-title">CHOISISSEZ VOTRE SALLE</h3>
-      <p class="step-txt">5 salles à Toulouse et agglomération. Venez là où vous voulez, quand vous voulez — votre pass est valable partout.</p>
-    </div>
-    <div class="step reveal" data-d="3">
-      <div class="step-bul"><span class="step-n">03</span></div>
-      <h3 class="step-title">ENTRAÎNEZ-VOUS</h3>
-      <p class="step-txt">Rejoignez les cours collectifs ou profitez de l'accès libre. Coaches disponibles à chaque séance, pour chaque niveau.</p>
-    </div>
+      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+    </article>
   </div>
 </section>
 
@@ -1095,14 +1013,13 @@ html.in-iframe #hero { min-height: 0; }
   <p class="cta-p reveal">3 mois d'entraînement illimité à 89€. Accès aux 5 salles, tous les cours, coaching personnalisé. Uniquement disponible été 2026.</p>
 
   <div class="cta-btns reveal">
-    <a href="https://boxingcenter.fr" target="_blank" class="btn-primary" style="padding:20px 56px;font-size:15px">
+    <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener" style="padding:20px 56px;font-size:15px">
       JE PROFITE DE L'OFFRE
       <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
     </a>
-    <a href="tel:0562244682" class="btn-ghost" style="font-size:13px">05 62 24 46 82</a>
   </div>
 
-  <p class="cta-note reveal">Sans engagement longue durée — boxingcenter.fr</p>
+  <p class="cta-note reveal">Sans engagement longue durée — boutique en ligne Boxing Center</p>
 </section>
 
 </div><!-- /#main-site -->

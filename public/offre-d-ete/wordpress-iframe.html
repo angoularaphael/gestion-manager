@@ -1,8 +1,25 @@
 <!-- ============================================================
      WORDPRESS — Colle tout ce bloc dans « HTML personnalisé »
+     Page : boxingcenter.fr/offre-d-ete
      ============================================================ -->
 
 <style>
+  /* Masquer menu / header WordPress sur cette page */
+  header.site-header,
+  #masthead,
+  .site-header,
+  .elementor-location-header,
+  .elementor-sticky--active.elementor-location-header,
+  nav.main-navigation,
+  .main-header,
+  #site-navigation,
+  .header-wrapper,
+  .top-bar {
+    display: none !important;
+  }
+  body.admin-bar { margin-top: 0 !important; }
+  html { margin-top: 0 !important; }
+
   .offre-ete-wp { margin: 0; padding: 0; background: #000; }
   .offre-ete-wp__frame-wrap {
     width: 100vw;
@@ -21,7 +38,6 @@
     overflow: hidden;
     background: #000;
   }
-  /* Fond noir autour de l'iframe (le footer WordPress reste visible) */
   body,
   .site-content,
   .entry-content,
