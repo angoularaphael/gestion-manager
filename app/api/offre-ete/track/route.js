@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
 import { trackOffreEteEvent } from '../../../../lib/offreEte';
+import { offreEteCorsHeaders } from '../../../../lib/offreEteCors';
+
+export async function OPTIONS(request) {
+  return new NextResponse(null, { status: 204, headers: offreEteCorsHeaders(request) });
+}
 
 function clientIp(request) {
   return (
@@ -18,9 +23,10 @@ export async function POST(request) {
     body = {};
   }
 
+  const cors = offreEteCorsHeaders(request);
   const eventType = body.event === 'view' ? 'view' : null;
   if (!eventType) {
-    return NextResponse.json({ error: 'event invalide (view attendu)' }, { status: 400 });
+    return NextResponse.json({ error: 'event invalide (view attendu)' }, { status: 400, headers: cors });
   }
 
   try {
@@ -31,8 +37,8 @@ export async function POST(request) {
       userAgent: request.headers.get('user-agent'),
       ip: clientIp(request),
     });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers: cors });
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: e.message }, { status: 500, headers: cors });
   }
 }

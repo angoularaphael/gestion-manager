@@ -1,5 +1,5 @@
 const CACHE = 'boxing-center-v1';
-const ASSETS = ['/', '/logo.png', '/icons/icon-192.png', '/icons/icon-512.png'];
+const ASSETS = ['/', '/logo.png', '/favicon.png', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

@@ -14,10 +14,10 @@ function safeRedirectUrl(request, raw) {
   const fallback = OFFRE_ETE_LANDING_URL;
   if (!raw) return fallback;
   try {
-    const target = new URL(raw, request.url);
-    const origin = new URL(request.url).origin;
-    if (target.origin !== origin) return fallback;
-    return target.toString();
+    const target = new URL(raw);
+    const allowed = new URL(fallback);
+    if (target.origin === allowed.origin) return target.toString();
+    return fallback;
   } catch {
     return fallback;
   }

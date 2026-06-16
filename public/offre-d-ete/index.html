@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boxing Center — Offre Été 2026 — 3 Mois Illimités 89€</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Oswald:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bc-navy:   #1B2A5A;
+  --bc-navy-2: #0F1C3F;
+  --bc-navy-3: #243270;
+  --bc-red:    #C8102E;
+  --bc-white:  #FFFFFF;
+  --bc-offwhite: #F2F4F8;
+  --bc-grey:   #8A94A6;
+  --bc-grey-2: #3A4560;
+  --bc-dark:   #0A0D1A;
+  --bc-dark-2: #0E1220;
+  --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bc-dark);
+  color: var(--bc-white);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR */
+.cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--bc-red); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .25s, height .25s;
+}
+.cursor-follower {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(200,16,46,0.5); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width .3s, height .3s, border-color .3s;
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(to right, var(--bc-red), var(--bc-navy));
+  z-index: 2000; transition: width .1s linear;
+}
+
+/* INTRO — coups de poing + étincelles */
+.intro-stage {
+  position: fixed; inset: 0; z-index: 10000;
+  background: #000; overflow: hidden;
+  transition: opacity 0.85s ease, visibility 0.85s ease;
+}
+.intro-stage--out { opacity: 0; visibility: hidden; pointer-events: none; }
+.intro-three, .intro-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+.intro-three { z-index: 5; }
+.intro-canvas { z-index: 20; }
+.intro-gloves {
+  position: absolute; inset: 0; z-index: 15; pointer-events: none;
+}
+.intro-glove {
+  position: absolute; top: 50%; left: 50%;
+  width: min(82vw, 720px); max-width: none;
+  opacity: 0; visibility: hidden;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+.intro-logo {
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+.intro-logo img {
+  width: min(88vw, 720px); height: auto; object-fit: contain;
+  filter: drop-shadow(0 0 28px rgba(200, 16, 46, 0.25));
+}
+.main-site--hidden { visibility: hidden; overflow: hidden; height: 100vh; }
+
+/* HERO */
+#hero {
+  min-height: 100vh; position: relative;
+  display: flex; align-items: center;
+  overflow: hidden; padding: 80px 64px;
+}
+.hero-bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  animation: gridDrift 25s linear infinite;
+}
+@keyframes gridDrift { to { transform: translate(72px, 72px); } }
+.hero-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 65% 45%, rgba(27,42,90,0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 25% 80%, rgba(200,16,46,0.07) 0%, transparent 45%);
+}
+.hero-content {
+  position: relative; z-index: 2; max-width: 680px;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-family: 'Oswald', sans-serif; font-size: 11px;
+  font-weight: 400; letter-spacing: 0.4em; text-transform: uppercase;
+  color: var(--bc-red); margin-bottom: 36px;
+  opacity: 0; transform: translateY(16px);
+  animation: fadeUp .7s var(--transition) .3s forwards;
+}
+.hero-eyebrow::before {
+  content: ''; display: block; width: 36px;
+  height: 1px; background: var(--bc-red);
+}
+.hero-h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(68px, 9.5vw, 130px);
+  line-height: 0.9; letter-spacing: 0.02em;
+  margin-bottom: 16px;
+}
+.hero-h1 .ln { display: block; overflow: hidden; }
+.hero-h1 .lni {
+  display: block; transform: translateY(110%);
+  animation: slideUp .85s var(--transition) forwards;
+}
+.hero-h1 .ln:nth-child(1) .lni { animation-delay: .45s; }
+.hero-h1 .ln:nth-child(2) .lni { animation-delay: .58s; color: var(--bc-red); }
+.hero-h1 .ln:nth-child(3) .lni { animation-delay: .71s; }
+@keyframes slideUp { to { transform: translateY(0); } }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.hero-price {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 36px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp .7s var(--transition) 1s forwards;
+}
+.p-old {
+  font-family: 'Oswald', sans-serif; font-size: 26px;
+  font-weight: 400; color: var(--bc-grey);
+  text-decoration: line-through;
+}
+.p-new {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 9vw, 110px);
+  color: var(--bc-white); line-height: 1;
+  text-shadow: 0 0 40px rgba(27,42,90,0.6);
+}
+.p-badge {
+  display: flex; flex-direction: column;
+  gap: 4px;
+}
+.p-badge span {
+  font-family: 'Oswald', sans-serif; font-size: 11px;
+  font-weight: 300; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--bc-grey);
+}
+.p-badge strong {
+  font-family: 'Oswald', sans-serif; font-size: 20px;
+  font-weight: 600; color: var(--bc-white);
+  letter-spacing: 0.05em;
+}
+.hero-desc {
+  font-size: 14px; font-weight: 300; line-height: 1.75;
+  color: rgba(242,244,248,0.55); max-width: 460px;
+  margin-bottom: 48px;
+  opacity: 0; animation: fadeUp .7s var(--transition) 1.1s forwards;
+}
+.hero-actions {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp .7s var(--transition) 1.2s forwards;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--bc-red); color: var(--bc-white);
+  padding: 17px 40px;
+  font-family: 'Oswald', sans-serif; font-size: 14px;
+  font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+  text-decoration: none; position: relative; overflow: hidden;
+  transition: transform .3s var(--transition), background .3s;
+  border: none; cursor: pointer;
+}
+.btn-primary::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0.12);
+  transform: translateX(-100%);
+  transition: transform .4s var(--transition);
+}
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--bc-white); font-family: 'Oswald', sans-serif;
+  font-size: 12px; font-weight: 400; letter-spacing: 0.2em;
+  text-transform: uppercase; text-decoration: none;
+  border-bottom: 1px solid var(--bc-grey-2); padding-bottom: 3px;
+  transition: color .3s, border-color .3s;
+}
+.btn-ghost:hover { color: var(--bc-red); border-color: var(--bc-red); }
+
+/* Hero visual — affiche */
+.hero-visual {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 48%;
+  overflow: hidden;
+  clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+.hero-visual-mask {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(to right, var(--bc-dark) 0%, transparent 35%),
+    linear-gradient(to top, var(--bc-dark) 0%, transparent 20%);
+}
+.hero-img {
+  width: 100%; height: 100%; object-fit: cover;
+  object-position: center top; opacity: 0;
+  filter: brightness(0.75) saturate(0.85);
+  animation: imgIn 1.2s var(--transition) .4s forwards;
+}
+@keyframes imgIn { to { opacity: 1; } }
+
+.hero-floats {
+  position: absolute; z-index: 3;
+  bottom: 48px; right: 5%;
+  display: flex; gap: 48px;
+  opacity: 0; animation: fadeUp .7s var(--transition) 1.4s forwards;
+}
+.hf-item { text-align: center; }
+.hf-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 44px;
+  line-height: 1; color: var(--bc-red);
+}
+.hf-lbl {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--bc-grey); margin-top: 4px;
+}
+.hero-scroll {
+  position: absolute; bottom: 40px; left: 64px; z-index: 3;
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Oswald', sans-serif; font-size: 11px;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--bc-grey);
+  opacity: 0; animation: fadeUp .7s var(--transition) 1.6s forwards;
+}
+.scroll-tick {
+  width: 36px; height: 1px; background: var(--bc-grey-2); overflow: hidden; position: relative;
+}
+.scroll-tick::after {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%; background: var(--bc-red);
+  animation: tickAnim 2s ease-in-out infinite;
+}
+@keyframes tickAnim { 0%{left:-100%} 50%{left:0} 100%{left:100%} }
+
+/* TICKER */
+.ticker {
+  background: var(--bc-navy); padding: 14px 0; overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ticker-inner {
+  display: flex; gap: 56px; animation: tickMove 22s linear infinite;
+  width: max-content; white-space: nowrap;
+}
+@keyframes tickMove { to { transform: translateX(-50%); } }
+.ticker-item {
+  display: flex; align-items: center; gap: 20px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 17px;
+  letter-spacing: 0.15em; color: rgba(255,255,255,0.7);
+}
+.ticker-sep {
+  width: 4px; height: 4px; background: var(--bc-red);
+  border-radius: 50%; flex-shrink: 0;
+}
+
+/* DISCIPLINES */
+#disciplines {
+  padding: 120px 64px;
+}
+.s-label {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 400;
+  letter-spacing: 0.4em; text-transform: uppercase; color: var(--bc-red);
+  margin-bottom: 20px;
+}
+.s-label::before {
+  content: ''; display: block; width: 28px;
+  height: 1px; background: var(--bc-red);
+}
+.s-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(44px, 5.5vw, 72px);
+  line-height: 1; letter-spacing: 0.02em; margin-bottom: 12px;
+}
+.s-title em { font-style: normal; color: var(--bc-red); }
+.s-sub {
+  font-size: 14px; font-weight: 300; color: var(--bc-grey);
+  max-width: 480px; line-height: 1.7; margin-bottom: 72px;
+}
+
+.disc-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+}
+.disc-card {
+  position: relative; overflow: hidden;
+  aspect-ratio: 3/4; cursor: pointer;
+  background: var(--bc-navy-2);
+}
+.disc-card-bg {
+  position: absolute; inset: 0;
+  transition: transform .6s var(--transition);
+}
+.disc-card:hover .disc-card-bg { transform: scale(1.06); }
+.disc-card-grd {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,13,26,0.95) 0%, rgba(10,13,26,0.3) 60%, transparent 100%);
+}
+.disc-stripe {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--bc-red);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .4s var(--transition);
+}
+.disc-card:hover .disc-stripe { transform: scaleX(1); }
+.disc-body {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 28px 22px;
+}
+.disc-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+  letter-spacing: 0.04em; display: block;
+  transform: translateY(6px); transition: transform .4s var(--transition);
+}
+.disc-card:hover .disc-name { transform: translateY(0); }
+.disc-sub {
+  font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 300;
+  letter-spacing: 0.2em; color: var(--bc-red); text-transform: uppercase;
+  opacity: 0; transform: translateY(8px);
+  transition: all .4s var(--transition) .06s;
+}
+.disc-card:hover .disc-sub { opacity: 1; transform: translateY(0); }
+/* Colored bg for each discipline */
+.dc1 { background: linear-gradient(155deg, #1B2A5A 0%, #0F1C3F 100%); }
+.dc2 { background: linear-gradient(155deg, #2a1b1b, #3d0f0f); }
+.dc3 { background: linear-gradient(155deg, #1a1b2a, #0f0f3d); }
+.dc4 { background: linear-gradient(155deg, #1a2a1b, #0f3d10); }
+.dc5 { background: linear-gradient(155deg, #1B2A5A 0%, #1a1a3a); }
+.disc-visual-text {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Bebas Neue', sans-serif; font-size: 64px;
+  letter-spacing: 0.05em; opacity: 0.07;
+  transition: opacity .4s ease, transform .4s ease;
+  white-space: nowrap;
+  color: var(--bc-white);
+}
+.disc-card:hover .disc-visual-text { opacity: 0; transform: translate(-50%, -70%); }
+
+/* OFFRE */
+#offre {
+  padding: 120px 64px;
+  background: var(--bc-dark-2);
+  position: relative;
+}
+#offre::before, #offre::after {
+  content: ''; position: absolute;
+  left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(200,16,46,0.4), transparent);
+}
+#offre::before { top: 0; }
+#offre::after { bottom: 0; }
+
+.offre-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+.offre-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(110px, 16vw, 200px);
+  line-height: 0.85; color: var(--bc-white);
+  position: relative; display: inline-block;
+}
+.offre-big sup {
+  font-size: 0.35em; vertical-align: super; color: var(--bc-red);
+}
+.offre-3mois {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 7vw, 90px);
+  line-height: 1; letter-spacing: 0.02em;
+  color: var(--bc-white);
+}
+.offre-3mois em { font-style: normal; color: var(--bc-red); }
+.offre-ghost {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(40px, 5.5vw, 70px);
+  -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+  color: transparent; letter-spacing: 0.02em;
+}
+.offre-meta {
+  font-family: 'Oswald', sans-serif; font-size: 12px;
+  font-weight: 300; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--bc-grey); margin: 16px 0 40px;
+}
+
+/* COUNTDOWN */
+.cd-label {
+  font-family: 'Oswald', sans-serif; font-size: 10px;
+  font-weight: 300; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--bc-grey); margin-bottom: 20px;
+}
+.cd-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-bottom: 44px;
+}
+.cd-unit {
+  background: rgba(27,42,90,0.3);
+  border: 1px solid rgba(27,42,90,0.8);
+  padding: 20px 10px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.cd-unit::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: var(--bc-red);
+}
+.cd-n {
+  font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+  line-height: 1; color: var(--bc-white); display: block;
+}
+.cd-u {
+  font-family: 'Oswald', sans-serif; font-size: 9px;
+  font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--bc-grey); margin-top: 4px;
+}
+
+/* CHECKLIST */
+.feat-list {
+  display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px;
+}
+.feat-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 13px; font-weight: 400;
+  color: rgba(242,244,248,0.75);
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.feat-check {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 1px solid var(--bc-navy-3);
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.feat-check::after {
+  content: ''; width: 6px; height: 6px; background: var(--bc-red);
+}
+.per-month {
+  font-family: 'Oswald', sans-serif; font-size: 12px;
+  font-weight: 300; letter-spacing: 0.15em; color: var(--bc-grey);
+}
+.per-month strong { color: var(--bc-white); font-weight: 600; }
+
+/* AVANTAGES */
+#avantages {
+  padding: 120px 64px;
+  position: relative; overflow: hidden;
+}
+.avt-ghost {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(140px, 19vw, 260px);
+  -webkit-text-stroke: 1px rgba(27,42,90,0.15);
+  color: transparent; white-space: nowrap;
+  pointer-events: none; user-select: none;
+}
+.avt-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 2px; position: relative; z-index: 2; margin-top: 60px;
+}
+.avt-card {
+  padding: 44px 28px; border: 1px solid rgba(255,255,255,0.04);
+  position: relative; overflow: hidden;
+  transition: border-color .4s ease, background .4s ease;
+}
+.avt-card:hover {
+  border-color: rgba(27,42,90,0.6);
+  background: rgba(27,42,90,0.12);
+}
+.avt-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 0; height: 3px; background: var(--bc-red);
+  transition: width .4s var(--transition);
+}
+.avt-card:hover::before { width: 100%; }
+.avt-ico {
+  width: 52px; height: 52px;
+  border: 1px solid rgba(27,42,90,0.8);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px;
+}
+.avt-ico svg { width: 22px; height: 22px; stroke: var(--bc-red); fill: none; stroke-width: 1.5; }
+.avt-num {
+  position: absolute; top: 28px; right: 28px;
+  font-family: 'Oswald', sans-serif; font-size: 10px;
+  font-weight: 300; letter-spacing: 0.25em;
+  color: rgba(27,42,90,0.6);
+}
+.avt-title {
+  font-family: 'Oswald', sans-serif; font-size: 18px;
+  font-weight: 600; letter-spacing: 0.04em; margin-bottom: 10px;
+}
+.avt-text {
+  font-size: 13px; font-weight: 300; color: var(--bc-grey); line-height: 1.7;
+}
+
+/* SALLES */
+#salles {
+  padding: 120px 64px;
+  background: var(--bc-dark-2);
+}
+.salles-head {
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: end; gap: 40px; margin-bottom: 72px;
+}
+.salles-bignb {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(80px, 12vw, 160px);
+  -webkit-text-stroke: 1px rgba(27,42,90,0.5);
+  color: transparent; line-height: 1;
+}
+.salles-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+}
+.salle-card {
+  background: rgba(27,42,90,0.12);
+  border: 1px solid rgba(27,42,90,0.3);
+  padding: 28px 22px 24px;
+  position: relative; overflow: hidden;
+  text-decoration: none; color: inherit;
+  display: block;
+  transition: background .35s ease, border-color .35s ease;
+}
+.salle-card:hover {
+  background: rgba(27,42,90,0.25);
+  border-color: rgba(27,42,90,0.8);
+}
+.salle-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--bc-red);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .4s var(--transition);
+}
+.salle-card:hover::before { transform: scaleX(1); }
+.salle-idx {
+  font-family: 'Oswald', sans-serif; font-size: 10px;
+  font-weight: 300; letter-spacing: 0.3em; color: var(--bc-grey);
+  margin-bottom: 18px;
+}
+.salle-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+  letter-spacing: 0.04em; display: block; margin-bottom: 6px;
+}
+.salle-addr {
+  font-size: 11px; font-weight: 300;
+  color: var(--bc-grey); line-height: 1.6;
+}
+.salle-arrow {
+  position: absolute; bottom: 20px; right: 20px;
+  width: 28px; height: 28px; border: 1px solid rgba(27,42,90,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--bc-grey);
+  transition: all .3s ease;
+  font-family: 'Oswald', sans-serif;
+}
+.salle-card:hover .salle-arrow {
+  background: var(--bc-red); border-color: var(--bc-red);
+  color: var(--bc-white);
+}
+
+/* STEPS */
+#steps {
+  padding: 120px 64px;
+  position: relative;
+}
+.steps-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin-top: 60px; position: relative;
+}
+.steps-grid::before {
+  content: ''; position: absolute; top: 40px;
+  left: 16.66%; right: 16.66%; height: 1px;
+  background: linear-gradient(to right, var(--bc-red), rgba(200,16,46,0.2), var(--bc-red));
+}
+.step {
+  padding: 44px 36px; text-align: center;
+}
+.step-bul {
+  width: 80px; height: 80px;
+  border: 1px solid rgba(27,42,90,0.8);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 28px; background: var(--bc-dark); position: relative;
+}
+.step-bul::before {
+  content: ''; position: absolute; inset: -5px;
+  border: 1px solid rgba(27,42,90,0.3);
+}
+.step-n {
+  font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: var(--bc-red);
+}
+.step-title {
+  font-family: 'Oswald', sans-serif; font-size: 18px;
+  font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px;
+}
+.step-txt {
+  font-size: 13px; font-weight: 300;
+  color: var(--bc-grey); line-height: 1.7;
+}
+
+/* CTA FINAL */
+#cta {
+  padding: 160px 64px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(27,42,90,0.35) 0%, transparent 65%),
+    var(--bc-dark);
+}
+.cta-lines {
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg, transparent, transparent 44px,
+    rgba(27,42,90,0.06) 44px, rgba(27,42,90,0.06) 45px
+  );
+}
+.cta-hl {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(54px, 8vw, 110px);
+  line-height: 1; letter-spacing: 0.02em;
+  position: relative; z-index: 2; margin-bottom: 28px;
+}
+.cta-hl em { font-style: normal; color: var(--bc-red); display: block; }
+.cta-p {
+  font-size: 14px; font-weight: 300; color: var(--bc-grey);
+  max-width: 480px; margin: 0 auto 52px; line-height: 1.7;
+  position: relative; z-index: 2;
+}
+.cta-btns {
+  display: flex; align-items: center; justify-content: center;
+  gap: 20px; flex-wrap: wrap; position: relative; z-index: 2;
+}
+.cta-note {
+  margin-top: 32px; font-size: 11px;
+  color: var(--bc-grey); letter-spacing: 0.1em;
+  position: relative; z-index: 2;
+}
+
+/* FOOTER */
+footer {
+  background: var(--bc-navy-2);
+  border-top: 1px solid rgba(27,42,90,0.5);
+  padding: 64px 64px 32px;
+}
+.ft-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px; margin-bottom: 60px;
+}
+.ft-logo-img { width: 110px; height: auto; margin-bottom: 20px; filter: brightness(0) invert(1); }
+.ft-brand p {
+  font-size: 12px; font-weight: 300; color: var(--bc-grey);
+  line-height: 1.7; max-width: 260px; margin-bottom: 24px;
+}
+.ft-socials { display: flex; gap: 10px; }
+.ft-soc {
+  width: 38px; height: 38px;
+  border: 1px solid rgba(27,42,90,0.6);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--bc-grey); font-size: 11px; text-decoration: none;
+  font-family: 'Oswald', sans-serif; font-weight: 600;
+  transition: all .3s ease; letter-spacing: 0;
+}
+.ft-soc:hover { background: var(--bc-red); border-color: var(--bc-red); color: var(--bc-white); }
+.ft-col h4 {
+  font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px;
+}
+.ft-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.ft-col ul a {
+  text-decoration: none; color: var(--bc-grey);
+  font-size: 12px; font-weight: 300;
+  transition: color .3s;
+}
+.ft-col ul a:hover { color: var(--bc-red); }
+.ft-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 28px; border-top: 1px solid rgba(27,42,90,0.3);
+  font-size: 11px; color: var(--bc-grey); flex-wrap: wrap; gap: 12px;
+}
+.ft-bottom a { color: var(--bc-grey); text-decoration: none; }
+.ft-bottom a:hover { color: var(--bc-red); }
+
+/* SCROLL REVEAL */
+.reveal, .reveal-l, .reveal-r {
+  opacity: 0; transition: opacity .8s var(--transition), transform .8s var(--transition);
+}
+.reveal { transform: translateY(36px); }
+.reveal-l { transform: translateX(-36px); }
+.reveal-r { transform: translateX(36px); }
+.reveal.vis, .reveal-l.vis, .reveal-r.vis { opacity: 1; transform: none; }
+[data-d="1"] { transition-delay: .08s !important; }
+[data-d="2"] { transition-delay: .16s !important; }
+[data-d="3"] { transition-delay: .24s !important; }
+[data-d="4"] { transition-delay: .32s !important; }
+[data-d="5"] { transition-delay: .40s !important; }
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .disc-grid { grid-template-columns: repeat(3, 1fr); }
+  .salles-grid { grid-template-columns: repeat(3, 1fr); }
+  .avt-grid { grid-template-columns: repeat(2, 1fr); }
+  .ft-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+}
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor, .cursor-follower { display: none; }
+  #hero { padding: 60px 24px 80px; }
+  .hero-visual { display: none; }
+  .hero-floats, .hero-scroll { display: none; }
+  #disciplines, #offre, #avantages, #salles, #steps, #cta { padding: 80px 24px; }
+  .disc-grid { grid-template-columns: repeat(2, 1fr); }
+  .offre-grid { grid-template-columns: 1fr; gap: 48px; }
+  .avt-grid { grid-template-columns: 1fr; }
+  .salles-head { grid-template-columns: 1fr; }
+  .salles-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps-grid { grid-template-columns: 1fr; }
+  .steps-grid::before { display: none; }
+  .cd-grid { grid-template-columns: repeat(2, 1fr); }
+  footer { padding: 48px 24px 24px; }
+  .ft-grid { grid-template-columns: 1fr; gap: 36px; }
+  .ft-bottom { flex-direction: column; text-align: center; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .disc-grid { grid-template-columns: 1fr 1fr; }
+  .salles-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO GANTS + ÉTINCELLES 3D -->
+<div id="intro-stage" class="intro-stage" aria-hidden="true">
+  <canvas id="intro-three" class="intro-three"></canvas>
+  <canvas id="intro-canvas" class="intro-canvas"></canvas>
+  <div class="intro-gloves">
+    <img id="intro-glove-left" class="intro-glove" src="assets/glove-right.png" alt="" draggable="false" />
+    <img id="intro-glove-right" class="intro-glove" src="assets/glove-left.png" alt="" draggable="false" />
+  </div>
+  <div id="intro-logo" class="intro-logo">
+    <img id="intro-logo-img" src="assets/logo-boxing-center.png" alt="Boxing Center" />
+  </div>
+</div>
+
+<div id="main-site" class="main-site main-site--hidden" hidden>
+
+<div class="progress-bar" id="pbar"></div>
+<div class="cursor" id="cur"></div>
+<div class="cursor-follower" id="curf"></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Offre Été 2026 — Toulouse &amp; Agglomération</div>
+
+    <h1 class="hero-h1">
+      <span class="ln"><span class="lni">3 MOIS</span></span>
+      <span class="ln"><span class="lni">ILLIMITÉS</span></span>
+      <span class="ln"><span class="lni">SANS LIMITES</span></span>
+    </h1>
+
+    <div class="hero-price">
+      <span class="p-old">150€</span>
+      <span class="p-new">89€</span>
+      <div class="p-badge">
+        <span>Accès aux</span>
+        <strong>5 SALLES</strong>
+        <span>Toulouse &amp; Agglomération</span>
+      </div>
+    </div>
+
+    <p class="hero-desc">
+      Un été pour tout transformer. Accès illimité aux 5 salles, tous les cours inclus,
+      coaches diplômés — pour tous les niveaux. Du ring au cross-training, à votre rythme.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://boxingcenter.fr" target="_blank" class="btn-primary">
+        Je profite de l'offre
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
+      </a>
+      <a href="#salles" class="btn-ghost">Voir les salles</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-visual-mask"></div>
+    <img src="assets/logo-boxing-center.png" alt="Boxing Center Offre Été 2026" class="hero-img"
+         onerror="this.style.display='none'">
+  </div>
+
+  <div class="hero-floats">
+    <div class="hf-item"><div class="hf-num">5</div><div class="hf-lbl">Salles</div></div>
+    <div class="hf-item"><div class="hf-num">6/7</div><div class="hf-lbl">Jours/sem</div></div>
+    <div class="hf-item"><div class="hf-num">+10</div><div class="hf-lbl">Disciplines</div></div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-tick"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="tickerInner">
+    <div class="ticker-item"><div class="ticker-sep"></div>BOXE ANGLAISE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>BOXE THAÏ</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>MMA / GRAPPLING</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>CROSSTRAINING</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>ACCÈS LIBRE 6/7</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>5 SALLES TOULOUSE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>89€ — 3 MOIS ILLIMITÉS</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>SAVATE &amp; BOXE FRANÇAISE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>HYROX TOULOUSE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>BOXING LADY</div>
+    <!-- duplicate -->
+    <div class="ticker-item"><div class="ticker-sep"></div>BOXE ANGLAISE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>BOXE THAÏ</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>MMA / GRAPPLING</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>CROSSTRAINING</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>ACCÈS LIBRE 6/7</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>5 SALLES TOULOUSE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>89€ — 3 MOIS ILLIMITÉS</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>SAVATE &amp; BOXE FRANÇAISE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>HYROX TOULOUSE</div>
+    <div class="ticker-item"><div class="ticker-sep"></div>BOXING LADY</div>
+  </div>
+</div>
+
+<!-- DISCIPLINES -->
+<section id="disciplines">
+  <div class="s-label reveal">Nos disciplines</div>
+  <h2 class="s-title reveal">TOUTES LES<br><em>DISCIPLINES</em></h2>
+  <p class="s-sub reveal">Du ring à la cage, chaque activité est encadrée par des coaches diplômés d'État. Tous les cours inclus dans votre pass été.</p>
+
+  <div class="disc-grid">
+    <div class="disc-card reveal" data-d="1">
+      <div class="disc-card-bg dc1">
+        <div class="disc-visual-text">B.A.</div>
+      </div>
+      <div class="disc-card-grd"></div>
+      <div class="disc-stripe"></div>
+      <div class="disc-body">
+        <span class="disc-name">BOXE ANGLAISE</span>
+        <span class="disc-sub">Loisir &amp; compétition</span>
+      </div>
+    </div>
+    <div class="disc-card reveal" data-d="2">
+      <div class="disc-card-bg dc2">
+        <div class="disc-visual-text">B.T.</div>
+      </div>
+      <div class="disc-card-grd"></div>
+      <div class="disc-stripe"></div>
+      <div class="disc-body">
+        <span class="disc-name">BOXE THAÏ</span>
+        <span class="disc-sub">Muay Thai — 8 membres</span>
+      </div>
+    </div>
+    <div class="disc-card reveal" data-d="3">
+      <div class="disc-card-bg dc3">
+        <div class="disc-visual-text">MMA</div>
+      </div>
+      <div class="disc-card-grd"></div>
+      <div class="disc-stripe"></div>
+      <div class="disc-body">
+        <span class="disc-name">MMA / GRAPPLING</span>
+        <span class="disc-sub">Arts martiaux mixtes</span>
+      </div>
+    </div>
+    <div class="disc-card reveal" data-d="4">
+      <div class="disc-card-bg dc4">
+        <div class="disc-visual-text">C.T.</div>
+      </div>
+      <div class="disc-card-grd"></div>
+      <div class="disc-stripe"></div>
+      <div class="disc-body">
+        <span class="disc-name">CROSSTRAINING</span>
+        <span class="disc-sub">Force &amp; conditionnement</span>
+      </div>
+    </div>
+    <div class="disc-card reveal" data-d="5">
+      <div class="disc-card-bg dc5">
+        <div class="disc-visual-text">A.L.</div>
+      </div>
+      <div class="disc-card-grd"></div>
+      <div class="disc-stripe"></div>
+      <div class="disc-body">
+        <span class="disc-name">ACCÈS LIBRE</span>
+        <span class="disc-sub">À votre rythme</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFRE -->
+<section id="offre">
+  <div class="offre-grid">
+    <div class="reveal-l">
+      <div class="s-label">Offre Été 2026</div>
+      <div class="offre-3mois">3 MOIS<br><em>ILLIMITÉS</em></div>
+      <div class="offre-big">89<sup>€</sup></div>
+      <div class="offre-ghost">au lieu de 150€</div>
+      <p class="offre-meta">Valable fin juillet — mi-août 2026</p>
+      <a href="https://boxingcenter.fr" target="_blank" class="btn-primary">
+        Je profite de l'offre
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
+      </a>
+    </div>
+    <div class="reveal-r">
+      <p class="cd-label">L'offre se termine dans</p>
+      <div class="cd-grid">
+        <div class="cd-unit"><span class="cd-n" id="cdD">--</span><div class="cd-u">Jours</div></div>
+        <div class="cd-unit"><span class="cd-n" id="cdH">--</span><div class="cd-u">Heures</div></div>
+        <div class="cd-unit"><span class="cd-n" id="cdM">--</span><div class="cd-u">Minutes</div></div>
+        <div class="cd-unit"><span class="cd-n" id="cdS">--</span><div class="cd-u">Secondes</div></div>
+      </div>
+
+      <div class="feat-list">
+        <div class="feat-item">
+          <div class="feat-check"></div>
+          Accès illimité aux 5 salles Boxing Center — Toulouse et agglomération
+        </div>
+        <div class="feat-item">
+          <div class="feat-check"></div>
+          Tous les cours collectifs inclus — débutants &amp; confirmés
+        </div>
+        <div class="feat-item">
+          <div class="feat-check"></div>
+          Accès libre 6 jours sur 7 pendant les 3 mois d'été
+        </div>
+        <div class="feat-item">
+          <div class="feat-check"></div>
+          Coaches diplômés d'État — accompagnement personnalisé
+        </div>
+        <div class="feat-item">
+          <div class="feat-check"></div>
+          Planning aménagé de fin juillet à mi-août
+        </div>
+      </div>
+
+      <p class="per-month">Soit <strong>29,67€ / mois</strong> — soit 41% d'économie sur l'abonnement standard</p>
+    </div>
+  </div>
+</section>
+
+<!-- AVANTAGES -->
+<section id="avantages">
+  <div class="avt-ghost">BOXING</div>
+  <div class="s-label reveal">Ce que vous obtenez</div>
+  <h2 class="s-title reveal">POURQUOI<br><em>BOXING CENTER</em></h2>
+
+  <div class="avt-grid">
+    <div class="avt-card reveal" data-d="1">
+      <div class="avt-num">01</div>
+      <div class="avt-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3 class="avt-title">5 SALLES, 1 PASS</h3>
+      <p class="avt-text">Minimes, Ramonville, Saint-Cyprien, Portet-sur-Garonne, États-Unis. Un seul abonnement pour accéder à l'ensemble du réseau.</p>
+    </div>
+    <div class="avt-card reveal" data-d="2">
+      <div class="avt-num">02</div>
+      <div class="avt-ico">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3 class="avt-title">ACCÈS LIBRE 6J/7</h3>
+      <p class="avt-text">Entraînez-vous à votre rythme pendant tout l'été. Les salles sont ouvertes 6 jours sur 7 pour votre accès libre.</p>
+    </div>
+    <div class="avt-card reveal" data-d="3">
+      <div class="avt-num">03</div>
+      <div class="avt-ico">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3 class="avt-title">TOUS NIVEAUX</h3>
+      <p class="avt-text">Débutant complet ou pratiquant confirmé — nos coaches diplômés adaptent chaque cours à votre niveau de pratique.</p>
+    </div>
+    <div class="avt-card reveal" data-d="4">
+      <div class="avt-num">04</div>
+      <div class="avt-ico">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <h3 class="avt-title">COACHES DIPLÔMÉS</h3>
+      <p class="avt-text">Chaque entraîneur est diplômé d'État. Un encadrement professionnel avec suivi personnalisé et progression garantie.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SALLES -->
+<section id="salles">
+  <div class="salles-head">
+    <div class="reveal-l">
+      <div class="s-label">Nos emplacements</div>
+      <h2 class="s-title">TOULOUSE &amp;<br><em>AGGLOMÉRATION</em></h2>
+      <p class="s-sub" style="margin-bottom:0">Six salles réparties sur l'ensemble de l'agglomération toulousaine pour que vous ne soyez jamais loin d'un Boxing Center.</p>
+    </div>
+    <div class="reveal-r" style="text-align:right">
+      <div class="salles-bignb">06</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.3em;color:var(--bc-grey);text-transform:uppercase">salles du réseau</div>
+    </div>
+  </div>
+
+  <div class="salles-grid">
+    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-minimes/" target="_blank" class="salle-card reveal" data-d="1">
+      <div class="salle-idx">01 / 06</div>
+      <span class="salle-name">MINIMES</span>
+      <p class="salle-addr">Toulouse Centre<br>Quartier des Minimes</p>
+      <div class="salle-arrow">&#8599;</div>
+    </a>
+    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-ramonville/" target="_blank" class="salle-card reveal" data-d="2">
+      <div class="salle-idx">02 / 06</div>
+      <span class="salle-name">RAMONVILLE</span>
+      <p class="salle-addr">Ramonville-Saint-Agne<br>Sud de Toulouse</p>
+      <div class="salle-arrow">&#8599;</div>
+    </a>
+    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-saint-cyprien/" target="_blank" class="salle-card reveal" data-d="3">
+      <div class="salle-idx">03 / 06</div>
+      <span class="salle-name">SAINT-CYPRIEN</span>
+      <p class="salle-addr">Toulouse<br>Quartier Saint-Cyprien</p>
+      <div class="salle-arrow">&#8599;</div>
+    </a>
+    <a href="https://www.boxing-center-portet.fr/" target="_blank" class="salle-card reveal" data-d="4">
+      <div class="salle-idx">04 / 06</div>
+      <span class="salle-name">PORTET-SUR-GARONNE</span>
+      <p class="salle-addr">Portet-sur-Garonne<br>Sud Toulouse</p>
+      <div class="salle-arrow">&#8599;</div>
+    </a>
+    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-etats-unis/" target="_blank" class="salle-card reveal" data-d="5">
+      <div class="salle-idx">05 / 06</div>
+      <span class="salle-name">ÉTATS-UNIS</span>
+      <p class="salle-addr">Toulouse<br>Quartier États-Unis</p>
+      <div class="salle-arrow">&#8599;</div>
+    </a>
+    <a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-et-fitness-a-balma-gramont/" target="_blank" class="salle-card reveal" data-d="5">
+      <div class="salle-idx">06 / 06</div>
+      <span class="salle-name">BALMA-GRAMONT</span>
+      <p class="salle-addr">Balma<br>Est de Toulouse</p>
+      <div class="salle-arrow">&#8599;</div>
+    </a>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section id="steps">
+  <div class="s-label reveal" style="justify-content:center">Comment rejoindre</div>
+  <h2 class="s-title reveal" style="text-align:center">EN 3 ÉTAPES<br><em>C'EST PARTI</em></h2>
+
+  <div class="steps-grid">
+    <div class="step reveal" data-d="1">
+      <div class="step-bul"><span class="step-n">01</span></div>
+      <h3 class="step-title">RÉSERVEZ EN LIGNE</h3>
+      <p class="step-txt">Rendez-vous sur boxingcenter.fr, sélectionnez l'offre été 3 mois et finalisez votre inscription en quelques clics.</p>
+    </div>
+    <div class="step reveal" data-d="2">
+      <div class="step-bul"><span class="step-n">02</span></div>
+      <h3 class="step-title">CHOISISSEZ VOTRE SALLE</h3>
+      <p class="step-txt">6 salles à Toulouse et agglomération. Venez là où vous voulez, quand vous voulez — votre pass est valable partout.</p>
+    </div>
+    <div class="step reveal" data-d="3">
+      <div class="step-bul"><span class="step-n">03</span></div>
+      <h3 class="step-title">ENTRAÎNEZ-VOUS</h3>
+      <p class="step-txt">Rejoignez les cours collectifs ou profitez de l'accès libre. Coaches disponibles à chaque séance, pour chaque niveau.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-lines"></div>
+
+  <div class="s-label reveal" style="justify-content:center">Offre limitée dans le temps</div>
+  <h2 class="cta-hl reveal">
+    L'ÉTÉ POUR
+    <em>TOUT CHANGER</em>
+  </h2>
+  <p class="cta-p reveal">3 mois d'entraînement illimité à 89€. Accès aux 6 salles, tous les cours, coaching personnalisé. Uniquement disponible été 2026.</p>
+
+  <div class="cta-btns reveal">
+    <a href="https://boxingcenter.fr" target="_blank" class="btn-primary" style="padding:20px 56px;font-size:15px">
+      JE PROFITE DE L'OFFRE
+      <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
+    </a>
+    <a href="tel:0562244682" class="btn-ghost" style="font-size:13px">05 62 24 46 82</a>
+  </div>
+
+  <p class="cta-note reveal">Sans engagement longue durée — boxingcenter.fr</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <img src="assets/logo.png" alt="Boxing Center" class="ft-logo-img"
+           onerror="this.outerHTML='<div style=\'font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:0.15em;margin-bottom:20px\'>BOXING <span style=\'color:#C8102E\'>CENTER</span></div>'">
+      <p>Le réseau de salles de sports de combat de référence à Toulouse. Boxe anglaise, Muay Thai, MMA, Grappling, Crosstraining — pour tous les niveaux.</p>
+      <div class="ft-socials">
+        <a href="https://www.facebook.com/BoxingCenterToulouse/" target="_blank" class="ft-soc">f</a>
+        <a href="https://www.instagram.com/boxingcentertoulouse/" target="_blank" class="ft-soc">in</a>
+        <a href="https://www.youtube.com/@boxingcentertoulouse6983/" target="_blank" class="ft-soc">yt</a>
+        <a href="https://fr.linkedin.com/company/boxing-center" target="_blank" class="ft-soc">li</a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>Disciplines</h4>
+      <ul>
+        <li><a href="https://boxingcenter.fr/club-de-boxe-anglaise-toulouse/" target="_blank">Boxe Anglaise</a></li>
+        <li><a href="https://boxingcenter.fr/boxe-thai-muay-thai-et-kick-boxing-toulouse/" target="_blank">Boxe Thaï</a></li>
+        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/le-grappling-toulouse/" target="_blank">MMA / Grappling</a></li>
+        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/cross-training/" target="_blank">Crosstraining</a></li>
+        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/hyrox-toulouse/" target="_blank">Hyrox</a></li>
+        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/boxing-camp/" target="_blank">Boxing Camp</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Nos Salles</h4>
+      <ul>
+        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-minimes/" target="_blank">Toulouse Minimes</a></li>
+        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-toulouse-ramonville/" target="_blank">Ramonville</a></li>
+        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-saint-cyprien/" target="_blank">Saint-Cyprien</a></li>
+        <li><a href="https://www.boxing-center-portet.fr/" target="_blank">Portet-sur-Garonne</a></li>
+        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/boxing-center-salle-de-toulouse-etats-unis/" target="_blank">États-Unis</a></li>
+        <li><a href="https://boxingcenter.fr/salle-de-sport-toulouse/salle-de-boxe-et-fitness-a-balma-gramont/" target="_blank">Balma-Gramont</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:0562244682">05 62 24 46 82</a></li>
+        <li><a href="https://boxingcenter.fr" target="_blank">boxingcenter.fr</a></li>
+        <li><a href="https://boxingcenter.fr/coachs-2/" target="_blank">Nos coaches</a></li>
+        <li><a href="https://boxingcenter.fr/activites-sportives-boxe-toulouse/" target="_blank">Toutes les activités</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <span>© 2026 Boxing Center. Tous droits réservés.</span>
+    <span><a href="#">Mentions légales</a> — <a href="#">CGV</a> — <a href="#">Confidentialité</a></span>
+  </div>
+</footer>
+
+</div><!-- /#main-site -->
+
+<script>
+window.OFFRE_ETE_TRACK_API = 'https://gestion-manager.vercel.app/api/offre-ete/track';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="assets/intro.js" data-assets="assets"></script>
+
+<script>
+/* LOADER retiré — intro gants gérée par assets/intro.js */
+/* CURSOR */
+const cur = document.getElementById('cur');
+const curf = document.getElementById('curf');
+let mx = 0, my = 0, fx = 0, fy = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+});
+(function anim() {
+  fx += (mx - fx) * 0.12; fy += (my - fy) * 0.12;
+  curf.style.left = fx + 'px'; curf.style.top = fy + 'px';
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('a, button, .disc-card, .salle-card, .avt-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cur.style.width = '18px'; cur.style.height = '18px';
+    curf.style.width = '52px'; curf.style.height = '52px';
+    curf.style.borderColor = 'rgba(200,16,46,0.8)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cur.style.width = '10px'; cur.style.height = '10px';
+    curf.style.width = '36px'; curf.style.height = '36px';
+    curf.style.borderColor = 'rgba(200,16,46,0.5)';
+  });
+});
+
+/* PROGRESS BAR + NAV SCROLL */
+const pbar = document.getElementById('pbar');
+window.addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  pbar.style.width = (window.scrollY / max * 100) + '%';
+});
+
+/* TICKER PAUSE */
+const ti = document.getElementById('tickerInner');
+ti.addEventListener('mouseenter', () => ti.style.animationPlayState = 'paused');
+ti.addEventListener('mouseleave', () => ti.style.animationPlayState = 'running');
+
+/* SCROLL REVEAL */
+const revEls = document.querySelectorAll('.reveal, .reveal-l, .reveal-r');
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revEls.forEach(el => ro.observe(el));
+
+/* COUNTDOWN — fin juillet 2026 */
+function cd() {
+  const t = new Date('2026-07-31T23:59:59');
+  const n = new Date();
+  const diff = t - n;
+  const pad = x => String(Math.max(0, Math.floor(x))).padStart(2, '0');
+  if (diff <= 0) {
+    ['cdD','cdH','cdM','cdS'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  document.getElementById('cdD').textContent = pad(diff / 864e5);
+  document.getElementById('cdH').textContent = pad((diff % 864e5) / 36e5);
+  document.getElementById('cdM').textContent = pad((diff % 36e5) / 6e4);
+  document.getElementById('cdS').textContent = pad((diff % 6e4) / 1e3);
+}
+cd(); setInterval(cd, 1000);
+
+/* HERO GRID PARALLAX */
+const hg = document.querySelector('.hero-bg-grid');
+document.addEventListener('mousemove', e => {
+  if (!hg) return;
+  const x = (e.clientX / window.innerWidth - .5) * 18;
+  const y = (e.clientY / window.innerHeight - .5) * 18;
+  hg.style.transform = `translate(${x}px, ${y}px)`;
+});
+</script>
+</body>
+</html>
