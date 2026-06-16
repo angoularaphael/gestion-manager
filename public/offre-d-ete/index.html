@@ -175,6 +175,30 @@ html.in-iframe #hero { min-height: 0; }
   margin-bottom: 48px;
   opacity: 0; animation: fadeUp .7s var(--transition) 1.1s forwards;
 }
+.hero-deadline {
+  margin-bottom: 28px;
+  padding: 18px 20px 16px;
+  max-width: 440px;
+  border: 1px solid rgba(227, 6, 19, 0.45);
+  background: rgba(227, 6, 19, 0.07);
+  opacity: 0;
+  animation: fadeUp .7s var(--transition) 1.05s forwards;
+}
+.hero-deadline__tag {
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bc-red);
+  margin-bottom: 14px;
+}
+.cd-grid--hero {
+  margin-bottom: 0;
+  gap: 6px;
+}
+.cd-grid--hero .cd-unit { padding: 14px 8px; }
+.cd-grid--hero .cd-n { font-size: clamp(32px, 6vw, 42px); }
 .hero-actions {
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
   opacity: 0; animation: fadeUp .7s var(--transition) 1.2s forwards;
@@ -754,6 +778,16 @@ html.in-iframe #hero { min-height: 0; }
       </div>
     </div>
 
+    <div class="hero-deadline">
+      <p class="hero-deadline__tag">OFFRE VALABLE JUSQU'AU 30/06/2026</p>
+      <div class="cd-grid cd-grid--hero" aria-live="polite">
+        <div class="cd-unit"><span class="cd-n" id="hcdD">--</span><div class="cd-u">Jours</div></div>
+        <div class="cd-unit"><span class="cd-n" id="hcdH">--</span><div class="cd-u">Heures</div></div>
+        <div class="cd-unit"><span class="cd-n" id="hcdM">--</span><div class="cd-u">Minutes</div></div>
+        <div class="cd-unit"><span class="cd-n" id="hcdS">--</span><div class="cd-u">Secondes</div></div>
+      </div>
+    </div>
+
     <p class="hero-desc">
       Un été pour tout transformer. Accès illimité aux 5 salles, tous les cours inclus,
       coaches diplômés — pour tous les niveaux. Du ring au cross-training, à votre rythme.
@@ -886,14 +920,14 @@ html.in-iframe #hero { min-height: 0; }
       <div class="offre-3mois">3 MOIS<br><em>ILLIMITÉS</em></div>
       <div class="offre-big">89<sup>€</sup></div>
       <div class="offre-ghost">au lieu de 150€</div>
-      <p class="offre-meta">Valable fin juillet — mi-août 2026</p>
+      <p class="offre-meta">Inscription avant le 30 juin 2026</p>
       <a href="https://boxingcenter.fr" target="_blank" class="btn-primary">
         Je profite de l'offre
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </a>
     </div>
     <div class="reveal-r">
-      <p class="cd-label">L'offre se termine dans</p>
+      <p class="cd-label">OFFRE VALABLE JUSQU'AU 30/06/2026</p>
       <div class="cd-grid">
         <div class="cd-unit"><span class="cd-n" id="cdD">--</span><div class="cd-u">Jours</div></div>
         <div class="cd-unit"><span class="cd-n" id="cdH">--</span><div class="cd-u">Heures</div></div>
@@ -1097,20 +1131,27 @@ const ro = new IntersectionObserver(entries => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 revEls.forEach(el => ro.observe(el));
 
-/* COUNTDOWN — fin juillet 2026 */
+/* COUNTDOWN — fin 30 juin 2026 */
+const OFFRE_END = new Date('2026-06-30T23:59:59');
+const CD_IDS = ['cdD', 'cdH', 'cdM', 'cdS', 'hcdD', 'hcdH', 'hcdM', 'hcdS'];
+
 function cd() {
-  const t = new Date('2026-07-31T23:59:59');
   const n = new Date();
-  const diff = t - n;
+  const diff = OFFRE_END - n;
   const pad = x => String(Math.max(0, Math.floor(x))).padStart(2, '0');
-  if (diff <= 0) {
-    ['cdD','cdH','cdM','cdS'].forEach(id => document.getElementById(id).textContent = '00');
-    return;
-  }
-  document.getElementById('cdD').textContent = pad(diff / 864e5);
-  document.getElementById('cdH').textContent = pad((diff % 864e5) / 36e5);
-  document.getElementById('cdM').textContent = pad((diff % 36e5) / 6e4);
-  document.getElementById('cdS').textContent = pad((diff % 6e4) / 1e3);
+  const values =
+    diff <= 0
+      ? ['00', '00', '00', '00']
+      : [
+          pad(diff / 864e5),
+          pad((diff % 864e5) / 36e5),
+          pad((diff % 36e5) / 6e4),
+          pad((diff % 6e4) / 1e3),
+        ];
+  CD_IDS.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = values[i % 4];
+  });
 }
 cd(); setInterval(cd, 1000);
 
