@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app/api/bot/route.js": {
+      "maxDuration": 120
+    },
+    "app/api/managers/send-email/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/promoteurs/send-email/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/boxeurs/send-email/route.js": {
+      "maxDuration": 60
+    }
+  }
+}
