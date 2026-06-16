@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Boxing Center — Offre Été 2026 — 3 Mois Illimités 89€</title>
+<link rel="icon" href="https://gestion-manager.vercel.app/favicon.png" type="image/png" sizes="32x32" />
+<link rel="icon" href="https://gestion-manager.vercel.app/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="https://gestion-manager.vercel.app/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Oswald:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -55,10 +58,13 @@ body {
 }
 .intro-glove {
   position: absolute; top: 50%; left: 50%;
-  width: min(82vw, 720px); max-width: none;
+  width: clamp(200px, min(52vw, 46vh), 480px);
+  max-width: none;
+  height: auto;
   opacity: 0; visibility: hidden;
   transform: translate(-50%, -50%);
   will-change: transform, opacity;
+  object-fit: contain;
 }
 .intro-logo {
   position: absolute; inset: 0; z-index: 30;
@@ -343,11 +349,12 @@ html.in-iframe #hero { min-height: 0; }
 }
 .disc-card:hover .disc-sub { opacity: 1; transform: translateY(0); }
 /* Colored bg for each discipline */
-.dc1 { background: linear-gradient(155deg, #1a1a1a 0%, #000000 100%); }
-.dc2 { background: linear-gradient(155deg, #1a1212, #0d0d0d); }
-.dc3 { background: linear-gradient(155deg, #141414, #0a0a0a); }
-.dc4 { background: linear-gradient(155deg, #121212, #080808); }
-.dc5 { background: linear-gradient(155deg, #1a1a1a, #050505); }
+.dc1 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/boxe-anglaise.webp') center/cover; }
+.dc2 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/muay-thai.webp') center/cover; }
+.dc3 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/mma.webp') center/cover; }
+.dc4 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/disc/cross.webp') center/cover; }
+.dc5 { background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url('https://www.boxing-center-portet.fr/img/gym-21.jpg') center/cover; }
+.disc-visual-text { display: none; }
 .disc-visual-text {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
