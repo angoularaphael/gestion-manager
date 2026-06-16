@@ -15,11 +15,11 @@
     logoSvg: `${ASSET_BASE}/logo-boxing-center.svg`,
   };
 
-  const NAVY = '#0E1A33';
-  const WHITE = '#F5F5F2';
+  const NAVY = '#111111';
+  const WHITE = '#FFFFFF';
   const GOLD = '#C9A227';
-  const BLUE_SPARK = '#4A7CFF';
-  const RED_SPARK = '#C8102E';
+  const BLUE_SPARK = '#CCCCCC';
+  const RED_SPARK = '#E30613';
 
   const stage = document.getElementById('intro-stage');
   const canvas2d = document.getElementById('intro-canvas');
