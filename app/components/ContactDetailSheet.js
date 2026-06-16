@@ -8,8 +8,7 @@ import ActionButton from './ActionButton';
 import ContactFormFields, { readContactFormPayload } from './ContactFormFields';
 
 function categorieLabel(categorie) {
-  if (categorie === 'pro') return 'Pro';
-  if (categorie === 'amateur') return 'Amateur';
+  if (categorie === 'pro' || categorie === 'amateur') return 'Entraîneur';
   return categorie || '—';
 }
 

@@ -92,21 +92,19 @@ export default function DashboardStats() {
       .catch((e) => setBoxeurError(e.message));
   }, []);
 
-  const boxeurSubtitle =
-    boxeurStats && (boxeurStats.amateur != null || boxeurStats.pro != null)
-      ? `${boxeurStats.amateur ?? 0} amateur · ${boxeurStats.pro ?? 0} pro`
-      : '';
+  const entraineurSubtitle =
+    boxeurStats && boxeurStats.total != null ? `${boxeurStats.total} entraîneur(s)` : '';
 
   return (
     <div className="dashboard-stats-stack">
       <StatsBlock title="Managers" stats={managerStats} error={managerError} accent="blue" />
       <StatsBlock title="Promoteurs" stats={promoteurStats} error={promoteurError} accent="gold" />
       <StatsBlock
-        title="Boxeurs"
+        title="Entraîneurs"
         stats={boxeurStats}
         error={boxeurError}
         accent="green"
-        subtitle={boxeurSubtitle}
+        subtitle={entraineurSubtitle}
       />
     </div>
   );
