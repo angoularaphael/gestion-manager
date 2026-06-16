@@ -57,14 +57,19 @@ body {
   position: absolute; inset: 0; z-index: 15; pointer-events: none;
 }
 .intro-glove {
-  position: absolute; top: 50%; left: 50%;
-  width: clamp(200px, min(52vw, 46vh), 480px);
-  max-width: none;
-  height: auto;
-  opacity: 0; visibility: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: clamp(200px, min(46vw, 40vh), 420px);
+  max-width: min(52vw, 480px);
+  opacity: 0;
+  visibility: hidden;
   transform: translate(-50%, -50%);
+  transform-origin: center center;
   will-change: transform, opacity;
   object-fit: contain;
+  object-position: center center;
 }
 .intro-logo {
   position: absolute; inset: 0; z-index: 30;
