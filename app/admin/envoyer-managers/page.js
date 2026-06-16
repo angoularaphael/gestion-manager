@@ -7,7 +7,7 @@ import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 import { formatCountriesLabel } from '../../../lib/countryFilter';
-import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../lib/sendPageHelpers';
+import { idsForCountrySend, mergeSendResults, emptySendResult, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import SendCountryModePanel from '../../components/SendCountryModePanel';
 import CountryMultiPicker from '../../components/CountryMultiPicker';
@@ -332,35 +332,18 @@ export default function EnvoyerPage() {
         payload.broadcast = broadcast;
       }
 
-      const data = emptySendResult('managers');
+      const { data, partial } = await runDualChannelSend({
+        channels,
+        payload,
+        entityKey: 'managers',
+        botPath: '/api/send-to-managers',
+        emailPath: '/api/managers/send-email',
+        parseApiJson,
+      });
 
-      if (channels.includes('whatsapp')) {
-        const waRes = await fetch('/api/bot', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            path: '/api/send-to-managers',
-            body: { ...payload, channels: ['whatsapp'] },
-          }),
-        });
-        const waData = await parseApiJson(waRes);
-        if (!waRes.ok) throw new Error(waData.error || 'Erreur envoi WhatsApp');
-        mergeSendResultsLocal(data, waData);
-      }
-
-      if (channels.includes('email')) {
-        const { channels: _c, ...emailPayload } = payload;
-        const emRes = await fetch('/api/managers/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(emailPayload),
-        });
-        const emData = await parseApiJson(emRes);
-        if (!emRes.ok) throw new Error(emData.error || 'Erreur envoi email');
-        mergeSendResultsLocal(data, emData);
-      }
       setResult({
         success: true,
+        partial,
         data,
         previewHtml:
           channels.includes('email')
@@ -613,6 +596,11 @@ export default function EnvoyerPage() {
               ) : (
                 <>
                   <p><strong>Envoi terminé</strong> — {result.data.managers} manager(s) traité(s)</p>
+                  {result.partial && result.data.warnings?.length > 0 && (
+                    <p className="result-warn">
+                      <strong>Envoi partiel :</strong> {result.data.warnings.join(' · ')}
+                    </p>
+                  )}
                   {result.data.destinations?.length > 0 && (
                     <ul className="dest-list">
                       {result.data.destinations.map((d, i) => (

@@ -7,7 +7,7 @@ import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { extractCountry, filterManagers, listCountries } from '../../../lib/managerCountry';
 import { formatCountriesLabel } from '../../../lib/countryFilter';
-import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../lib/sendPageHelpers';
+import { idsForCountrySend, mergeSendResults, emptySendResult, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import SendCountryModePanel from '../../components/SendCountryModePanel';
 import CountryMultiPicker from '../../components/CountryMultiPicker';
@@ -364,36 +364,18 @@ export default function EnvoyerBoxeursPage() {
         payload.broadcast = broadcast;
       }
 
-      const data = emptySendResult('boxeurs');
-
-      if (channels.includes('whatsapp')) {
-        const waRes = await fetch('/api/bot', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            path: '/api/send-to-boxeurs',
-            body: { ...payload, channels: ['whatsapp'] },
-          }),
-        });
-        const waData = await parseApiJson(waRes);
-        if (!waRes.ok) throw new Error(waData.error || 'Erreur envoi WhatsApp');
-        mergeSendResults(data, waData);
-      }
-
-      if (channels.includes('email')) {
-        const { channels: _c, ...emailPayload } = payload;
-        const emRes = await fetch('/api/boxeurs/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(emailPayload),
-        });
-        const emData = await parseApiJson(emRes);
-        if (!emRes.ok) throw new Error(emData.error || 'Erreur envoi email');
-        mergeSendResults(data, emData);
-      }
+      const { data, partial } = await runDualChannelSend({
+        channels,
+        payload,
+        entityKey: 'boxeurs',
+        botPath: '/api/send-to-boxeurs',
+        emailPath: '/api/boxeurs/send-email',
+        parseApiJson,
+      });
 
       setResult({
         success: true,
+        partial,
         data,
         previewHtml:
           channels.includes('email')
@@ -683,6 +665,11 @@ export default function EnvoyerBoxeursPage() {
               ) : (
                 <>
                   <p><strong>Envoi terminé</strong> — {result.data.boxeurs} entraîneur(s) traité(s)</p>
+                  {result.partial && result.data.warnings?.length > 0 && (
+                    <p className="result-warn">
+                      <strong>Envoi partiel :</strong> {result.data.warnings.join(' · ')}
+                    </p>
+                  )}
                   {result.data.destinations?.length > 0 && (
                     <ul className="dest-list">
                       {result.data.destinations.map((d, i) => (
