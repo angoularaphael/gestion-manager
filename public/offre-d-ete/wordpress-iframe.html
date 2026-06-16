@@ -3,7 +3,7 @@
      ============================================================ -->
 
 <style>
-  .offre-ete-wp { margin: 0; padding: 0; }
+  .offre-ete-wp { margin: 0; padding: 0; background: #000; }
   .offre-ete-wp__frame-wrap {
     width: 100vw;
     max-width: 100vw;
@@ -11,6 +11,7 @@
     margin-right: calc(50% - 50vw);
     overflow: hidden;
     line-height: 0;
+    background: #000;
   }
   .offre-ete-wp__frame {
     display: block;
@@ -18,11 +19,24 @@
     border: 0;
     height: 900px;
     overflow: hidden;
+    background: #000;
   }
-  /* Pied de page WordPress sous l'iframe */
+  /* Fond noir + masquer le pied de page WordPress */
+  body,
+  .site-content,
+  .entry-content,
+  .content-area,
+  #content,
+  .elementor-section-wrap {
+    background: #000 !important;
+  }
+  footer,
   .site-footer,
   #colophon,
-  footer.elementor-location-footer {
+  .elementor-location-footer,
+  .ast-footer-wrap,
+  .hfe-site-footer,
+  .site-footer-primary-section {
     display: none !important;
   }
 </style>
