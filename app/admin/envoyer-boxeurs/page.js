@@ -11,6 +11,8 @@ import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../l
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import SendCountryModePanel from '../../components/SendCountryModePanel';
 import CountryMultiPicker from '../../components/CountryMultiPicker';
+import MessageTemplatePicker from '../../components/MessageTemplatePicker';
+import { detectActiveRegion } from '../../../lib/languageRegions';
 import { useCountryFromUrl } from '../../components/useCountryFromUrl';
 
 function categorieLabel(cat) {
@@ -169,9 +171,14 @@ export default function EnvoyerBoxeursPage() {
     loadBoxeurs();
   }, [loadBoxeurs]);
 
-  useCountryFromUrl({ setMode, setSelectedCountries, setBroadcast });
-
   const countries = useMemo(() => listCountries(boxeurs), [boxeurs]);
+
+  useCountryFromUrl({
+    setMode,
+    setSelectedCountries,
+    setBroadcast,
+    availableCountries: countries,
+  });
 
   const filtered = useMemo(() => {
     let rows = filterManagers(boxeurs, { search, countries: selectedCountries });
@@ -181,6 +188,11 @@ export default function EnvoyerBoxeursPage() {
 
   const withEmail = useMemo(() => filtered.filter((m) => m.email), [filtered]);
   const withPhone = useMemo(() => filtered.filter((m) => m.telephone), [filtered]);
+
+  const activeRegion = useMemo(
+    () => detectActiveRegion(selectedCountries, countries.map((c) => c.name)),
+    [selectedCountries, countries]
+  );
 
   const selectedBoxeur = boxeurs.find((m) => m.id === selectedId);
   const selectedBoxeurs = useMemo(
@@ -613,6 +625,14 @@ export default function EnvoyerBoxeursPage() {
 
           <section className="card send-card">
             <h2 className="section-title">Message</h2>
+            <MessageTemplatePicker
+              selectedCountries={selectedCountries}
+              activeRegion={activeRegion}
+              onInsert={({ subject: nextSubject, message: nextMessage }) => {
+                setSubject(nextSubject);
+                setMessage(nextMessage);
+              }}
+            />
             {channels.includes('email') && (
               <div className="field">
                 <label htmlFor="subject">Sujet de l&apos;email</label>
