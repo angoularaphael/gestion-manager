@@ -85,7 +85,8 @@ body {
   width: min(88vw, 720px); height: auto; object-fit: contain;
   filter: drop-shadow(0 0 28px rgba(200, 16, 46, 0.25));
 }
-.main-site--hidden { visibility: hidden; overflow: hidden; height: 100vh; }
+.main-site--hidden { display: none !important; }
+.main-site { display: block; min-height: 100vh; }
 
 /* HERO */
 #hero {
@@ -776,7 +777,7 @@ footer {
   </div>
 </div>
 
-<div id="main-site" class="main-site main-site--hidden" hidden>
+<div id="main-site" class="main-site main-site--hidden">
 
 <div class="progress-bar" id="pbar"></div>
 <div class="cursor" id="cur"></div>
