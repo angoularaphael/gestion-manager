@@ -1,20 +1,21 @@
 import sharp from "sharp";
+import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(__dirname, "..", "public");
-const logoPath = join(publicDir, "logo.png");
-const iconsDir = join(publicDir, "icons");
-const bg = { r: 15, g: 23, b: 42, alpha: 1 };
+/** Source favicon onglet — ne modifie pas logo.png du site */
+const logoPath = join(publicDir, "favicon-brand.png");
+const bg = { r: 255, g: 255, b: 255, alpha: 1 };
 
 async function circularIcon(size, { maskable = false } = {}) {
-  const inset = maskable ? Math.round(size * 0.12) : 0;
+  const inset = maskable ? Math.round(size * 0.12) : Math.round(size * 0.14);
   const inner = size - inset * 2;
-  const logoW = Math.round(inner * 0.72);
+  const logoW = Math.round(inner * 0.92);
 
   const logo = await sharp(logoPath)
-    .resize(logoW, Math.round(logoW * 0.47), { fit: "inside", withoutEnlargement: true })
+    .resize(logoW, Math.round(logoW * 0.55), { fit: "inside", withoutEnlargement: true })
     .png()
     .toBuffer();
 
@@ -50,3 +51,13 @@ for (const { name, size, maskable } of outputs) {
   await sharp(buf).toFile(join(publicDir, name));
   console.log(`Wrote ${name} (${size}x${size})`);
 }
+
+const fav32 = await circularIcon(32);
+const b64 = (await sharp(fav32).png().toBuffer()).toString("base64");
+writeFileSync(
+  join(publicDir, "favicon.svg"),
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Boxing Center">
+  <image href="data:image/png;base64,${b64}" width="32" height="32"/>
+</svg>`
+);
+console.log("Wrote favicon.svg");
