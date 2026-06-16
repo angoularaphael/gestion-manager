@@ -362,14 +362,23 @@
 
   let introFinished = false;
   let safetyTimer = null;
+  let lastReportedHeight = 0;
+
+  function getContentHeight() {
+    if (stage && stage.parentNode && !introFinished) {
+      return Math.ceil(window.innerHeight || document.documentElement.clientHeight || 800);
+    }
+    if (mainSite) {
+      return Math.ceil(mainSite.getBoundingClientRect().height);
+    }
+    return Math.ceil(document.body.offsetHeight);
+  }
 
   function notifyParentHeight() {
     if (window.parent === window) return;
-    const h = Math.max(
-      document.documentElement.scrollHeight,
-      document.body.scrollHeight,
-      document.documentElement.offsetHeight
-    );
+    const h = getContentHeight();
+    if (Math.abs(h - lastReportedHeight) < 4) return;
+    lastReportedHeight = h;
     window.parent.postMessage({ type: 'offre-ete-resize', height: h }, '*');
   }
 
@@ -411,13 +420,11 @@
     wakePromoAnimations();
     trackView();
     notifyParentHeight();
-    window.setTimeout(notifyParentHeight, 400);
-    window.setTimeout(notifyParentHeight, 1200);
-    if (!window.__offreEteResizeInterval) {
-      window.__offreEteResizeInterval = window.setInterval(notifyParentHeight, 1500);
-    }
+    window.setTimeout(notifyParentHeight, 500);
+    window.setTimeout(notifyParentHeight, 1500);
     window.setTimeout(() => {
       stage.remove();
+      lastReportedHeight = 0;
       notifyParentHeight();
       window.dispatchEvent(new CustomEvent('offre-ete-intro-done'));
     }, 900);
@@ -581,6 +588,9 @@
   }
 
   function boot() {
+    if (window.parent !== window) {
+      document.documentElement.classList.add('in-iframe');
+    }
     resize();
     window.addEventListener('resize', resize);
     initThree();

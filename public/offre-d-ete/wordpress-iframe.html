@@ -1,6 +1,5 @@
 <!-- ============================================================
      WORDPRESS — Colle tout ce bloc dans « HTML personnalisé »
-     Remplace l'ancien iframe seul.
      ============================================================ -->
 
 <style>
@@ -26,7 +25,7 @@
     display: block;
     width: 100%;
     border: 0;
-    min-height: 100vh;
+    height: 900px;
     overflow: hidden;
   }
 </style>
@@ -56,13 +55,16 @@
 (function () {
   var frame = document.getElementById('offre-ete-frame');
   if (!frame) return;
+  var lastH = 0;
+  var ALLOWED = 'https://gestion-manager.vercel.app';
+
   window.addEventListener('message', function (e) {
+    if (e.origin !== ALLOWED) return;
     if (!e.data || e.data.type !== 'offre-ete-resize') return;
-    var h = Math.max(600, Number(e.data.height) || 0);
+    var h = Math.max(600, Math.min(15000, Number(e.data.height) || 0));
+    if (Math.abs(h - lastH) < 4) return;
+    lastH = h;
     frame.style.height = h + 'px';
-  });
-  frame.addEventListener('load', function () {
-    frame.style.height = '12000px';
   });
 })();
 </script>
