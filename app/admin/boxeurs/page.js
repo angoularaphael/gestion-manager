@@ -112,9 +112,9 @@ export default function BoxeursPage() {
     <div className="managers-page">
       <header className="page-header managers-page-header">
         <div>
-          <h1>Entraîneurs</h1>
+          <h1>Boxeurs</h1>
           <p className="page-subtitle managers-page-subtitle">
-            Contacts entraîneurs du réseau Boxing Center — séparés des managers et promoteurs
+            Boxeurs amateur et professionnel — séparés des managers et promoteurs
           </p>
         </div>
         <div className="header-actions">
@@ -123,7 +123,7 @@ export default function BoxeursPage() {
             className={`btn ${showAdd ? 'secondary' : ''}`}
             onClick={() => setShowAdd((v) => !v)}
           >
-            {showAdd ? 'Fermer le formulaire' : 'Ajouter un entraîneur'}
+            {showAdd ? 'Fermer le formulaire' : 'Ajouter un boxeur'}
           </button>
         </div>
         <div className="header-stats">
@@ -149,7 +149,7 @@ export default function BoxeursPage() {
       {showAdd && (
         <AddContactForm
           apiPath="/api/boxeurs"
-          title="Ajouter un entraîneur"
+          title="Ajouter un boxeur"
           showCategorie
           onSuccess={() => {
             loadBoxeurs();
@@ -185,7 +185,7 @@ export default function BoxeursPage() {
 
       <CountrySendLink
         countries={selectedCountries}
-        sendPath="/admin/envoyer-entraineurs"
+        sendPath="/admin/envoyer-boxeurs"
       />
 
       <section className="filter-panel card">
@@ -236,7 +236,7 @@ export default function BoxeursPage() {
       {error && (
         <div className="alert-banner err">
           <div>
-            <strong>Impossible de charger les entraîneurs</strong>
+            <strong>Impossible de charger les boxeurs</strong>
             <p>{error}</p>
           </div>
           <ActionButton className="btn btn-sm" onClick={loadBoxeurs} loading={loading}>
@@ -245,10 +245,10 @@ export default function BoxeursPage() {
         </div>
       )}
 
-      <section className="managers-mobile-list" aria-label="Liste des entraîneurs">
-        {loading && <p className="muted managers-mobile-empty">Chargement des entraîneurs…</p>}
+      <section className="managers-mobile-list" aria-label="Liste des boxeurs">
+        {loading && <p className="muted managers-mobile-empty">Chargement des boxeurs…</p>}
         {!loading && filtered.length === 0 && !error && (
-          <p className="muted managers-mobile-empty">Aucun entraîneur ne correspond aux filtres.</p>
+          <p className="muted managers-mobile-empty">Aucun boxeur ne correspond aux filtres.</p>
         )}
         <ul className="manager-card-list">
           {paged.map((m) => {
@@ -334,14 +334,14 @@ export default function BoxeursPage() {
               {loading && (
                 <tr>
                   <td colSpan={7} className="empty-cell">
-                    Chargement des entraîneurs…
+                    Chargement des boxeurs…
                   </td>
                 </tr>
               )}
               {!loading && filtered.length === 0 && !error && (
                 <tr>
                   <td colSpan={7} className="empty-cell">
-                    Aucun entraîneur ne correspond aux filtres.
+                    Aucun boxeur ne correspond aux filtres.
                   </td>
                 </tr>
               )}
@@ -379,7 +379,7 @@ export default function BoxeursPage() {
       <ContactDetailSheet
         contact={selected}
         apiPath="/api/boxeurs"
-        entityLabel="l'entraîneur"
+        entityLabel="le boxeur"
         showCategorie
         onClose={() => setSelected(null)}
         onUpdated={(data) => {

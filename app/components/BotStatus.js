@@ -75,7 +75,7 @@ export default function BotStatus() {
 
         <div className="card dashboard-card">
           <h2>Envoi de messages</h2>
-          <p className="muted">Contactez managers, promoteurs ou entraîneurs par email ou WhatsApp.</p>
+          <p className="muted">Contactez managers, promoteurs ou boxeurs par email ou WhatsApp.</p>
           <Link href="/admin/envoyer" className="btn">
             Envoyer
           </Link>
