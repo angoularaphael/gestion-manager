@@ -236,25 +236,30 @@ html.in-iframe #hero { min-height: 0; }
 }
 .btn-ghost:hover { color: var(--bc-red); border-color: var(--bc-red); }
 
-/* Hero visual — affiche */
+/* Hero visual — emplacement réservé (image à fournir) */
 .hero-visual {
   position: absolute; right: 0; top: 0; bottom: 0; width: 48%;
   overflow: hidden;
   clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%);
+  background: linear-gradient(145deg, #141414 0%, #0a0a0a 55%, #1a1a1a 100%);
 }
 .hero-visual-mask {
   position: absolute; inset: 0; z-index: 1;
   background:
     linear-gradient(to right, var(--bc-dark) 0%, transparent 35%),
     linear-gradient(to top, var(--bc-dark) 0%, transparent 20%);
+  pointer-events: none;
 }
-.hero-img {
-  width: 100%; height: 100%; object-fit: cover;
-  object-position: center top; opacity: 0;
-  filter: brightness(0.75) saturate(0.85);
-  animation: imgIn 1.2s var(--transition) .4s forwards;
+.hero-visual-slot {
+  position: absolute; inset: 12% 8% 12% 16%; z-index: 0;
+  border: 1px dashed rgba(255,255,255,0.22);
+  background: rgba(0,0,0,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); text-align: center;
 }
-@keyframes imgIn { to { opacity: 1; } }
+.hero-img { display: none !important; }
 
 .hero-floats {
   position: absolute; z-index: 3;
@@ -759,10 +764,9 @@ html.in-iframe #hero { min-height: 0; }
     </div>
   </div>
 
-  <div class="hero-visual">
+  <div class="hero-visual" aria-hidden="true">
+    <div class="hero-visual-slot">Visuel à venir</div>
     <div class="hero-visual-mask"></div>
-    <img src="assets/logo-boxing-center.png" alt="Boxing Center Offre Été 2026" class="hero-img"
-         onerror="this.style.display='none'">
   </div>
 
   <div class="hero-floats">

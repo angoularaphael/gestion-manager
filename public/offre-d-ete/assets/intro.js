@@ -405,7 +405,7 @@
   function wakePromoAnimations() {
     document.body.classList.add('intro-done');
     const wake = mainSite.querySelectorAll(
-      '.hero-eyebrow, .hero-price, .hero-desc, .hero-actions, .hero-floats, .hero-scroll, .hero-img, .reveal, .reveal-l, .reveal-r'
+      '.hero-eyebrow, .hero-price, .hero-desc, .hero-actions, .hero-floats, .hero-scroll, .hero-visual, .reveal, .reveal-l, .reveal-r'
     );
     wake.forEach((el) => {
       el.style.animation = 'none';
