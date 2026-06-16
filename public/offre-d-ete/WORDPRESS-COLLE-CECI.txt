@@ -1,0 +1,34 @@
+NE COLLE PAS index.html entier dans WordPress — ça donne une page noire.
+
+ÉTAPE 1 — Envoyer les fichiers sur OVH
+---------------------------------------
+1. OVH → Hébergements → Multisite → Gestionnaire de fichiers
+2. Ouvre : www/wp-content/uploads/
+3. Crée le dossier : offre-d-ete
+4. Envoie dedans :
+   - index.html
+   - le dossier assets/ (complet)
+
+ÉTAPE 2 — Vérifier
+------------------
+Ouvre dans le navigateur :
+https://boxingcenter.fr/wp-content/uploads/offre-d-ete/index.html
+
+Tu dois voir la promo (gants puis 89€). Si 404 → fichiers mal placés.
+
+ÉTAPE 3 — Dans WordPress (page Offre d'été)
+--------------------------------------------
+Supprime tout ce que tu as collé. Mets UNIQUEMENT ce code :
+
+<iframe
+  src="https://boxingcenter.fr/wp-content/uploads/offre-d-ete/index.html"
+  title="Offre Été 2026"
+  style="width:100%;border:0;min-height:100vh;display:block"
+></iframe>
+
+Enregistrer → tester : https://boxingcenter.fr/offre-d-ete
+
+POURQUOI LA PAGE NOIRE ?
+-------------------------
+index.html commence par une intro noire (animation gants).
+WordPress bloque les scripts → l'intro ne finit jamais → écran noir.
