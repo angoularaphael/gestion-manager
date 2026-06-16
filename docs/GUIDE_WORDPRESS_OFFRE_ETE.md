@@ -1,145 +1,135 @@
 # Guide WordPress / Elementor — Offre Été 2026
 
-Ce guide explique comment remplacer la carte **Fight Event IV** sur la page d'accueil de [boxingcenter.fr](https://boxingcenter.fr/) par la vignette **Offre Été 2026**, avec un lien « En savoir plus » qui enregistre les clics et redirige vers la landing page.
+La landing page vit sur **boxingcenter.fr** (pas sur gestion-manager).  
+URL cible : **https://boxingcenter.fr/offre-d-ete**
+
+Le suivi des clics et des vues reste géré par gestion-manager (API).
 
 ---
 
-## Avant de commencer
+## Fichiers à déployer
 
-- Vous devez être connecté à WordPress en tant qu'administrateur.
-- La barre noire en haut du site doit afficher **Modifier avec Elementor**.
-- L'image vignette se trouve dans ce dépôt : `public/offre-ete-2026/vignette.png`
-- URL de tracking (lien « En savoir plus ») :
-  ```
-  https://gestion-manager.vercel.app/api/offre-ete/click
-  ```
-- Landing page publique :
-  ```
-  https://gestion-manager.vercel.app/offre-ete-2026
-  ```
+Dans le dépôt `gestion-manager`, le dossier complet à mettre en ligne :
 
----
-
-## Étape 1 — Ouvrir la page d'accueil dans Elementor
-
-1. Allez sur [boxingcenter.fr](https://boxingcenter.fr/).
-2. Dans la barre d'administration WordPress (en haut), cliquez sur **Modifier avec Elementor**.
-3. Attendez le chargement complet de l'éditeur Elementor.
+```
+public/offre-d-ete/
+├── index.html          ← page promo (intro gants + contenu)
+└── assets/
+    ├── intro.js
+    ├── glove-left.png / .svg
+    ├── glove-right.png / .svg
+    ├── logo-boxing-center.png / .svg
+    └── logo.png
+```
 
 ---
 
-## Étape 2 — Trouver la section « Actualité et Évènements »
+## Étape 1 — Mettre la page sur boxingcenter.fr
 
-1. Faites défiler la page dans l'aperçu Elementor jusqu'à la section **Actualité et Évènements**.
-2. Sur la droite, vous voyez la carte **Fight Event IV - Faites vos jeux** (affiche avec les boxeurs, date du 28 mars 2026).
-3. Cliquez sur cette carte (ou sur le conteneur/colonne qui l'entoure) pour la sélectionner.
+### Méthode recommandée (FTP / gestionnaire de fichiers OVH)
 
----
+1. Connectez-vous à l’hébergement (FTP, SFTP ou **File Manager** OVH).
+2. Allez à la **racine du site** (souvent `www/` ou `public_html/`).
+3. Créez un dossier **`offre-d-ete`**.
+4. Téléversez **tout le contenu** de `public/offre-d-ete/` :
+   - `index.html` à la racine du dossier
+   - le sous-dossier `assets/` avec tous les fichiers
+5. Ouvrez **https://boxingcenter.fr/offre-d-ete/** en navigation privée.
 
-## Étape 3 — Supprimer la carte Fight Event IV
+> Si WordPress affiche une page 404 à la place : voir **Étape 1b** ci-dessous.
 
-1. Une fois la carte sélectionnée, faites un **clic droit** dessus.
-2. Choisissez **Supprimer** (ou appuyez sur la touche **Suppr** du clavier).
-3. Vérifiez que l'ancienne carte a bien disparu. La colonne de droite doit être vide ou prête à recevoir le nouveau contenu.
+### Étape 1b — Si WordPress intercepte l’URL
 
-> **Astuce :** Si la carte ne se supprime pas, cliquez sur l'icône **Structure** (en haut à gauche dans Elementor) pour voir l'arborescence des widgets et supprimer le bon bloc.
+WordPress peut « capturer » `/offre-d-ete` avant le fichier statique.
 
----
+**Option A — Priorité au dossier statique (.htaccess)**  
+À la racine du site, **avant** les règles WordPress, ajoutez :
 
-## Étape 4 — Téléverser l'image vignette
+```apache
+RewriteRule ^offre-d-ete/?$ /offre-d-ete/index.html [L]
+```
 
-1. Dans le menu WordPress (hors Elementor), allez dans **Médias → Ajouter**.
-2. Téléversez le fichier `vignette.png` (Offre Été 2026 — 3 mois illimités, 89€).
-3. Notez le nom du fichier une fois importé.
+**Option B — Page WordPress vide + redirection**  
+1. Créez une page WordPress intitulée **Offre d'été 2026**.
+2. Réglez le permalien sur **`offre-d-ete`**.
+3. Modèle : **Elementor Canvas** (sans en-tête/pied).
+4. Ajoutez un widget **HTML** avec :
 
----
+```html
+<iframe src="/offre-d-ete/index.html" style="width:100%;height:100vh;border:0" title="Offre Été 2026"></iframe>
+```
 
-## Étape 5 — Ajouter la nouvelle vignette dans Elementor
-
-1. Retournez dans **Modifier avec Elementor** sur la page d'accueil.
-2. Dans la colonne de droite (là où était Fight Event IV), faites glisser un widget **Image** depuis le panneau de gauche.
-3. Cliquez sur **Choisir une image** et sélectionnez la vignette **Offre Été 2026**.
-4. Dans l'onglet **Style** du widget Image :
-   - **Largeur** : 100 %
-   - **Rayon de bordure** : 4 à 8 px (optionnel, pour un rendu plus propre)
-5. Dans l'onglet **Avancé** :
-   - Ajoutez une **marge inférieure** de 12 à 16 px si besoin.
-
----
-
-## Étape 6 — Ajouter le texte descriptif
-
-1. Sous l'image, ajoutez un widget **Éditeur de texte** (ou **Titre + Texte**).
-2. Collez ce texte :
-
-   > **Offre Été 2026** — Profitez de **3 mois d'accès illimité** à toutes nos salles et disciplines pour **89€** au lieu de 150€. Boxe, MMA, muay thaï, kick, cross training : entraînez-vous sans limite tout l'été.
-
-3. Mettez en forme :
-   - Titre en **gras** pour « Offre Été 2026 »
-   - Taille de police cohérente avec les autres cartes de la section (environ 15–16 px)
+*(L’option FTP directe reste préférable pour le SEO et les perfs.)*
 
 ---
 
-## Étape 7 — Ajouter le lien « En savoir plus » (avec tracking)
+## Étape 2 — Vignette sur la page d’accueil (remplacer Fight Event IV)
 
-1. Sous le texte, ajoutez un widget **Bouton** ou **Texte** avec lien.
-2. Texte du lien : **En savoir plus →**
-3. **URL du lien** — copiez-collez exactement :
+1. Allez sur [boxingcenter.fr](https://boxingcenter.fr/) → **Modifier avec Elementor**.
+2. Section **Actualité et Évènements** → sélectionnez la carte **Fight Event IV**.
+3. **Supprimez** la carte (clic droit → Supprimer).
+4. **Médias → Ajouter** : importez `public/offre-ete-2026/vignette.png` (si disponible) ou une capture de la landing.
+5. Dans la colonne de droite, ajoutez un widget **Image** → vignette Offre Été.
+6. Sous l’image, widget **Texte** :
 
-   ```
-   https://gestion-manager.vercel.app/api/offre-ete/click
-   ```
-
-4. Dans les réglages du lien :
-   - Ouvrir dans un **nouvel onglet** : **Non** (recommandé — le visiteur reste sur le parcours offre)
-   - **nofollow** : laissez par défaut
-
-5. Style du bouton/lien :
-   - Couleur proche du rouge Boxing Center ou du doré de la vignette
-   - Police en gras, comme le lien « Plus d'informations » de l'ancienne carte
-
-> **Comment ça marche :** Quand un visiteur clique sur « En savoir plus », notre serveur enregistre **1 clic**, puis redirige automatiquement vers la landing page `/offre-ete-2026`. Chaque visite de la landing page enregistre **1 vue**.
+   > **Offre Été 2026** — **3 mois d'accès illimité** à toutes nos salles pour **89€** au lieu de 150€.
 
 ---
 
-## Étape 8 — Vérifier sur mobile
+## Étape 3 — Lien « En savoir plus » (tracking + même site)
 
-1. En bas de l'éditeur Elementor, cliquez sur l'icône **responsive** (téléphone / tablette).
-2. Vérifiez que :
-   - La vignette s'affiche correctement (pas coupée)
-   - Le texte reste lisible
-   - Le lien « En savoir plus » est bien cliquable
+Le lien ne doit **pas** envoyer vers gestion-manager pour la page promo.  
+Il passe par l’API de tracking, qui redirige vers **boxingcenter.fr/offre-d-ete**.
 
----
+**URL à coller dans Elementor (bouton ou lien) :**
 
-## Étape 9 — Publier
+```
+https://gestion-manager.vercel.app/api/offre-ete/click
+```
 
-1. Cliquez sur le bouton vert **Mettre à jour** (ou **Publier**) en bas à gauche d'Elementor.
-2. Ouvrez [boxingcenter.fr](https://boxingcenter.fr/) en navigation privée pour vérifier le résultat final.
-3. Cliquez sur **En savoir plus** pour tester : vous devez arriver sur la page offre avec le fond bleu marine et le prix 89€.
+Réglages :
+- **Nouvel onglet** : Non
+- Le visiteur reste sur boxingcenter.fr après redirection
 
----
-
-## Consulter les statistiques
-
-1. Connectez-vous à [gestion-manager.vercel.app/login](https://gestion-manager.vercel.app/login).
-2. Allez dans **Marketing → Offre Été 2026** (`/admin/offre-ete`).
-3. Vous y verrez :
-   - Nombre de **clics** sur « En savoir plus »
-   - Nombre de **vues** de la landing page
-   - Liste des derniers événements
-   - Bouton **Réinitialiser** (désactivable plus tard via `OFFRE_ETE_ALLOW_RESET=false` sur Vercel)
+**Fonctionnement :**
+1. Clic sur « En savoir plus » → +1 clic en base
+2. Redirection automatique → `https://boxingcenter.fr/offre-d-ete`
+3. La landing enregistre +1 vue (script dans `index.html`)
 
 ---
 
-## Dépannage
+## Étape 4 — Vérifications
 
-| Problème | Solution |
-|----------|----------|
-| Le lien ne redirige pas | Vérifiez l'URL exacte du tracking (pas d'espace, pas de `/` en trop) |
-| L'image est floue | Téléversez la vignette en taille originale, pas une capture d'écran |
-| La carte Fight Event est toujours visible | Videz le cache (plugin cache ou Cloudflare) après publication |
-| Les stats restent à 0 | Vérifiez que la migration Supabase `007_offre_ete_events.sql` est appliquée |
+| Test | Résultat attendu |
+|------|------------------|
+| `boxingcenter.fr/offre-d-ete` | Intro gants → logo → promo 89€ |
+| Clic « En savoir plus » depuis l’accueil | Arrivée sur `/offre-d-ete` (même domaine) |
+| Admin `/admin/offre-ete` | Clics et vues qui augmentent |
+
+---
+
+## Étape 5 — Publier Elementor
+
+1. **Mettre à jour** la page d’accueil dans Elementor.
+2. Vider le cache (plugin cache / Cloudflare si activé).
+3. Retester en navigation privée.
+
+---
+
+## Statistiques (admin)
+
+1. [gestion-manager.vercel.app/login](https://gestion-manager.vercel.app/login)
+2. **Marketing → Offre Été 2026**
+
+---
+
+## Variables Vercel (gestion-manager)
+
+| Variable | Valeur recommandée |
+|----------|-------------------|
+| `NEXT_PUBLIC_OFFRE_ETE_LANDING_URL` | `https://boxingcenter.fr/offre-d-ete` |
+| `OFFRE_ETE_CORS_ORIGINS` | `https://boxingcenter.fr,https://www.boxingcenter.fr` |
+| `OFFRE_ETE_ALLOW_RESET` | `true` (puis `false` en prod stable) |
 
 ---
 
@@ -147,6 +137,18 @@ Ce guide explique comment remplacer la carte **Fight Event IV** sur la page d'ac
 
 | Usage | URL |
 |-------|-----|
-| Lien « En savoir plus » (WordPress) | `https://gestion-manager.vercel.app/api/offre-ete/click` |
-| Landing page publique | `https://gestion-manager.vercel.app/offre-ete-2026` |
-| Admin statistiques | `https://gestion-manager.vercel.app/admin/offre-ete` |
+| **Landing (visiteurs)** | `https://boxingcenter.fr/offre-d-ete` |
+| Lien tracking (accueil WP) | `https://gestion-manager.vercel.app/api/offre-ete/click` |
+| API vues (automatique) | `https://gestion-manager.vercel.app/api/offre-ete/track` |
+| Admin stats | `https://gestion-manager.vercel.app/admin/offre-ete` |
+
+---
+
+## Dépannage
+
+| Problème | Solution |
+|----------|----------|
+| 404 sur `/offre-d-ete` | Vérifier le dossier FTP + règle `.htaccess` |
+| Intro ne se lance pas | Vérifier que `assets/intro.js` et les PNG sont bien en ligne |
+| Stats vues à 0 | Vérifier `OFFRE_ETE_CORS_ORIGINS` sur Vercel + migration Supabase `007` |
+| Redirection vers Vercel | Mettre à jour `NEXT_PUBLIC_OFFRE_ETE_LANDING_URL` sur Vercel |

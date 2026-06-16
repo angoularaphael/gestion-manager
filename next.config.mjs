@@ -2,7 +2,7 @@
 const nextConfig = {
   images: { unoptimized: true },
   async redirects() {
-    return [{ source: '/favicon.ico', destination: '/logo.png', permanent: false }];
+    return [{ source: '/favicon.ico', destination: '/favicon.png', permanent: false }];
   },
 };
 
