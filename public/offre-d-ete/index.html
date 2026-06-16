@@ -611,8 +611,15 @@ html.in-iframe #hero { min-height: 0; }
 .salle-thumb {
   margin-top: auto; padding-top: 18px;
   width: 100%; aspect-ratio: 16 / 10;
+  background: center / cover no-repeat rgba(0,0,0,0.22);
+  overflow: hidden;
+}
+.salle-thumb--minimes { background-image: url('assets/salles/minimes.png'); }
+.salle-thumb--ramonville { background-image: url('assets/salles/ramonville.png'); }
+.salle-thumb--saint-cyprien { background-image: url('assets/salles/saint-cyprien.png'); }
+.salle-thumb--portet-sur-garonne { background-image: url('assets/salles/portet-sur-garonne.png'); }
+.salle-thumb--placeholder {
   border: 1px dashed rgba(255,255,255,0.28);
-  background: rgba(0,0,0,0.22);
   display: flex; align-items: center; justify-content: center;
   font-family: 'Oswald', sans-serif;
   font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
@@ -978,31 +985,31 @@ html.in-iframe #hero { min-height: 0; }
       <div class="salle-idx">01 / 05</div>
       <span class="salle-name">MINIMES</span>
       <p class="salle-addr">Toulouse Centre<br>Quartier des Minimes</p>
-      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+      <div class="salle-thumb salle-thumb--minimes" role="img" aria-label="Salle Boxing Center Minimes"></div>
     </article>
     <article class="salle-card reveal" data-d="2">
       <div class="salle-idx">02 / 05</div>
       <span class="salle-name">RAMONVILLE</span>
       <p class="salle-addr">Ramonville-Saint-Agne<br>Sud de Toulouse</p>
-      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+      <div class="salle-thumb salle-thumb--ramonville" role="img" aria-label="Salle Boxing Center Ramonville"></div>
     </article>
     <article class="salle-card reveal" data-d="3">
       <div class="salle-idx">03 / 05</div>
       <span class="salle-name">SAINT-CYPRIEN</span>
       <p class="salle-addr">Toulouse<br>Quartier Saint-Cyprien</p>
-      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+      <div class="salle-thumb salle-thumb--saint-cyprien" role="img" aria-label="Salle Boxing Center Saint-Cyprien"></div>
     </article>
     <article class="salle-card reveal" data-d="4">
       <div class="salle-idx">04 / 05</div>
       <span class="salle-name">PORTET-SUR-GARONNE</span>
       <p class="salle-addr">Portet-sur-Garonne<br>Sud Toulouse</p>
-      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+      <div class="salle-thumb salle-thumb--portet-sur-garonne" role="img" aria-label="Salle Boxing Center Portet-sur-Garonne"></div>
     </article>
     <article class="salle-card reveal" data-d="5">
       <div class="salle-idx">05 / 05</div>
       <span class="salle-name">ÉTATS-UNIS</span>
       <p class="salle-addr">Toulouse<br>Quartier États-Unis</p>
-      <div class="salle-thumb" aria-hidden="true">Vignette à venir</div>
+      <div class="salle-thumb salle-thumb--placeholder" aria-hidden="true">Vignette à venir</div>
     </article>
   </div>
 </section>
