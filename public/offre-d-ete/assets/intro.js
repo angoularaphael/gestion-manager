@@ -436,7 +436,7 @@
       lastReportedHeight = 0;
       notifyParentHeight();
       window.dispatchEvent(new CustomEvent('offre-ete-intro-done'));
-    }, 900);
+    }, 500);
   }
 
   function revealLogo() {
@@ -445,14 +445,14 @@
     logoOverlay.style.visibility = 'visible';
     const onDone = () => {
       particles = particles.filter((p) => p.phase !== 'text');
-      window.setTimeout(finishIntro, 650);
+      window.setTimeout(finishIntro, 350);
     };
     if (typeof gsap !== 'undefined') {
-      gsap.to(logoOverlay, { opacity: 1, duration: 0.85, ease: 'power2.out', onComplete: onDone });
+      gsap.to(logoOverlay, { opacity: 1, duration: 0.5, ease: 'power2.out', onComplete: onDone });
     } else {
-      logoOverlay.style.transition = 'opacity 0.85s ease-out';
+      logoOverlay.style.transition = 'opacity 0.5s ease-out';
       logoOverlay.style.opacity = '1';
-      window.setTimeout(onDone, 900);
+      window.setTimeout(onDone, 520);
     }
   }
 
@@ -483,8 +483,8 @@
       } else if (p.phase === 'text') {
         const dx = p.targetX - p.x;
         const dy = p.targetY - p.y;
-        p.x += dx * 0.07;
-        p.y += dy * 0.07;
+        p.x += dx * 0.12;
+        p.y += dy * 0.12;
         p.alpha = Math.min(1, p.alpha + 0.025);
         if (Math.hypot(dx, dy) < 2.5) p.settled = true;
       }
@@ -507,7 +507,7 @@
       } else {
         const settledRatio =
           textParticles.filter((p) => p.settled).length / textParticles.length;
-        if (settledRatio > 0.82) revealLogo();
+        if (settledRatio > 0.78) revealLogo();
       }
     }
     requestAnimationFrame(drawParticles);
@@ -540,9 +540,9 @@
         window.setTimeout(() => {
           spawnLogoParticles();
           animationPhase = 'text';
-          window.setTimeout(revealLogo, 2800);
-        }, 900);
-      }, 400);
+          window.setTimeout(revealLogo, 1400);
+        }, 450);
+      }, 200);
       return;
     }
 
@@ -561,31 +561,31 @@
     gsap.set(rightGlove, { ...gloveBase, x: travel, rotation: -6 });
     gsap.set(logoOverlay, { opacity: 0, visibility: 'hidden' });
 
-    const tl = gsap.timeline({ delay: 0.15 });
+    const tl = gsap.timeline({ delay: 0.05 });
     tl.set([leftGlove, rightGlove], { visibility: 'visible', opacity: 1 })
-      .to(leftGlove, { x: -meetOffset, y: 0, rotation: 8, scale: 1.04, duration: 0.85, ease: 'power4.in' })
-      .to(rightGlove, { x: meetOffset, y: 0, rotation: -8, scale: 1.04, duration: 0.85, ease: 'power4.in' }, '<')
+      .to(leftGlove, { x: -meetOffset, y: 0, rotation: 8, scale: 1.04, duration: 0.55, ease: 'power4.in' })
+      .to(rightGlove, { x: meetOffset, y: 0, rotation: -8, scale: 1.04, duration: 0.55, ease: 'power4.in' }, '<')
       .add(() => {
         animationPhase = 'sparks';
         spawnSparks(150);
         spawn3DImpact();
-        shakeCamera3D(0.16, 360);
+        shakeCamera3D(0.16, 280);
       }, '-=0.03')
-      .to(stage, { x: -14, y: 6, duration: 0.04, yoyo: true, repeat: 7, ease: 'power1.inOut', onComplete: () => gsap.set(stage, { x: 0, y: 0 }) }, '<')
-      .to(leftGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.32, ease: 'power2.in' }, '-=0.1')
-      .to(rightGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.32, ease: 'power2.in' }, '<')
+      .to(stage, { x: -14, y: 6, duration: 0.03, yoyo: true, repeat: 5, ease: 'power1.inOut', onComplete: () => gsap.set(stage, { x: 0, y: 0 }) }, '<')
+      .to(leftGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.22, ease: 'power2.in' }, '-=0.08')
+      .to(rightGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.22, ease: 'power2.in' }, '<')
       .add(() => {
         animationPhase = 'glitter';
         spawnGlitter(480);
       })
-      .to({}, { duration: 1.35 })
+      .to({}, { duration: 0.75 })
       .add(() => {
         animationPhase = 'text';
         particles = particles.filter((p) => p.phase !== 'glitter');
         const hasLogoParticles = spawnLogoParticles();
-        if (!hasLogoParticles) window.setTimeout(revealLogo, 400);
+        if (!hasLogoParticles) window.setTimeout(revealLogo, 220);
       })
-      .to({}, { duration: 2.6, onComplete: revealLogo });
+      .to({}, { duration: 1.35, onComplete: revealLogo });
   }
 
   function boot() {
@@ -607,11 +607,11 @@
       }),
     ])
       .then(() => {
-        safetyTimer = window.setTimeout(finishIntro, 11000);
+        safetyTimer = window.setTimeout(finishIntro, 8000);
         startTimeline();
       })
       .catch(() => {
-        safetyTimer = window.setTimeout(finishIntro, 11000);
+        safetyTimer = window.setTimeout(finishIntro, 8000);
         startTimeline();
       });
   }
