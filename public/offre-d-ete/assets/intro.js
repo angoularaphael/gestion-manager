@@ -548,32 +548,23 @@
 
     gsap.set(stage, { x: 0, y: 0 });
     const travel = gloveTravel();
-    gsap.set(leftGlove, {
+    const gloveBase = {
       xPercent: -50,
       yPercent: -50,
-      x: -travel,
-      rotation: 8,
+      y: 0,
       scale: 1,
       opacity: 0,
       visibility: 'hidden',
-      transformOrigin: '78% 52%',
-    });
-    gsap.set(rightGlove, {
-      xPercent: -50,
-      yPercent: -50,
-      x: travel,
-      rotation: -8,
-      scale: 1,
-      opacity: 0,
-      visibility: 'hidden',
-      transformOrigin: '22% 52%',
-    });
+      transformOrigin: '50% 50%',
+    };
+    gsap.set(leftGlove, { ...gloveBase, x: -travel, rotation: 6 });
+    gsap.set(rightGlove, { ...gloveBase, x: travel, rotation: -6 });
     gsap.set(logoOverlay, { opacity: 0, visibility: 'hidden' });
 
     const tl = gsap.timeline({ delay: 0.15 });
     tl.set([leftGlove, rightGlove], { visibility: 'visible', opacity: 1 })
-      .to(leftGlove, { x: -meetOffset, rotation: 12, scale: 1.05, duration: 0.85, ease: 'power4.in' })
-      .to(rightGlove, { x: meetOffset, rotation: -12, scale: 1.05, duration: 0.85, ease: 'power4.in' }, '<')
+      .to(leftGlove, { x: -meetOffset, y: 0, rotation: 8, scale: 1.04, duration: 0.85, ease: 'power4.in' })
+      .to(rightGlove, { x: meetOffset, y: 0, rotation: -8, scale: 1.04, duration: 0.85, ease: 'power4.in' }, '<')
       .add(() => {
         animationPhase = 'sparks';
         spawnSparks(150);
@@ -581,8 +572,8 @@
         shakeCamera3D(0.16, 360);
       }, '-=0.03')
       .to(stage, { x: -14, y: 6, duration: 0.04, yoyo: true, repeat: 7, ease: 'power1.inOut', onComplete: () => gsap.set(stage, { x: 0, y: 0 }) }, '<')
-      .to(leftGlove, { opacity: 0, scale: 1.28, duration: 0.32, ease: 'power2.in' }, '-=0.1')
-      .to(rightGlove, { opacity: 0, scale: 1.28, duration: 0.32, ease: 'power2.in' }, '<')
+      .to(leftGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.32, ease: 'power2.in' }, '-=0.1')
+      .to(rightGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.32, ease: 'power2.in' }, '<')
       .add(() => {
         animationPhase = 'glitter';
         spawnGlitter(480);
