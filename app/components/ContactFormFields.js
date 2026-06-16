@@ -23,15 +23,14 @@ export default function ContactFormFields({
 
       {showCategorie ? (
         <div className="form-field">
-          <label htmlFor={`${idPrefix}-categorie`}>Catégorie *</label>
+          <label htmlFor={`${idPrefix}-categorie`}>Profil *</label>
           <select
             id={`${idPrefix}-categorie`}
             name="categorie"
             value={categorie}
             onChange={(e) => onCategorieChange?.(e.target.value)}
           >
-            <option value="amateur">Amateur</option>
-            <option value="pro">Pro</option>
+            <option value="amateur">Entraîneur</option>
           </select>
         </div>
       ) : null}

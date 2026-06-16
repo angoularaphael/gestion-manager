@@ -103,8 +103,7 @@ export default function BoxeursPage() {
   const hasFilters = search || type || selectedCountries.length > 0 || categorie;
 
   function categorieLabel(cat) {
-    if (cat === 'pro') return 'Pro';
-    if (cat === 'amateur') return 'Amateur';
+    if (cat === 'pro' || cat === 'amateur') return 'Entraîneur';
     return cat;
   }
 
@@ -112,9 +111,9 @@ export default function BoxeursPage() {
     <div className="managers-page">
       <header className="page-header managers-page-header">
         <div>
-          <h1>Boxeurs</h1>
+          <h1>Entraîneurs</h1>
           <p className="page-subtitle managers-page-subtitle">
-            Boxeurs amateur et professionnel — séparés des managers et promoteurs
+            Contacts entraîneurs du réseau Boxing Center — séparés des managers et promoteurs
           </p>
         </div>
         <div className="header-actions">
@@ -123,25 +122,21 @@ export default function BoxeursPage() {
             className={`btn ${showAdd ? 'secondary' : ''}`}
             onClick={() => setShowAdd((v) => !v)}
           >
-            {showAdd ? 'Fermer le formulaire' : 'Ajouter un boxeur'}
+            {showAdd ? 'Fermer le formulaire' : 'Ajouter un entraîneur'}
           </button>
         </div>
         <div className="header-stats">
           <div className="mini-stat">
             <span>{stats.total}</span>
-            <small>Total</small>
-          </div>
-          <div className="mini-stat">
-            <span>{stats.amateur}</span>
-            <small>Amateur</small>
-          </div>
-          <div className="mini-stat">
-            <span>{stats.pro}</span>
-            <small>Pro</small>
+            <small>Entraîneurs</small>
           </div>
           <div className="mini-stat">
             <span>{stats.withEmail}</span>
             <small>Emails</small>
+          </div>
+          <div className="mini-stat">
+            <span>{stats.withPhone}</span>
+            <small>Téléphones</small>
           </div>
         </div>
       </header>
@@ -149,7 +144,7 @@ export default function BoxeursPage() {
       {showAdd && (
         <AddContactForm
           apiPath="/api/boxeurs"
-          title="Ajouter un boxeur"
+          title="Ajouter un entraîneur"
           showCategorie
           onSuccess={() => {
             loadBoxeurs();
@@ -158,30 +153,6 @@ export default function BoxeursPage() {
           onCancel={() => setShowAdd(false)}
         />
       )}
-
-      <div className="categorie-tabs">
-        <button
-          type="button"
-          className={categorie === '' ? 'active' : ''}
-          onClick={() => setCategorie('')}
-        >
-          Tous ({stats.total})
-        </button>
-        <button
-          type="button"
-          className={categorie === 'amateur' ? 'active' : ''}
-          onClick={() => setCategorie('amateur')}
-        >
-          Amateur ({stats.amateur})
-        </button>
-        <button
-          type="button"
-          className={categorie === 'pro' ? 'active' : ''}
-          onClick={() => setCategorie('pro')}
-        >
-          Pro ({stats.pro})
-        </button>
-      </div>
 
       <CountrySendLink
         countries={selectedCountries}
@@ -236,7 +207,7 @@ export default function BoxeursPage() {
       {error && (
         <div className="alert-banner err">
           <div>
-            <strong>Impossible de charger les boxeurs</strong>
+            <strong>Impossible de charger les entraîneurs</strong>
             <p>{error}</p>
           </div>
           <ActionButton className="btn btn-sm" onClick={loadBoxeurs} loading={loading}>
@@ -245,10 +216,10 @@ export default function BoxeursPage() {
         </div>
       )}
 
-      <section className="managers-mobile-list" aria-label="Liste des boxeurs">
-        {loading && <p className="muted managers-mobile-empty">Chargement des boxeurs…</p>}
+      <section className="managers-mobile-list" aria-label="Liste des entraîneurs">
+        {loading && <p className="muted managers-mobile-empty">Chargement des entraîneurs…</p>}
         {!loading && filtered.length === 0 && !error && (
-          <p className="muted managers-mobile-empty">Aucun boxeur ne correspond aux filtres.</p>
+          <p className="muted managers-mobile-empty">Aucun entraîneur ne correspond aux filtres.</p>
         )}
         <ul className="manager-card-list">
           {paged.map((m) => {
@@ -334,14 +305,14 @@ export default function BoxeursPage() {
               {loading && (
                 <tr>
                   <td colSpan={7} className="empty-cell">
-                    Chargement des boxeurs…
+                    Chargement des entraîneurs…
                   </td>
                 </tr>
               )}
               {!loading && filtered.length === 0 && !error && (
                 <tr>
                   <td colSpan={7} className="empty-cell">
-                    Aucun boxeur ne correspond aux filtres.
+                    Aucun entraîneur ne correspond aux filtres.
                   </td>
                 </tr>
               )}
@@ -379,7 +350,7 @@ export default function BoxeursPage() {
       <ContactDetailSheet
         contact={selected}
         apiPath="/api/boxeurs"
-        entityLabel="le boxeur"
+        entityLabel="l'entraîneur"
         showCategorie
         onClose={() => setSelected(null)}
         onUpdated={(data) => {
