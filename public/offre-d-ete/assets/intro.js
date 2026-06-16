@@ -363,6 +363,16 @@
   let introFinished = false;
   let safetyTimer = null;
 
+  function notifyParentHeight() {
+    if (window.parent === window) return;
+    const h = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+      document.documentElement.offsetHeight
+    );
+    window.parent.postMessage({ type: 'offre-ete-resize', height: h }, '*');
+  }
+
   function trackView() {
     const api = window.OFFRE_ETE_TRACK_API;
     if (!api) return;
