@@ -620,107 +620,6 @@ html.in-iframe #hero { min-height: 0; }
   color: var(--bc-grey); line-height: 1.7;
 }
 
-/* FAQ */
-#faq {
-  padding: 120px 64px;
-  background: var(--bc-dark-2);
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-.faq-intro {
-  max-width: 640px;
-  margin: 0 auto 56px;
-  text-align: center;
-}
-.faq-intro p {
-  font-size: 14px; font-weight: 300; color: var(--bc-grey); line-height: 1.7;
-  margin-top: 16px;
-}
-.faq-root { max-width: 900px; margin: 0 auto 64px; }
-.faq-cat { margin-bottom: 40px; }
-.faq-cat-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 13px; font-weight: 600;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--bc-red); margin-bottom: 16px;
-}
-.faq-item {
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
-  margin-bottom: 8px;
-}
-.faq-q {
-  list-style: none; cursor: pointer;
-  padding: 18px 48px 18px 20px;
-  font-family: 'Oswald', sans-serif;
-  font-size: 15px; font-weight: 500;
-  letter-spacing: 0.02em; position: relative;
-}
-.faq-q::-webkit-details-marker { display: none; }
-.faq-q::after {
-  content: '+'; position: absolute; right: 20px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--bc-red); font-size: 20px; font-weight: 300;
-}
-.faq-item[open] .faq-q::after { content: '−'; }
-.faq-a {
-  padding: 0 20px 18px;
-  font-size: 13px; font-weight: 300; color: var(--bc-grey);
-  line-height: 1.75;
-}
-.faq-a a { color: var(--bc-red); text-decoration: none; }
-.faq-a a:hover { text-decoration: underline; }
-.faq-contact {
-  max-width: 640px; margin: 0 auto;
-  padding: 36px 32px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.03);
-}
-.faq-contact h3 {
-  font-family: 'Oswald', sans-serif;
-  font-size: 20px; font-weight: 600;
-  letter-spacing: 0.04em; margin-bottom: 8px;
-}
-.faq-contact > p {
-  font-size: 13px; color: var(--bc-grey); margin-bottom: 24px; line-height: 1.6;
-}
-.faq-field { margin-bottom: 16px; }
-.faq-field label {
-  display: block; font-size: 11px; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--bc-grey); margin-bottom: 8px;
-}
-.faq-field input,
-.faq-field select,
-.faq-field textarea {
-  width: 100%; background: #000;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: var(--bc-white); font-family: inherit;
-  font-size: 14px; padding: 12px 14px;
-}
-.faq-field textarea { min-height: 120px; resize: vertical; }
-.faq-field input:focus,
-.faq-field select:focus,
-.faq-field textarea:focus {
-  outline: none; border-color: var(--bc-red);
-}
-.faq-hp { position: absolute; left: -9999px; opacity: 0; height: 0; }
-.faq-form-status {
-  font-size: 13px; margin-top: 14px; min-height: 1.2em;
-}
-.faq-form-status--ok { color: #6ee7a0; }
-.faq-form-status--err { color: #ff8a8a; }
-.faq-submit {
-  margin-top: 8px; width: 100%;
-  padding: 16px 24px;
-  background: var(--bc-red); color: var(--bc-white);
-  border: none; font-family: 'Oswald', sans-serif;
-  font-size: 14px; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; cursor: pointer;
-  transition: opacity .25s;
-}
-.faq-submit:hover { opacity: 0.9; }
-.faq-submit:disabled { opacity: 0.55; cursor: wait; }
-
 /* CTA FINAL */
 #cta {
   padding: 160px 64px; text-align: center;
@@ -785,7 +684,7 @@ html.in-iframe #hero { min-height: 0; }
   #hero { padding: 60px 24px 80px; }
   .hero-visual { display: none; }
   .hero-floats, .hero-scroll { display: none; }
-  #disciplines, #offre, #avantages, #salles, #steps, #faq, #cta { padding: 80px 24px; }
+  #disciplines, #offre, #avantages, #salles, #steps, #cta { padding: 80px 24px; }
   .disc-grid { grid-template-columns: repeat(2, 1fr); }
   .offre-grid { grid-template-columns: 1fr; gap: 48px; }
   .avt-grid { grid-template-columns: 1fr; }
@@ -1137,49 +1036,6 @@ html.in-iframe #hero { min-height: 0; }
   </div>
 </section>
 
-<!-- FAQ -->
-<section id="faq">
-  <div class="faq-intro">
-    <div class="s-label reveal" style="justify-content:center">Informations</div>
-    <h2 class="s-title reveal" style="text-align:center">FOIRE AUX<br><em>QUESTIONS</em></h2>
-    <p class="reveal">Réponses aux questions les plus fréquentes sur Boxing Center Toulouse — inspirées de notre <a href="https://boxingcenter.fr/faq/" target="_blank" rel="noopener" style="color:var(--bc-red)">FAQ officielle</a>.</p>
-  </div>
-
-  <div id="faq-root" class="faq-root" aria-live="polite"></div>
-
-  <div class="faq-contact reveal">
-    <h3>Ma question n'apparaît pas ?</h3>
-    <p>Choisissez un sujet, rédigez votre message et nous vous répondrons par email.</p>
-    <form id="faq-contact-form" novalidate>
-      <div class="faq-hp" aria-hidden="true">
-        <label>Ne pas remplir<input type="text" name="_website" tabindex="-1" autocomplete="off"></label>
-      </div>
-      <div class="faq-field">
-        <label for="faq-topic">Votre question concerne</label>
-        <select id="faq-topic" name="topic" required></select>
-      </div>
-      <div class="faq-field">
-        <label for="faq-name">Nom</label>
-        <input id="faq-name" name="name" type="text" required autocomplete="name" maxlength="120">
-      </div>
-      <div class="faq-field">
-        <label for="faq-email">Email</label>
-        <input id="faq-email" name="email" type="email" required autocomplete="email" maxlength="320">
-      </div>
-      <div class="faq-field">
-        <label for="faq-phone">Téléphone (optionnel)</label>
-        <input id="faq-phone" name="phone" type="tel" autocomplete="tel" maxlength="40">
-      </div>
-      <div class="faq-field">
-        <label for="faq-message">Votre message</label>
-        <textarea id="faq-message" name="message" required maxlength="4000" placeholder="Décrivez votre question…"></textarea>
-      </div>
-      <button type="submit" class="faq-submit">Envoyer ma question</button>
-      <p id="faq-form-status" class="faq-form-status" role="status"></p>
-    </form>
-  </div>
-</section>
-
 <!-- CTA FINAL -->
 <section id="cta">
   <div class="cta-glow"></div>
@@ -1207,13 +1063,10 @@ html.in-iframe #hero { min-height: 0; }
 
 <script>
 window.OFFRE_ETE_TRACK_API = 'https://gestion-manager.vercel.app/api/offre-ete/track';
-window.OFFRE_ETE_FAQ_API = 'https://gestion-manager.vercel.app/api/offre-ete/faq-contact';
 </script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="assets/intro.js" data-assets="assets"></script>
-<script src="assets/faq-data.js"></script>
-<script src="assets/faq.js"></script>
 
 <script>
 /* LOADER retiré — intro gants gérée par assets/intro.js */
