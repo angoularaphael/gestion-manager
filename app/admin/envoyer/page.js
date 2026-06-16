@@ -6,6 +6,7 @@ import MobileNavIcon from '../../components/MobileNavIcon';
 import CountryMultiPicker from '../../components/CountryMultiPicker';
 import { filterManagers, listCountries } from '../../../lib/managerCountry';
 import { buildCountriesQuery, formatCountriesLabel } from '../../../lib/countryFilter';
+import { detectActiveRegion } from '../../../lib/languageRegions';
 
 const ENTITY_TYPES = [
   {
@@ -80,8 +81,13 @@ export default function EnvoyerHubPage() {
 
   const countriesLabel = formatCountriesLabel(selectedCountries);
 
+  const activeRegion = useMemo(
+    () => detectActiveRegion(selectedCountries, countries.map((c) => c.name)),
+    [selectedCountries, countries]
+  );
+
   const entityStats = useMemo(() => {
-    const query = buildCountriesQuery(selectedCountries);
+    const query = buildCountriesQuery(selectedCountries, { region: activeRegion || '' });
     return ENTITY_TYPES.map((entity) => {
       const rows = selectedCountries.length
         ? filterManagers(data[entity.key], { countries: selectedCountries })
@@ -97,7 +103,7 @@ export default function EnvoyerHubPage() {
         sendHref,
       };
     });
-  }, [data, selectedCountries]);
+  }, [data, selectedCountries, activeRegion]);
 
   return (
     <div className="envoyer-hub-page">
@@ -105,7 +111,7 @@ export default function EnvoyerHubPage() {
         <div>
           <h1>Envoyer par pays</h1>
           <p className="page-subtitle">
-            Sélectionnez un ou plusieurs pays, puis envoyez un email et/ou WhatsApp aux managers, promoteurs ou entraîneurs concernés.
+            Sélectionnez une zone linguistique ou des pays, puis envoyez le message adapté (reste du monde → anglais).
           </p>
         </div>
       </header>

@@ -11,6 +11,8 @@ import { idsForCountrySend, mergeSendResults, emptySendResult } from '../../../l
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import SendCountryModePanel from '../../components/SendCountryModePanel';
 import CountryMultiPicker from '../../components/CountryMultiPicker';
+import MessageTemplatePicker from '../../components/MessageTemplatePicker';
+import { detectActiveRegion } from '../../../lib/languageRegions';
 import { useCountryFromUrl } from '../../components/useCountryFromUrl';
 
 function PromoteurFilterBar({ search, onSearchChange, selectedCountries, onCountriesChange, countries, showCountry = true }) {
@@ -137,9 +139,14 @@ export default function EnvoyerPromoteursPage() {
     loadPromoteurs();
   }, [loadPromoteurs]);
 
-  useCountryFromUrl({ setMode, setSelectedCountries, setBroadcast });
-
   const countries = useMemo(() => listCountries(promoteurs), [promoteurs]);
+
+  useCountryFromUrl({
+    setMode,
+    setSelectedCountries,
+    setBroadcast,
+    availableCountries: countries,
+  });
 
   const filtered = useMemo(
     () =>
@@ -153,6 +160,11 @@ export default function EnvoyerPromoteursPage() {
 
   const withEmail = useMemo(() => filtered.filter((m) => m.email), [filtered]);
   const withPhone = useMemo(() => filtered.filter((m) => m.telephone), [filtered]);
+
+  const activeRegion = useMemo(
+    () => detectActiveRegion(selectedCountries, countries.map((c) => c.name)),
+    [selectedCountries, countries]
+  );
 
   const selectedPromoteur = promoteurs.find((m) => m.id === selectedId);
   const selectedPromoteurs = useMemo(
@@ -546,6 +558,14 @@ export default function EnvoyerPromoteursPage() {
 
           <section className="card send-card">
             <h2 className="section-title">Message</h2>
+            <MessageTemplatePicker
+              selectedCountries={selectedCountries}
+              activeRegion={activeRegion}
+              onInsert={({ subject: nextSubject, message: nextMessage }) => {
+                setSubject(nextSubject);
+                setMessage(nextMessage);
+              }}
+            />
             {channels.includes('email') && (
               <div className="field">
                 <label htmlFor="subject">Sujet de l&apos;email</label>

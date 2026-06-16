@@ -1,5 +1,11 @@
 'use client';
 
+import LanguageRegionPicker from './LanguageRegionPicker';
+import {
+  detectActiveRegion,
+  resolveCountriesForRegion,
+} from '../../lib/languageRegions';
+
 export default function CountryMultiPicker({
   selected = [],
   onChange,
@@ -7,7 +13,11 @@ export default function CountryMultiPicker({
   id = 'country-multi',
   label = 'Pays',
   hint = 'Un ou plusieurs pays',
+  showLanguageRegions = true,
 }) {
+  const availableNames = countries.map((c) => c.name);
+  const activeRegion = detectActiveRegion(selected, availableNames);
+
   function toggle(name) {
     if (selected.includes(name)) {
       onChange(selected.filter((c) => c !== name));
@@ -24,8 +34,20 @@ export default function CountryMultiPicker({
     onChange([]);
   }
 
+  function selectRegion(regionId) {
+    onChange(resolveCountriesForRegion(availableNames, regionId));
+  }
+
   return (
     <div className="country-multi-picker">
+      {showLanguageRegions && countries.length > 0 ? (
+        <LanguageRegionPicker
+          countries={countries}
+          selectedCountries={selected}
+          onSelectRegion={selectRegion}
+          activeRegion={activeRegion}
+        />
+      ) : null}
       <div className="country-multi-header">
         <label htmlFor={id}>{label}</label>
         {hint ? <span className="muted country-multi-hint">{hint}</span> : null}
