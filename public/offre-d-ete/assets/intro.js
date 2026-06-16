@@ -335,7 +335,12 @@
   }
 
   function spawnLogoParticles() {
-    if (!logoPoints.length && logoSource.complete) sampleLogoPixels(logoSource);
+    if (!logoPoints.length && logoSource.complete) {
+      try {
+        sampleLogoPixels(logoSource);
+      } catch (_) {}
+    }
+    if (!logoPoints.length) return false;
     const shuffled = logoPoints.slice().sort(() => Math.random() - 0.5);
     shuffled.forEach((point) => {
       const angle = Math.random() * Math.PI * 2;
@@ -352,7 +357,11 @@
         settled: false,
       });
     });
+    return true;
   }
+
+  let introFinished = false;
+  let safetyTimer = null;
 
   function trackView() {
     const api = window.OFFRE_ETE_TRACK_API;
@@ -365,10 +374,31 @@
     }).catch(() => {});
   }
 
+  function wakePromoAnimations() {
+    document.body.classList.add('intro-done');
+    const wake = mainSite.querySelectorAll(
+      '.hero-eyebrow, .hero-price, .hero-desc, .hero-actions, .hero-floats, .hero-scroll, .hero-img, .reveal, .reveal-l, .reveal-r'
+    );
+    wake.forEach((el) => {
+      el.style.animation = 'none';
+      void el.offsetHeight;
+      el.style.animation = '';
+      if (el.classList.contains('reveal') || el.classList.contains('reveal-l') || el.classList.contains('reveal-r')) {
+        el.classList.add('vis');
+      }
+    });
+    mainSite.querySelectorAll('.hero-h1 .lni').forEach((el) => {
+      el.style.transform = 'translateY(0)';
+    });
+  }
+
   function finishIntro() {
+    if (introFinished) return;
+    introFinished = true;
+    if (safetyTimer) window.clearTimeout(safetyTimer);
     stage.classList.add('intro-stage--out');
     mainSite.classList.remove('main-site--hidden');
-    mainSite.removeAttribute('hidden');
+    wakePromoAnimations();
     trackView();
     window.setTimeout(() => {
       stage.remove();
@@ -439,11 +469,13 @@
     }
     if (animationPhase === 'text') {
       const textParticles = particles.filter((p) => p.phase === 'text');
-      const settledRatio =
-        textParticles.length === 0
-          ? 0
-          : textParticles.filter((p) => p.settled).length / textParticles.length;
-      if (settledRatio > 0.82) revealLogo();
+      if (!textParticles.length) {
+        revealLogo();
+      } else {
+        const settledRatio =
+          textParticles.filter((p) => p.settled).length / textParticles.length;
+        if (settledRatio > 0.82) revealLogo();
+      }
     }
     requestAnimationFrame(drawParticles);
   }
@@ -525,9 +557,10 @@
       .add(() => {
         animationPhase = 'text';
         particles = particles.filter((p) => p.phase !== 'glitter');
-        spawnLogoParticles();
+        const hasLogoParticles = spawnLogoParticles();
+        if (!hasLogoParticles) window.setTimeout(revealLogo, 400);
       })
-      .to({}, { duration: 3.2 });
+      .to({}, { duration: 2.6, onComplete: revealLogo });
   }
 
   function boot() {
@@ -543,8 +576,14 @@
         setImgSrc(logoImg, path, ASSETS.logoSvg);
       }),
     ])
-      .then(() => startTimeline())
-      .catch(() => startTimeline());
+      .then(() => {
+        safetyTimer = window.setTimeout(finishIntro, 11000);
+        startTimeline();
+      })
+      .catch(() => {
+        safetyTimer = window.setTimeout(finishIntro, 11000);
+        startTimeline();
+      });
   }
 
   if (document.readyState === 'loading') {
