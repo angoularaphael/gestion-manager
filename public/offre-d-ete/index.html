@@ -382,19 +382,22 @@ html.in-iframe #hero { min-height: 0; }
   transition: all .4s var(--transition) .06s;
 }
 .disc-card:hover .disc-sub { opacity: 1; transform: translateY(0); }
-/* Colored bg for each discipline — emplacements réservés (visuels IA à venir) */
-.dc1, .dc2, .dc3, .dc4, .dc5 {
-  background: linear-gradient(145deg, #1c1c1c 0%, #0a0a0a 50%, #222 100%);
+/* Visuels disciplines */
+.dc1 {
+  background: center / cover no-repeat url('assets/disciplines/boxe.png');
 }
-.disc-card-bg::after {
-  content: 'Visuel à venir';
-  position: absolute; inset: 0; z-index: 1;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 400;
-  letter-spacing: 0.28em; text-transform: uppercase;
-  color: rgba(255,255,255,0.32); pointer-events: none;
+.dc2 {
+  background: center / cover no-repeat url('assets/disciplines/muay-thai.png');
 }
-.disc-visual-text { display: none !important; }
+.dc3 {
+  background: center / cover no-repeat url('assets/disciplines/mma.png');
+}
+.dc4 {
+  background: center / cover no-repeat url('assets/disciplines/cross-training.jpg');
+}
+.dc5 {
+  background: center / cover no-repeat url('assets/disciplines/acces-libre.png');
+}
 
 /* OFFRE */
 #offre {
