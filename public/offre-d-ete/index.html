@@ -236,12 +236,18 @@ html.in-iframe #hero { min-height: 0; }
 }
 .btn-ghost:hover { color: var(--bc-red); border-color: var(--bc-red); }
 
-/* Hero visual — emplacement réservé (image à fournir) */
+/* Hero visual */
 .hero-visual {
   position: absolute; right: 0; top: 0; bottom: 0; width: 48%;
   overflow: hidden;
   clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%);
-  background: linear-gradient(145deg, #141414 0%, #0a0a0a 55%, #1a1a1a 100%);
+  background: #0a0a0a;
+}
+.hero-visual-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
 }
 .hero-visual-mask {
   position: absolute; inset: 0; z-index: 1;
@@ -250,16 +256,6 @@ html.in-iframe #hero { min-height: 0; }
     linear-gradient(to top, var(--bc-dark) 0%, transparent 20%);
   pointer-events: none;
 }
-.hero-visual-slot {
-  position: absolute; inset: 12% 8% 12% 16%; z-index: 0;
-  border: 1px dashed rgba(255,255,255,0.22);
-  background: rgba(0,0,0,0.2);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); text-align: center;
-}
-.hero-img { display: none !important; }
 
 .hero-floats {
   position: absolute; z-index: 3;
@@ -618,6 +614,7 @@ html.in-iframe #hero { min-height: 0; }
 .salle-thumb--ramonville { background-image: url('assets/salles/ramonville.png'); }
 .salle-thumb--saint-cyprien { background-image: url('assets/salles/saint-cyprien.png'); }
 .salle-thumb--portet-sur-garonne { background-image: url('assets/salles/portet-sur-garonne.png'); }
+.salle-thumb--etats-unis { background-image: url('assets/salles/etats-unis.png'); }
 .salle-thumb--placeholder {
   border: 1px dashed rgba(255,255,255,0.28);
   display: flex; align-items: center; justify-content: center;
@@ -775,7 +772,7 @@ html.in-iframe #hero { min-height: 0; }
   </div>
 
   <div class="hero-visual" aria-hidden="true">
-    <div class="hero-visual-slot">Visuel à venir</div>
+    <img class="hero-visual-img" src="assets/hero-offre.png" alt="" width="1200" height="1200" decoding="async" />
     <div class="hero-visual-mask"></div>
   </div>
 
@@ -1009,7 +1006,7 @@ html.in-iframe #hero { min-height: 0; }
       <div class="salle-idx">05 / 05</div>
       <span class="salle-name">ÉTATS-UNIS</span>
       <p class="salle-addr">Toulouse<br>Quartier États-Unis</p>
-      <div class="salle-thumb salle-thumb--placeholder" aria-hidden="true">Vignette à venir</div>
+      <div class="salle-thumb salle-thumb--etats-unis" role="img" aria-label="Salle Boxing Center États-Unis"></div>
     </article>
   </div>
 </section>
