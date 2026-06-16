@@ -628,6 +628,11 @@ export default function EnvoyerPage() {
                       <div className="result-stat">
                         <span className="ok">{result.data.whatsapp?.sent ?? 0}</span>
                         <small>WhatsApp envoyés</small>
+                        {(result.data.whatsapp?.queued > 0) && (
+                          <span className="result-detail">
+                            {result.data.whatsapp.queued} en cours sur le bot
+                          </span>
+                        )}
                         {(result.data.whatsapp?.failed > 0 || result.data.whatsapp?.skipped > 0) && (
                           <span className="result-detail">
                             {result.data.whatsapp?.failed} échec(s), {result.data.whatsapp?.skipped} ignoré(s)
