@@ -382,6 +382,8 @@
     window.parent.postMessage({ type: 'offre-ete-resize', height: h }, '*');
   }
 
+  window.offreEteNotifyResize = notifyParentHeight;
+
   function trackView() {
     const api = window.OFFRE_ETE_TRACK_API;
     if (!api) return;
