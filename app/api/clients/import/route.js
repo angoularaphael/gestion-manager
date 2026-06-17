@@ -14,6 +14,8 @@ export async function POST(request) {
     let text = '';
     let filename = '';
 
+    let fields = [];
+
     if (contentType.includes('multipart/form-data')) {
       const form = await request.formData();
       const file = form.get('file');
@@ -24,15 +26,21 @@ export async function POST(request) {
       text = await file.text();
     } else {
       const body = await request.json();
-      text = body.csv || body.text || '';
-      filename = body.filename || '';
+      if (Array.isArray(body.fields) && body.fields.length) {
+        fields = body.fields;
+      } else {
+        text = body.csv || body.text || '';
+        filename = body.filename || '';
+      }
     }
 
-    if (!String(text).trim()) {
-      return NextResponse.json({ error: 'Contenu vide' }, { status: 400 });
+    if (!fields.length) {
+      if (!String(text).trim()) {
+        return NextResponse.json({ error: 'Contenu vide' }, { status: 400 });
+      }
+      fields = parseClientImportFile(text, filename);
     }
 
-    const fields = parseClientImportFile(text, filename);
     if (!fields.length) {
       return NextResponse.json({ error: 'Aucune ligne de données' }, { status: 400 });
     }

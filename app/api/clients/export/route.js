@@ -14,7 +14,7 @@ export async function GET(request) {
   try {
     const clients = await fetchClientsFromDb({ source, salle });
     const csv = clientsToCsv(clients);
-    const filename = `clients-portet-${new Date().toISOString().slice(0, 10)}.csv`;
+    const filename = `clients-${new Date().toISOString().slice(0, 10)}.csv`;
     return new NextResponse(csv, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',

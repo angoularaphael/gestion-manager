@@ -4,12 +4,21 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ActionButton from '../../components/ActionButton';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
+import CampaignBulkHint from '../../components/CampaignBulkHint';
 import WhatsAppBulkHint from '../../components/WhatsAppBulkHint';
 import { parseApiJson } from '../../../lib/apiJson';
 import { clientDisplayName } from '../../../lib/clientDisplay';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
-import { runDualChannelSend } from '../../../lib/sendPageHelpers';
+import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import { useSingleAction } from '../../../lib/useSingleAction';
+
+const EMAIL_CHUNK_SIZE = 30;
+
+function chunkIds(ids, size) {
+  const out = [];
+  for (let i = 0; i < ids.length; i += size) out.push(ids.slice(i, i + size));
+  return out;
+}
 
 export default function EnvoyerClientsPageInner() {
   const searchParams = useSearchParams();
@@ -22,6 +31,8 @@ export default function EnvoyerClientsPageInner() {
   const [channels, setChannels] = useState(['email']);
   const [subject, setSubject] = useState('Message Boxing Center');
   const [message, setMessage] = useState('');
+  const [mode, setMode] = useState('campaign');
+  const [sendProgress, setSendProgress] = useState(null);
   const [result, setResult] = useState(null);
   const { run: runSend, pending: sending } = useSingleAction();
 
@@ -45,6 +56,7 @@ export default function EnvoyerClientsPageInner() {
 
   useEffect(() => {
     if (preselectId && clients.length) {
+      setMode('selection');
       setSelectedIds(new Set([preselectId]));
     }
   }, [preselectId, clients]);
@@ -53,7 +65,7 @@ export default function EnvoyerClientsPageInner() {
     if (!search.trim()) return clients;
     const q = search.trim().toLowerCase();
     return clients.filter((c) => {
-      const blob = [clientDisplayName(c), c.email, c.telephone, c.salle, c.tag]
+      const blob = [clientDisplayName(c), c.email, c.telephone, c.salle]
         .filter(Boolean)
         .join(' ')
         .toLowerCase();
@@ -72,7 +84,46 @@ export default function EnvoyerClientsPageInner() {
     );
   }
 
+  const withEmail = useMemo(() => clients.filter((c) => c.email), [clients]);
+  const withPhone = useMemo(() => clients.filter((c) => c.telephone), [clients]);
+
+  const campaignTargetIds = useMemo(() => {
+    if (channels.includes('email') && channels.includes('whatsapp')) {
+      return clients.filter((c) => c.email || c.telephone).map((c) => c.id);
+    }
+    if (channels.includes('whatsapp')) return withPhone.map((c) => c.id);
+    return withEmail.map((c) => c.id);
+  }, [channels, clients, withEmail, withPhone]);
+
+  function selectAllFiltered() {
+    setSelectedIds(new Set(filtered.map((c) => c.id)));
+  }
+
+  function useCampaignAudience() {
+    setMode('campaign');
+    setSelectedIds(new Set());
+  }
+
+  async function sendCampaignEmailChunks({ message, subject, ids }) {
+    const chunks = chunkIds(ids, EMAIL_CHUNK_SIZE);
+    const data = emptySendResult('clients');
+    for (let i = 0; i < chunks.length; i++) {
+      setSendProgress({ current: i + 1, total: chunks.length, label: 'emails' });
+      const res = await fetch('/api/clients/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_ids: chunks[i], message, subject }),
+      });
+      const batch = await parseApiJson(res);
+      if (!res.ok) throw new Error(batch.error || 'Erreur envoi email');
+      mergeSendResults(data, batch);
+      data.clients = Math.max(data.clients || 0, ids.length);
+    }
+    return data;
+  }
+
   function toggleId(id) {
+    setMode('selection');
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -84,28 +135,119 @@ export default function EnvoyerClientsPageInner() {
   async function send({ testOnly = false } = {}) {
     if (sending || !message.trim() || !channels.length) return;
 
-    if (!testOnly && !selectedIds.size) {
-      setResult({ error: 'Sélectionnez au moins un client' });
+    const isCampaign = mode === 'campaign' && !testOnly;
+    const targetCount = isCampaign ? campaignTargetIds.length : selectedIds.size;
+
+    if (!testOnly && targetCount === 0) {
+      setResult({ error: 'Aucun destinataire pour ce canal' });
       return;
     }
 
     if (!testOnly) {
-      const ok = window.confirm(
-        `Envoyer à ${selectedIds.size} client(s) ?\n\nLe bouton « Test atangana » envoie uniquement au compte de test.`
-      );
+      const channelLabel = channels.includes('email') && channels.includes('whatsapp')
+        ? 'email puis WhatsApp'
+        : channels.includes('whatsapp')
+          ? 'WhatsApp'
+          : 'email';
+      let warn = `Campagne : envoyer à ${targetCount} client(s) (${channelLabel}) ?`;
+      if (isCampaign && channels.includes('whatsapp') && withPhone.length > 12) {
+        warn +=
+          '\n\n⚠ WhatsApp : seuls ~12 numéros/heure partiront. Les autres devront être relancés plus tard ou par email.';
+      }
+      if (isCampaign && channels.length === 1 && channels[0] === 'email') {
+        warn += `\n\nEnvoi par lots de ${EMAIL_CHUNK_SIZE} emails.`;
+      }
+      warn += '\n\n« Test atangana » = compte de test uniquement.';
+      const ok = window.confirm(warn);
       if (!ok) return;
     }
 
     setResult(null);
+    setSendProgress(null);
 
     await runSend(async () => {
+      if (testOnly) {
+        const { data, partial, duplicate, failed } = await runDualChannelSend({
+          channels,
+          payload: { message, subject, channels, test_only: true },
+          entityKey: 'clients',
+          botPath: '/api/send-to-clients',
+          emailPath: '/api/clients/send-email',
+          parseApiJson,
+        });
+        setResult({
+          success: true,
+          partial,
+          duplicate,
+          failed,
+          data,
+          previewHtml: channels.includes('email')
+            ? buildEmailHtml({ subject, body: message, recipientName: 'Client' })
+            : null,
+        });
+        return;
+      }
+
+      if (isCampaign && channels.length === 1 && channels[0] === 'email') {
+        const ids = withEmail.map((c) => c.id);
+        const data = await sendCampaignEmailChunks({ message, subject, ids });
+        setResult({
+          success: true,
+          partial: (data.email?.failed || 0) > 0,
+          data,
+          previewHtml: buildEmailHtml({ subject, body: message, recipientName: 'Client' }),
+        });
+        return;
+      }
+
       const payload = {
         message,
         subject,
         channels,
-        test_only: testOnly,
-        client_ids: testOnly ? undefined : [...selectedIds],
+        test_only: false,
+        ...(isCampaign
+          ? { broadcast: channels.includes('email') ? 'email' : 'phone', client_ids: undefined }
+          : { client_ids: [...selectedIds] }),
       };
+
+      if (isCampaign && channels.includes('email') && channels.includes('whatsapp')) {
+        const emailData = await sendCampaignEmailChunks({
+          message,
+          subject,
+          ids: withEmail.map((c) => c.id),
+        });
+        let waData = emptySendResult('clients');
+        try {
+          const waRes = await fetch('/api/bot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              path: '/api/send-to-clients',
+              body: { ...payload, channels: ['whatsapp'], broadcast: 'phone' },
+            }),
+          });
+          const waJson = await parseApiJson(waRes);
+          if (!waRes.ok) throw new Error(waJson.error || 'Erreur WhatsApp');
+          mergeSendResults(waData, waJson);
+          waData.clients = withPhone.length;
+        } catch (err) {
+          waData.errors.push({ channel: 'whatsapp', error: err.message });
+        }
+        const data = { ...emailData };
+        mergeSendResults(data, waData);
+        data.warnings = [
+          ...(data.warnings || []),
+          ...(waData.warnings || []),
+          'Campagne email complète. WhatsApp soumis aux limites horaires du bot.',
+        ];
+        setResult({
+          success: true,
+          partial: true,
+          data,
+          previewHtml: buildEmailHtml({ subject, body: message, recipientName: 'Client' }),
+        });
+        return;
+      }
 
       const { data, partial, duplicate, failed } = await runDualChannelSend({
         channels,
@@ -126,7 +268,9 @@ export default function EnvoyerClientsPageInner() {
           ? buildEmailHtml({ subject, body: message, recipientName: 'Client' })
           : null,
       });
-    }).catch((e) => setResult({ error: e.message }));
+    })
+      .catch((e) => setResult({ error: e.message }))
+      .finally(() => setSendProgress(null));
   }
 
   return (
@@ -135,7 +279,10 @@ export default function EnvoyerClientsPageInner() {
       <header className="page-header">
         <div>
           <h1>Envoyer aux clients</h1>
-          <p className="page-subtitle">Promotions, infos — email et WhatsApp</p>
+          <p className="page-subtitle">
+            {withEmail.length} avec email · {withPhone.length} avec téléphone · {clients.length}{' '}
+            total
+          </p>
         </div>
       </header>
 
@@ -160,10 +307,54 @@ export default function EnvoyerClientsPageInner() {
               </button>
             </div>
             <WhatsAppBulkHint visible={channels.includes('whatsapp')} />
+            <CampaignBulkHint
+              visible={mode === 'campaign' || channels.includes('whatsapp')}
+              emailCount={withEmail.length}
+              phoneCount={withPhone.length}
+              campaignMode={mode === 'campaign'}
+            />
           </section>
 
           <section className="card send-card">
-            <h2 className="section-title">Clients ({selectedIds.size} sélectionné(s))</h2>
+            <h2 className="section-title">Audience</h2>
+            <div className="channel-pills" style={{ marginBottom: '0.75rem' }}>
+              <button
+                type="button"
+                className={`channel-pill ${mode === 'campaign' ? 'on' : ''}`}
+                onClick={useCampaignAudience}
+              >
+                Campagne — tous ({campaignTargetIds.length})
+              </button>
+              <button
+                type="button"
+                className={`channel-pill ${mode === 'selection' ? 'on' : ''}`}
+                onClick={() => setMode('selection')}
+              >
+                Sélection manuelle
+              </button>
+            </div>
+            {mode === 'campaign' ? (
+              <p className="muted">
+                Tous les clients avec{' '}
+                {channels.includes('whatsapp') && !channels.includes('email')
+                  ? 'un numéro de téléphone'
+                  : channels.includes('email') && !channels.includes('whatsapp')
+                    ? 'une adresse email'
+                    : 'email ou téléphone'}{' '}
+                recevront le message (email en priorité pour une couverture maximale).
+              </p>
+            ) : null}
+          </section>
+
+          <section className="card send-card">
+            <h2 className="section-title">
+              Clients {mode === 'selection' ? `(${selectedIds.size} sélectionné(s))` : ''}
+            </h2>
+            {mode === 'selection' ? (
+              <button type="button" className="btn ghost sm" onClick={selectAllFiltered} style={{ marginBottom: 8 }}>
+                Tout cocher (liste filtrée)
+              </button>
+            ) : null}
             <input
               type="search"
               className="search-input"
@@ -177,18 +368,26 @@ export default function EnvoyerClientsPageInner() {
               <ul className="sidebar-manager-list" style={{ maxHeight: 320, overflow: 'auto' }}>
                 {filtered.map((c) => (
                   <li key={c.id} className="sidebar-manager-item">
-                    <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(c.id)}
-                        onChange={() => toggleId(c.id)}
-                      />
+                    {mode === 'selection' ? (
+                      <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(c.id)}
+                          onChange={() => toggleId(c.id)}
+                        />
+                        <span>
+                          <strong>{clientDisplayName(c)}</strong>
+                          {c.email ? <small>{c.email}</small> : null}
+                          {c.telephone ? <small>{c.telephone}</small> : null}
+                        </span>
+                      </label>
+                    ) : (
                       <span>
                         <strong>{clientDisplayName(c)}</strong>
                         {c.email ? <small>{c.email}</small> : null}
                         {c.telephone ? <small>{c.telephone}</small> : null}
                       </span>
-                    </label>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -227,11 +426,20 @@ export default function EnvoyerClientsPageInner() {
               className="btn"
               onClick={() => send({ testOnly: false })}
               loading={sending}
-              disabled={!message.trim() || !selectedIds.size}
+              disabled={
+                !message.trim() ||
+                (mode === 'selection' ? !selectedIds.size : campaignTargetIds.length === 0)
+              }
             >
-              Envoyer
+              {mode === 'campaign' ? `Lancer la campagne (${campaignTargetIds.length})` : 'Envoyer'}
             </ActionButton>
           </div>
+
+          {sendProgress ? (
+            <p className="muted">
+              Envoi en cours… lot {sendProgress.current}/{sendProgress.total} ({sendProgress.label})
+            </p>
+          ) : null}
 
           {result ? (
             <div className={`result-panel ${result.error ? 'error' : 'success'}`}>
