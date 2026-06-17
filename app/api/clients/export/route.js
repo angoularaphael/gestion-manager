@@ -10,10 +10,9 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const source = searchParams.get('source') || '';
   const salle = searchParams.get('salle') || '';
-  const tag = searchParams.get('tag') || '';
 
   try {
-    const clients = await fetchClientsFromDb({ source, salle, tag });
+    const clients = await fetchClientsFromDb({ source, salle });
     const csv = clientsToCsv(clients);
     const filename = `clients-portet-${new Date().toISOString().slice(0, 10)}.csv`;
     return new NextResponse(csv, {

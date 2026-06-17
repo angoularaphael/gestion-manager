@@ -106,22 +106,6 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
                   Salle
                   <input name="salle" defaultValue={client.salle || ''} />
                 </label>
-                <label>
-                  Ville
-                  <input name="ville" defaultValue={client.ville || ''} />
-                </label>
-                <label>
-                  Tag
-                  <input name="tag" defaultValue={client.tag || ''} />
-                </label>
-                <label>
-                  Métier / intérêt
-                  <input name="metier" defaultValue={client.metier || ''} />
-                </label>
-                <label>
-                  Message chatbot
-                  <textarea name="message" rows={3} defaultValue={client.message || ''} />
-                </label>
                 <div className="form-actions">
                   <ActionButton type="submit" className="btn" loading={saving}>
                     Enregistrer
@@ -134,20 +118,16 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
             ) : (
               <>
                 <dl className="detail-dl">
+                  <dt>Prénom</dt>
+                  <dd>{client.prenom || '—'}</dd>
+                  <dt>Nom</dt>
+                  <dd>{client.nom || '—'}</dd>
                   <dt>Email</dt>
                   <dd>{client.email || '—'}</dd>
                   <dt>Téléphone</dt>
                   <dd>{client.telephone || '—'}</dd>
                   <dt>Salle</dt>
                   <dd>{client.salle || '—'}</dd>
-                  <dt>Tag</dt>
-                  <dd>{client.tag || '—'}</dd>
-                  <dt>Ville</dt>
-                  <dd>{client.ville || '—'}</dd>
-                  <dt>Métier / intérêt</dt>
-                  <dd>{client.metier || '—'}</dd>
-                  <dt>Message</dt>
-                  <dd>{client.message || '—'}</dd>
                 </dl>
                 <div className="form-actions">
                   <button type="button" className="btn secondary" onClick={() => setEditing(true)}>
@@ -162,9 +142,7 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
           </div>
         ) : (
           <div className="manager-sheet-body">
-            <p className="muted">
-              Envoyer une promotion ou une info à ce client par email ou WhatsApp.
-            </p>
+            <p className="muted">Envoyer une promotion ou une info à ce client.</p>
             <Link
               href={`/admin/envoyer-clients?client=${client.id}`}
               className="btn"
@@ -172,9 +150,6 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
             >
               Ouvrir l&apos;envoi pour {clientDisplayName(client)}
             </Link>
-            {!client.email && !client.telephone ? (
-              <p className="form-error">Ce client n&apos;a ni email ni téléphone.</p>
-            ) : null}
           </div>
         )}
       </div>

@@ -10,10 +10,9 @@ export async function GET(request) {
   const search = searchParams.get('search') || '';
   const source = searchParams.get('source') || '';
   const salle = searchParams.get('salle') || '';
-  const tag = searchParams.get('tag') || '';
 
   try {
-    const clients = await fetchClientsFromDb({ search, source, salle, tag });
+    const clients = await fetchClientsFromDb({ search, source, salle });
     return NextResponse.json({ clients });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });

@@ -69,13 +69,16 @@ export async function POST(request) {
 
       const lead = await createChatbotLead({
         sessionId,
-        name: body.name,
+        name: body.name || [body.prenom, body.nom].filter(Boolean).join(' '),
         email: body.email,
         phone: body.phone,
         metier: body.metier,
         message,
         recontactRequested: body.recontactRequested,
         source: body.source || 'portet',
+        prenom: body.prenom,
+        nom: body.nom,
+        salle: body.salle,
       });
 
       if (body.event === 'escalation' && rawMessage) {

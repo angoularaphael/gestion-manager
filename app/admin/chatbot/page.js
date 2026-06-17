@@ -188,22 +188,18 @@ export default function ChatbotAdminPage() {
                   <th>Téléphone</th>
                   <th>Salle</th>
                   <th>Source</th>
-                  <th>Tag / intérêt</th>
                 </tr>
               </thead>
               <tbody>
                 {stats.recentClients.map((client) => (
                   <tr key={client.id}>
-                    <td>{formatDate(client.updated_at || client.registered_at || client.created_at)}</td>
+                    <td>{formatDate(client.updated_at || client.created_at)}</td>
                     <td>{[client.prenom, client.nom].filter(Boolean).join(' ') || client.email || '—'}</td>
                     <td>{client.email || '—'}</td>
                     <td>{client.telephone || '—'}</td>
                     <td>{client.salle || '—'}</td>
                     <td>
                       <span className="badge">{client.source || '—'}</span>
-                    </td>
-                    <td className="chatbot-message-cell">
-                      {client.tag || client.metier || client.message || '—'}
                     </td>
                   </tr>
                 ))}
