@@ -169,31 +169,42 @@ export default function ChatbotAdminPage() {
       </section>
 
       <section className="card">
-        <h2 className="card-title">Derniers événements</h2>
+        <h2 className="card-title">Derniers clients (chatbot &amp; inscriptions)</h2>
         {loading ? (
           <p className="muted">Chargement…</p>
-        ) : !stats?.recentEvents?.length ? (
-          <p className="muted">Aucun événement.</p>
+        ) : !stats?.recentClients?.length ? (
+          <p className="muted">
+            Aucun client en base. Les leads chatbot et les imports CSV apparaissent ici — voir aussi{' '}
+            <a href="/admin/clients">Clients Portet</a>.
+          </p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Type</th>
-                  <th>Question FAQ</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Téléphone</th>
+                  <th>Salle</th>
+                  <th>Source</th>
+                  <th>Tag / intérêt</th>
                 </tr>
               </thead>
               <tbody>
-                {stats.recentEvents.map((ev) => (
-                  <tr key={ev.id}>
-                    <td>{formatDate(ev.created_at)}</td>
+                {stats.recentClients.map((client) => (
+                  <tr key={client.id}>
+                    <td>{formatDate(client.updated_at || client.registered_at || client.created_at)}</td>
+                    <td>{[client.prenom, client.nom].filter(Boolean).join(' ') || client.email || '—'}</td>
+                    <td>{client.email || '—'}</td>
+                    <td>{client.telephone || '—'}</td>
+                    <td>{client.salle || '—'}</td>
                     <td>
-                      <span className={`badge badge--${ev.event_type === 'faq_hit' ? 'blue' : ev.event_type === 'escalation' ? 'gold' : ''}`}>
-                        {ev.event_type}
-                      </span>
+                      <span className="badge">{client.source || '—'}</span>
                     </td>
-                    <td className="chatbot-message-cell">{ev.faq_question || '—'}</td>
+                    <td className="chatbot-message-cell">
+                      {client.tag || client.metier || client.message || '—'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
