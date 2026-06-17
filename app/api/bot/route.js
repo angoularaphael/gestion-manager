@@ -4,7 +4,7 @@ import { getSession } from '../../../lib/session';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function GET(request) {
   const session = await getSession();
