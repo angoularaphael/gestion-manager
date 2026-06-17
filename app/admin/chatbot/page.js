@@ -175,7 +175,7 @@ export default function ChatbotAdminPage() {
         ) : !stats?.recentClients?.length ? (
           <p className="muted">
             Aucun client en base. Les leads chatbot et les imports CSV apparaissent ici — voir aussi{' '}
-            <a href="/admin/clients">Clients Portet</a>.
+            <a href="/admin/clients">Clients</a>.
           </p>
         ) : (
           <div className="table-wrap">

@@ -4,11 +4,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import ActionButton from '../../components/ActionButton';
 import ClientDetailSheet from '../../components/ClientDetailSheet';
+import ListPagination from '../../components/ListPagination';
 import { clientDisplayName } from '../../../lib/clientDisplay';
+import { parseClientImportFile, dedupeClientFieldsForImport } from '../../../lib/clientCsv';
 import { parseApiJson } from '../../../lib/apiJson';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
 const PAGE_SIZE = 10;
+const IMPORT_BATCH_SIZE = 200;
+
+function chunkArray(items, size) {
+  const out = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
 
 const SOURCE_TABS = [
   { id: '', label: 'Tous' },
@@ -107,13 +116,36 @@ export default function ClientsPage() {
     if (!file || importing) return;
     setImportMsg('');
     await runImport(async () => {
-      const form = new FormData();
-      form.append('file', file);
-      const res = await fetch('/api/clients/import', { method: 'POST', body: form });
-      const data = await parseApiJson(res);
-      if (!res.ok) throw new Error(data.error || 'Import échoué');
+      setImportMsg('Lecture du fichier…');
+      const text = await file.text();
+      setImportMsg('Analyse des lignes…');
+      const parsed = parseClientImportFile(text, file.name);
+      const { rows: fields, skippedDuplicates: fileDupes } = dedupeClientFieldsForImport(parsed);
+      if (!fields.length) throw new Error('Aucune ligne valide après dédoublonnage');
+
+      const batches = chunkArray(fields, IMPORT_BATCH_SIZE);
+      const totals = { inserted: 0, updated: 0, skipped: 0, duplicates: fileDupes, errors: 0 };
+
+      for (let i = 0; i < batches.length; i++) {
+        setImportMsg(`Import en cours… lot ${i + 1}/${batches.length}`);
+        const res = await fetch('/api/clients/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields: batches[i] }),
+        });
+        const data = await parseApiJson(res);
+        if (!res.ok) throw new Error(data.error || 'Import échoué');
+        totals.inserted += data.inserted || 0;
+        totals.updated += data.updated || 0;
+        totals.skipped += data.skipped || 0;
+        totals.duplicates += data.duplicates || 0;
+        totals.errors += data.errors?.length || 0;
+      }
+
+      const errNote = totals.errors ? `, ${totals.errors} erreur(s)` : '';
+      const dupNote = totals.duplicates ? `, ${totals.duplicates} doublon(s) ignoré(s)` : '';
       setImportMsg(
-        `Import terminé : ${data.inserted} ajouté(s), ${data.updated} mis à jour, ${data.skipped} ignoré(s).`
+        `Import terminé : ${totals.inserted} ajouté(s), ${totals.skipped} ignoré(s)${dupNote}${errNote}.`
       );
       await loadClients();
       if (fileRef.current) fileRef.current.value = '';
@@ -132,9 +164,9 @@ export default function ClientsPage() {
     <div className="managers-page clients-page">
       <header className="page-header managers-page-header">
         <div>
-          <h1>Clients Portet</h1>
+          <h1>Clients</h1>
           <p className="page-subtitle">
-            Séances d&apos;essai, chatbot site Portet — pagination {PAGE_SIZE} par page
+            Séances d&apos;essai, chatbot, imports — pagination {PAGE_SIZE} par page
           </p>
         </div>
         <div className="header-actions">
@@ -174,7 +206,7 @@ export default function ClientsPage() {
         <div className="alert-banner err">
           <strong>Erreur</strong>
           <p>{error}</p>
-          <p className="muted">Appliquez la migration Supabase <code>009_portet_clients.sql</code>.</p>
+          <p className="muted">Appliquez la migration Supabase <code>009_portet_clients.sql</code> si la table est absente.</p>
         </div>
       ) : null}
 
@@ -254,25 +286,13 @@ export default function ClientsPage() {
             </div>
 
             <div className="pagination-bar">
-              <button
-                type="button"
-                className="btn ghost sm"
-                disabled={safePage <= 0}
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-              >
-                Précédent
-              </button>
-              <span className="muted">
-                Page {safePage + 1} / {totalPages}
-              </span>
-              <button
-                type="button"
-                className="btn ghost sm"
-                disabled={safePage >= totalPages - 1}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Suivant
-              </button>
+              <ListPagination
+                page={safePage}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                pageSize={PAGE_SIZE}
+                onPageChange={setPage}
+              />
             </div>
           </>
         )}
