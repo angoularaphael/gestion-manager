@@ -4,7 +4,9 @@
     "app/api/bot/route.js": {
       "maxDuration": 120
     },
-    "app/api/managers/send-email/route.js": {
+    "app/api/clients/import/route.js": {
+      "maxDuration": 120
+    },
       "maxDuration": 60
     },
     "app/api/promoteurs/send-email/route.js": {
