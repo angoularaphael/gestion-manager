@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { importClientFieldsList } from '../../../lib/clients';
-import { parseClientImportFile } from '../../../lib/clientCsv';
-import { getSession } from '../../../lib/session';
+import { importClientFieldsList } from '../../../../lib/clients';
+import { parseClientImportFile } from '../../../../lib/clientCsv';
+import { getSession } from '../../../../lib/session';
 
 export const maxDuration = 120;
 
