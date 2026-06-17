@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { fetchClientsFromDb } from '../../../lib/clients';
-import { clientsToCsv } from '../../../lib/clientCsv';
-import { getSession } from '../../../lib/session';
+import { fetchClientsFromDb } from '../../../../lib/clients';
+import { clientsToCsv } from '../../../../lib/clientCsv';
+import { getSession } from '../../../../lib/session';
 
 export async function GET(request) {
   const session = await getSession();
