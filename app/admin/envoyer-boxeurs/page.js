@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
+import EmailPreviewFrame from '../../components/EmailPreviewFrame';
 import { parseApiJson } from '../../../lib/apiJson';
 import { useSingleAction } from '../../../lib/useSingleAction';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
@@ -129,7 +130,7 @@ function SendSidebar({ mode, broadcast, boxeurs, audienceSummary, previewHtml, s
             <h3>Aperçu email</h3>
           </div>
           <div className="preview-frame">
-            <iframe title="Aperçu email" srcDoc={previewHtml} sandbox="" />
+            <EmailPreviewFrame html={previewHtml} title="Aperçu email" />
           </div>
         </section>
       )}
@@ -721,7 +722,7 @@ export default function EnvoyerBoxeursPage() {
                     <div className="sent-preview">
                       <h4>Aperçu de l&apos;email envoyé</h4>
                       <div className="preview-frame sent-preview-frame">
-                        <iframe title="Email envoyé" srcDoc={result.previewHtml} sandbox="" />
+                        <EmailPreviewFrame html={result.previewHtml} title="Email envoyé" minHeight={320} />
                       </div>
                     </div>
                   )}
