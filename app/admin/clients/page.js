@@ -27,6 +27,70 @@ const SOURCE_TABS = [
   { id: 'manual', label: 'Manuel' },
 ];
 
+const CONTACT_FILTERS = [
+  { id: '', label: 'Tous contacts' },
+  { id: 'email', label: 'Avec email' },
+  { id: 'phone', label: 'Avec téléphone' },
+  { id: 'both', label: 'Email + tél.' },
+  { id: 'no_email', label: 'Sans email' },
+  { id: 'no_phone', label: 'Sans téléphone' },
+];
+
+function compareText(a, b, { numeric = false, emptyLast = true } = {}) {
+  const av = String(a || '').trim();
+  const bv = String(b || '').trim();
+  if (!av && !bv) return 0;
+  if (!av) return emptyLast ? 1 : -1;
+  if (!bv) return emptyLast ? -1 : 1;
+  return av.localeCompare(bv, 'fr', { sensitivity: 'base', numeric });
+}
+
+function sortClients(rows, sortKey) {
+  const sorted = [...rows];
+  sorted.sort((a, b) => {
+    switch (sortKey) {
+      case 'name_asc':
+        return compareText(clientDisplayName(a), clientDisplayName(b));
+      case 'email_asc':
+        return compareText(a.email, b.email, { numeric: true });
+      case 'email_desc':
+        return compareText(b.email, a.email, { numeric: true });
+      case 'phone_asc':
+        return compareText(a.telephone, b.telephone, { numeric: true });
+      case 'phone_desc':
+        return compareText(b.telephone, a.telephone, { numeric: true });
+      case 'recent':
+      default:
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    }
+  });
+  return sorted;
+}
+
+function nextSortForColumn(column, currentSort) {
+  if (column === 'email') {
+    if (currentSort === 'email_asc') return 'email_desc';
+    return 'email_asc';
+  }
+  if (column === 'phone') {
+    if (currentSort === 'phone_asc') return 'phone_desc';
+    return 'phone_asc';
+  }
+  return currentSort;
+}
+
+function sortIndicator(sortKey, column) {
+  if (column === 'email') {
+    if (sortKey === 'email_asc') return ' ↑';
+    if (sortKey === 'email_desc') return ' ↓';
+  }
+  if (column === 'phone') {
+    if (sortKey === 'phone_asc') return ' ↑';
+    if (sortKey === 'phone_desc') return ' ↓';
+  }
+  return '';
+}
+
 function formatDate(iso) {
   if (!iso) return '—';
   try {
@@ -47,6 +111,8 @@ export default function ClientsPage() {
   const [search, setSearch] = useState('');
   const [sourceTab, setSourceTab] = useState('');
   const [salle, setSalle] = useState('');
+  const [contactFilter, setContactFilter] = useState('');
+  const [sortKey, setSortKey] = useState('recent');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
   const [importMsg, setImportMsg] = useState('');
@@ -78,7 +144,17 @@ export default function ClientsPage() {
 
   useEffect(() => {
     setPage(0);
-  }, [search, sourceTab, salle]);
+  }, [search, sourceTab, salle, contactFilter, sortKey]);
+
+  const contactStats = useMemo(() => {
+    let withEmail = 0;
+    let withPhone = 0;
+    for (const c of clients) {
+      if (c.email) withEmail++;
+      if (c.telephone) withPhone++;
+    }
+    return { withEmail, withPhone };
+  }, [clients]);
 
   const salles = useMemo(() => {
     const set = new Set();
@@ -92,6 +168,11 @@ export default function ClientsPage() {
     let rows = clients;
     if (sourceTab) rows = rows.filter((c) => c.source === sourceTab);
     if (salle) rows = rows.filter((c) => (c.salle || '').toLowerCase().includes(salle.toLowerCase()));
+    if (contactFilter === 'email') rows = rows.filter((c) => c.email);
+    if (contactFilter === 'phone') rows = rows.filter((c) => c.telephone);
+    if (contactFilter === 'both') rows = rows.filter((c) => c.email && c.telephone);
+    if (contactFilter === 'no_email') rows = rows.filter((c) => !c.email);
+    if (contactFilter === 'no_phone') rows = rows.filter((c) => !c.telephone);
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       rows = rows.filter((c) => {
@@ -102,8 +183,8 @@ export default function ClientsPage() {
         return blob.includes(q);
       });
     }
-    return rows;
-  }, [clients, sourceTab, salle, search]);
+    return sortClients(rows, sortKey);
+  }, [clients, sourceTab, salle, contactFilter, search, sortKey]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);
@@ -199,6 +280,14 @@ export default function ClientsPage() {
             <span>{filtered.length}</span>
             <small>Affichés</small>
           </div>
+          <div className="mini-stat">
+            <span>{contactStats.withEmail}</span>
+            <small>Avec email</small>
+          </div>
+          <div className="mini-stat">
+            <span>{contactStats.withPhone}</span>
+            <small>Avec tél.</small>
+          </div>
         </div>
       </header>
 
@@ -228,6 +317,27 @@ export default function ClientsPage() {
             </option>
           ))}
         </select>
+        <select value={sortKey} onChange={(e) => setSortKey(e.target.value)} className="search-input">
+          <option value="recent">Tri : plus récents</option>
+          <option value="name_asc">Tri : nom A→Z</option>
+          <option value="email_asc">Tri : email A→Z</option>
+          <option value="email_desc">Tri : email Z→A</option>
+          <option value="phone_asc">Tri : téléphone A→Z</option>
+          <option value="phone_desc">Tri : téléphone Z→A</option>
+        </select>
+      </div>
+
+      <div className="channel-pills" style={{ marginBottom: '0.75rem' }}>
+        {CONTACT_FILTERS.map((tab) => (
+          <button
+            key={tab.id || 'all-contacts'}
+            type="button"
+            className={`channel-pill ${contactFilter === tab.id ? 'on' : ''}`}
+            onClick={() => setContactFilter(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       <div className="channel-pills" style={{ marginBottom: '1rem' }}>
@@ -255,8 +365,24 @@ export default function ClientsPage() {
                 <thead>
                   <tr>
                     <th>Nom</th>
-                    <th>Email</th>
-                    <th>Téléphone</th>
+                    <th>
+                      <button
+                        type="button"
+                        className="table-sort-btn"
+                        onClick={() => setSortKey((k) => nextSortForColumn('email', k))}
+                      >
+                        Email{sortIndicator(sortKey, 'email')}
+                      </button>
+                    </th>
+                    <th>
+                      <button
+                        type="button"
+                        className="table-sort-btn"
+                        onClick={() => setSortKey((k) => nextSortForColumn('phone', k))}
+                      >
+                        Téléphone{sortIndicator(sortKey, 'phone')}
+                      </button>
+                    </th>
                     <th>Salle</th>
                     <th>Source</th>
                     <th>Ajouté</th>

@@ -1796,6 +1796,28 @@ th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; colo
   font-size: 0.8rem;
 }
 
+.table-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.table-sort-btn:hover {
+  color: var(--blue, #2563eb);
+}
+
+.data-table th .table-sort-btn {
+  white-space: nowrap;
+}
+
 html.manager-sheet-open,
 html.manager-sheet-open body {
   overflow: hidden;
