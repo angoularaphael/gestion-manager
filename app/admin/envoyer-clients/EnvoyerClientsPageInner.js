@@ -7,12 +7,14 @@ import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import CampaignBulkHint from '../../components/CampaignBulkHint';
 import WhatsAppBulkHint from '../../components/WhatsAppBulkHint';
 import { parseApiJson } from '../../../lib/apiJson';
-import { clientDisplayName } from '../../../lib/clientDisplay';
+import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
+import { getOffreEteClientCampaignTemplate } from '../../../lib/offreEteCampaign';
 import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
 const EMAIL_CHUNK_SIZE = 30;
+const OFFRE_ETE_CAMPAIGN = getOffreEteClientCampaignTemplate();
 
 function chunkIds(ids, size) {
   const out = [];
@@ -29,8 +31,8 @@ export default function EnvoyerClientsPageInner() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [channels, setChannels] = useState(['email']);
-  const [subject, setSubject] = useState('Message Boxing Center');
-  const [message, setMessage] = useState('');
+  const [subject, setSubject] = useState(OFFRE_ETE_CAMPAIGN.subject);
+  const [message, setMessage] = useState(OFFRE_ETE_CAMPAIGN.message);
   const [mode, setMode] = useState('campaign');
   const [sendProgress, setSendProgress] = useState(null);
   const [result, setResult] = useState(null);
@@ -65,7 +67,7 @@ export default function EnvoyerClientsPageInner() {
     if (!search.trim()) return clients;
     const q = search.trim().toLowerCase();
     return clients.filter((c) => {
-      const blob = [clientDisplayName(c), c.email, c.telephone, c.salle]
+      const blob = [clientDisplayName(c), c.email, formatClientPhone(c.telephone), c.salle]
         .filter(Boolean)
         .join(' ')
         .toLowerCase();
@@ -378,14 +380,14 @@ export default function EnvoyerClientsPageInner() {
                         <span>
                           <strong>{clientDisplayName(c)}</strong>
                           {c.email ? <small>{c.email}</small> : null}
-                          {c.telephone ? <small>{c.telephone}</small> : null}
+                          {c.telephone ? <small>{formatClientPhone(c.telephone)}</small> : null}
                         </span>
                       </label>
                     ) : (
                       <span>
                         <strong>{clientDisplayName(c)}</strong>
                         {c.email ? <small>{c.email}</small> : null}
-                        {c.telephone ? <small>{c.telephone}</small> : null}
+                        {c.telephone ? <small>{formatClientPhone(c.telephone)}</small> : null}
                       </span>
                     )}
                   </li>
@@ -396,6 +398,25 @@ export default function EnvoyerClientsPageInner() {
 
           <section className="card send-card">
             <h2 className="section-title">Message</h2>
+            <div className="message-template-picker">
+              <div className="message-template-header">
+                <strong>Modèle Offre Été 2026</strong>
+                <span className="muted">Prérempli pour la campagne clients</span>
+              </div>
+              <div className="message-template-actions">
+                <button
+                  type="button"
+                  className="btn ghost sm is-suggested"
+                  onClick={() => {
+                    const t = getOffreEteClientCampaignTemplate();
+                    setSubject(t.subject);
+                    setMessage(t.message);
+                  }}
+                >
+                  Réinsérer le modèle
+                </button>
+              </div>
+            </div>
             <label>
               Objet email
               <input

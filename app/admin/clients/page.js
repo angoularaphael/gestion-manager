@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ActionButton from '../../components/ActionButton';
 import ClientDetailSheet from '../../components/ClientDetailSheet';
 import ListPagination from '../../components/ListPagination';
-import { clientDisplayName } from '../../../lib/clientDisplay';
+import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { parseClientImportFile, dedupeClientFieldsForImport } from '../../../lib/clientCsv';
 import { BOXING_CENTER_SALLES, matchClientSalle } from '../../../lib/boxingCenterSalles';
 import { parseApiJson } from '../../../lib/apiJson';
@@ -400,7 +400,7 @@ export default function ClientsPage() {
                     >
                       <td>{clientDisplayName(client)}</td>
                       <td>{client.email || '—'}</td>
-                      <td>{client.telephone || '—'}</td>
+                      <td>{formatClientPhone(client.telephone) || '—'}</td>
                       <td>{client.salle || '—'}</td>
                       <td>
                         <span className={`badge badge--${client.source === 'chatbot' ? 'blue' : ''}`}>

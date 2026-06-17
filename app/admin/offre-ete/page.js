@@ -108,6 +108,13 @@ export default function OffreEteAdminPage() {
         <h2 className="card-title">Liens utiles</h2>
         <dl className="offre-ete-dl">
           <div>
+            <dt>Campagne clients</dt>
+            <dd>
+              <a href="/admin/envoyer-clients">Envoyer aux clients</a>
+              <span className="muted"> — modèle Offre Été prérempli</span>
+            </dd>
+          </div>
+          <div>
             <dt>Landing page (public)</dt>
             <dd>
               <a href={OFFRE_ETE_LANDING_URL} target="_blank" rel="noopener noreferrer">
