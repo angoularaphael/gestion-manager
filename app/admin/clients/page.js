@@ -14,6 +14,7 @@ const SOURCE_TABS = [
   { id: '', label: 'Tous' },
   { id: 'chatbot', label: 'Chatbot' },
   { id: 'csv', label: 'Import CSV' },
+  { id: 'xls', label: 'Membres XLS' },
   { id: 'manual', label: 'Manuel' },
 ];
 
@@ -85,7 +86,7 @@ export default function ClientsPage() {
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       rows = rows.filter((c) => {
-        const blob = [c.prenom, c.nom, c.email, c.telephone, c.salle, c.ville, c.tag]
+        const blob = [c.prenom, c.nom, c.email, c.telephone, c.salle]
           .filter(Boolean)
           .join(' ')
           .toLowerCase();
@@ -144,11 +145,11 @@ export default function ClientsPage() {
             Exporter CSV
           </button>
           <label className="btn secondary" style={{ cursor: 'pointer' }}>
-            {importing ? 'Import…' : 'Importer CSV'}
+            {importing ? 'Import…' : 'Importer CSV / XLS'}
             <input
               ref={fileRef}
               type="file"
-              accept=".csv,text/csv"
+              accept=".csv,.xls,text/csv,application/vnd.ms-excel"
               hidden
               onChange={(e) => handleImport(e.target.files?.[0])}
             />
@@ -182,7 +183,7 @@ export default function ClientsPage() {
       <div className="filter-bar filter-bar-stack">
         <input
           type="search"
-          placeholder="Rechercher nom, email, salle, tag…"
+          placeholder="Rechercher nom, email, salle…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
@@ -225,9 +226,8 @@ export default function ClientsPage() {
                     <th>Email</th>
                     <th>Téléphone</th>
                     <th>Salle</th>
-                    <th>Tag</th>
                     <th>Source</th>
-                    <th>Inscrit</th>
+                    <th>Ajouté</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -241,13 +241,12 @@ export default function ClientsPage() {
                       <td>{client.email || '—'}</td>
                       <td>{client.telephone || '—'}</td>
                       <td>{client.salle || '—'}</td>
-                      <td>{client.tag || '—'}</td>
                       <td>
                         <span className={`badge badge--${client.source === 'chatbot' ? 'blue' : ''}`}>
                           {client.source}
                         </span>
                       </td>
-                      <td>{formatDate(client.registered_at || client.created_at)}</td>
+                      <td>{formatDate(client.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { importClientsFromCsvRows } from '../../../lib/clients';
-import { parseClientCsv } from '../../../lib/clientCsv';
+import { importClientFieldsList } from '../../../lib/clients';
+import { parseClientImportFile } from '../../../lib/clientCsv';
 import { getSession } from '../../../lib/session';
 
 export const maxDuration = 120;
@@ -12,30 +12,33 @@ export async function POST(request) {
   try {
     const contentType = request.headers.get('content-type') || '';
     let text = '';
+    let filename = '';
 
     if (contentType.includes('multipart/form-data')) {
       const form = await request.formData();
       const file = form.get('file');
       if (!file || typeof file.text !== 'function') {
-        return NextResponse.json({ error: 'Fichier CSV requis' }, { status: 400 });
+        return NextResponse.json({ error: 'Fichier CSV ou XLS requis' }, { status: 400 });
       }
+      filename = file.name || '';
       text = await file.text();
     } else {
       const body = await request.json();
       text = body.csv || body.text || '';
+      filename = body.filename || '';
     }
 
     if (!String(text).trim()) {
-      return NextResponse.json({ error: 'Contenu CSV vide' }, { status: 400 });
+      return NextResponse.json({ error: 'Contenu vide' }, { status: 400 });
     }
 
-    const rows = parseClientCsv(text);
-    if (!rows.length) {
-      return NextResponse.json({ error: 'Aucune ligne de données dans le CSV' }, { status: 400 });
+    const fields = parseClientImportFile(text, filename);
+    if (!fields.length) {
+      return NextResponse.json({ error: 'Aucune ligne de données' }, { status: 400 });
     }
 
-    const stats = await importClientsFromCsvRows(rows);
-    return NextResponse.json({ success: true, totalRows: rows.length, ...stats });
+    const stats = await importClientFieldsList(fields);
+    return NextResponse.json({ success: true, totalRows: fields.length, ...stats });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
