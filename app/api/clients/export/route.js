@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchClientsFromDb } from '../../../../lib/clients';
+import { matchClientSalle } from '../../../../lib/boxingCenterSalles';
 import { clientsToCsv } from '../../../../lib/clientCsv';
 import { getSession } from '../../../../lib/session';
 
@@ -12,7 +13,8 @@ export async function GET(request) {
   const salle = searchParams.get('salle') || '';
 
   try {
-    const clients = await fetchClientsFromDb({ source, salle });
+    let clients = await fetchClientsFromDb({ source });
+    if (salle) clients = clients.filter((c) => matchClientSalle(c.salle, salle));
     const csv = clientsToCsv(clients);
     const filename = `clients-${new Date().toISOString().slice(0, 10)}.csv`;
     return new NextResponse(csv, {

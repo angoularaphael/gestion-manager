@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { parseApiJson } from '../../lib/apiJson';
 import { clientDisplayName } from '../../lib/clientDisplay';
+import { BOXING_CENTER_SALLES } from '../../lib/boxingCenterSalles';
 import { useSingleAction } from '../../lib/useSingleAction';
 import ActionButton from './ActionButton';
 
@@ -104,7 +105,14 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
                 </label>
                 <label>
                   Salle
-                  <input name="salle" defaultValue={client.salle || ''} />
+                  <select name="salle" defaultValue={client.salle || ''} className="search-input">
+                    <option value="">—</option>
+                    {BOXING_CENTER_SALLES.map((s) => (
+                      <option key={s.id} value={s.label}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <div className="form-actions">
                   <ActionButton type="submit" className="btn" loading={saving}>

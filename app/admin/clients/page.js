@@ -7,6 +7,7 @@ import ClientDetailSheet from '../../components/ClientDetailSheet';
 import ListPagination from '../../components/ListPagination';
 import { clientDisplayName } from '../../../lib/clientDisplay';
 import { parseClientImportFile, dedupeClientFieldsForImport } from '../../../lib/clientCsv';
+import { BOXING_CENTER_SALLES, matchClientSalle } from '../../../lib/boxingCenterSalles';
 import { parseApiJson } from '../../../lib/apiJson';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
@@ -148,18 +149,12 @@ export default function ClientsPage() {
     setPage(0);
   }, [search, sourceTab, salle, contactFilter, sortKey]);
 
-  const salles = useMemo(() => {
-    const set = new Set();
-    for (const c of clients) {
-      if (c.salle?.trim()) set.add(c.salle.trim());
-    }
-    return [...set].sort((a, b) => a.localeCompare(b, 'fr'));
-  }, [clients]);
+  const salles = BOXING_CENTER_SALLES;
 
   const filtered = useMemo(() => {
     let rows = clients;
     if (sourceTab) rows = rows.filter((c) => c.source === sourceTab);
-    if (salle) rows = rows.filter((c) => (c.salle || '').toLowerCase().includes(salle.toLowerCase()));
+    if (salle) rows = rows.filter((c) => matchClientSalle(c.salle, salle));
     if (contactFilter === 'email') rows = rows.filter((c) => c.email);
     if (contactFilter === 'phone') rows = rows.filter((c) => c.telephone);
     if (contactFilter === 'both') rows = rows.filter((c) => c.email && c.telephone);
@@ -320,8 +315,8 @@ export default function ClientsPage() {
         <select value={salle} onChange={(e) => setSalle(e.target.value)} className="search-input">
           <option value="">Toutes les salles</option>
           {salles.map((s) => (
-            <option key={s} value={s}>
-              {s}
+            <option key={s.id} value={s.id}>
+              {s.label}
             </option>
           ))}
         </select>

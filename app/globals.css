@@ -2473,9 +2473,17 @@ html.manager-sheet-open body {
 @media (max-width: 767px) {
   .header-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
     width: 100%;
+  }
+
+  .clients-page .channel-pills {
+    flex-wrap: wrap;
+  }
+
+  .clients-page .filter-bar-stack .search-input {
+    min-width: 0;
   }
 
   .mini-stat {
