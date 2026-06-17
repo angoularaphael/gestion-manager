@@ -3,27 +3,40 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { BOXING_CENTER_CONTACT_EMAIL, BOXING_CENTER_SITE } from '../../lib/site';
+import { BOXING_CENTER_SALLES } from '../../lib/boxingCenterSalles';
 
-const SALLES = [
-  {
-    name: 'Portet-sur-Garonne',
-    tag: 'Salle phare',
-    desc: '800 m², ring olympique, cage MMA — la plus grande du groupe.',
-    href: 'https://boxingcenterportet.fr/',
-  },
-  {
-    name: 'Ramonville',
-    tag: 'Sud Toulouse',
-    desc: 'Boxe, pieds-poings et cross training au cœur de la métropole.',
-    href: `${BOXING_CENTER_SITE}salles/`,
-  },
-  {
-    name: 'Les Minimes',
+const SALLE_DETAILS = {
+  minimes: {
     tag: 'Centre-ville',
     desc: 'Ambiance club, coachs diplômés, cours tous niveaux.',
     href: `${BOXING_CENTER_SITE}salles/`,
   },
-];
+  ramonville: {
+    tag: 'Sud Toulouse',
+    desc: 'Boxe, pieds-poings et cross training au cœur de la métropole.',
+    href: `${BOXING_CENTER_SITE}salles/`,
+  },
+  'saint-cyprien': {
+    tag: 'Toulouse centre',
+    desc: 'Cours collectifs et libre pratique à deux pas du centre-ville.',
+    href: `${BOXING_CENTER_SITE}salles/`,
+  },
+  portet: {
+    tag: 'Salle phare',
+    desc: '800 m², ring olympique, cage MMA — la plus grande du groupe.',
+    href: 'https://boxingcenterportet.fr/',
+  },
+  'etats-unis': {
+    tag: 'Quartier États-Unis',
+    desc: 'Boxe, MMA et préparation physique dans le nord-est toulousain.',
+    href: `${BOXING_CENTER_SITE}salles/`,
+  },
+};
+
+const SALLES = BOXING_CENTER_SALLES.map((s) => ({
+  name: s.label,
+  ...SALLE_DETAILS[s.id],
+}));
 
 const BENEFITS = [
   'Accès illimité à toutes les salles Boxing Center',
@@ -187,7 +200,7 @@ export default function OffreEteLanding() {
           <Reveal>
             <p className="oe-eyebrow">Nos salles</p>
             <h2 className="oe-section-title">
-              3 clubs, <span className="oe-tint">un seul abonnement</span>
+              5 clubs, <span className="oe-tint">un seul abonnement</span>
             </h2>
             <p className="oe-section-lead">
               L&apos;offre Été vous donne accès à l&apos;ensemble du réseau Boxing Center en Occitanie.
