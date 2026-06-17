@@ -106,6 +106,7 @@ function formatDate(iso) {
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
+  const [dbStats, setDbStats] = useState({ total: 0, withEmail: 0, withPhone: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -130,6 +131,7 @@ export default function ClientsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
       setClients(data.clients || []);
+      setDbStats(data.stats || { total: data.clients?.length || 0, withEmail: 0, withPhone: 0 });
     } catch (e) {
       setError(e.message);
     } finally {
@@ -145,16 +147,6 @@ export default function ClientsPage() {
   useEffect(() => {
     setPage(0);
   }, [search, sourceTab, salle, contactFilter, sortKey]);
-
-  const contactStats = useMemo(() => {
-    let withEmail = 0;
-    let withPhone = 0;
-    for (const c of clients) {
-      if (c.email) withEmail++;
-      if (c.telephone) withPhone++;
-    }
-    return { withEmail, withPhone };
-  }, [clients]);
 
   const salles = useMemo(() => {
     const set = new Set();
@@ -185,6 +177,16 @@ export default function ClientsPage() {
     }
     return sortClients(rows, sortKey);
   }, [clients, sourceTab, salle, contactFilter, search, sortKey]);
+
+  const contactStats = useMemo(() => {
+    let withEmail = 0;
+    let withPhone = 0;
+    for (const c of filtered) {
+      if (c.email) withEmail++;
+      if (c.telephone) withPhone++;
+    }
+    return { withEmail, withPhone };
+  }, [filtered]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages - 1);
@@ -273,21 +275,27 @@ export default function ClientsPage() {
         </div>
         <div className="header-stats">
           <div className="mini-stat">
-            <span>{clients.length}</span>
-            <small>Total</small>
+            <span>{dbStats.total}</span>
+            <small>Total base</small>
           </div>
           <div className="mini-stat">
             <span>{filtered.length}</span>
             <small>Affichés</small>
           </div>
           <div className="mini-stat">
-            <span>{contactStats.withEmail}</span>
-            <small>Avec email</small>
+            <span>{dbStats.withEmail}</span>
+            <small>Email (base)</small>
           </div>
           <div className="mini-stat">
-            <span>{contactStats.withPhone}</span>
-            <small>Avec tél.</small>
+            <span>{dbStats.withPhone}</span>
+            <small>Tél. (base)</small>
           </div>
+          {contactFilter || sourceTab || salle || search.trim() ? (
+            <div className="mini-stat">
+              <span>{contactStats.withEmail}</span>
+              <small>Email filtrés</small>
+            </div>
+          ) : null}
         </div>
       </header>
 
@@ -355,7 +363,7 @@ export default function ClientsPage() {
 
       <section className="card">
         {loading ? (
-          <p className="muted">Chargement…</p>
+          <p className="muted">Chargement de tous les clients… (quelques secondes si la base est grande)</p>
         ) : !paged.length ? (
           <p className="muted">Aucun client. Importez le CSV ou attendez les leads chatbot.</p>
         ) : (

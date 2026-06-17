@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClientInDb, fetchClientsFromDb } from '../../../lib/clients';
+import { createClientInDb, fetchClientStatsFromDb, fetchClientsFromDb } from '../../../lib/clients';
 import { getSession } from '../../../lib/session';
 
 export async function GET(request) {
@@ -12,8 +12,11 @@ export async function GET(request) {
   const salle = searchParams.get('salle') || '';
 
   try {
-    const clients = await fetchClientsFromDb({ search, source, salle });
-    return NextResponse.json({ clients });
+    const [clients, stats] = await Promise.all([
+      fetchClientsFromDb({ search, source, salle }),
+      fetchClientStatsFromDb(),
+    ]);
+    return NextResponse.json({ clients, stats });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
