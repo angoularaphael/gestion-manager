@@ -1,4 +1,4 @@
-const CACHE = 'boxing-center-v1';
+const CACHE = 'boxing-center-v2';
 const ASSETS = ['/', '/logo.png', '/favicon.png', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -31,6 +31,12 @@ self.addEventListener('fetch', (event) => {
         }
         return res;
       })
-      .catch(() => caches.match(event.request).then((hit) => hit || caches.match('/')))
+      .catch(async () => {
+        const hit = await caches.match(event.request);
+        if (hit) return hit;
+        const home = await caches.match('/');
+        if (home) return home;
+        return new Response('Hors ligne', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+      })
   );
 });

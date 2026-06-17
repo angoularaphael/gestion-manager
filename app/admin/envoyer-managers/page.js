@@ -332,7 +332,7 @@ export default function EnvoyerPage() {
         payload.broadcast = broadcast;
       }
 
-      const { data, partial } = await runDualChannelSend({
+      const { data, partial, duplicate, failed } = await runDualChannelSend({
         channels,
         payload,
         entityKey: 'managers',
@@ -344,6 +344,8 @@ export default function EnvoyerPage() {
       setResult({
         success: true,
         partial,
+        duplicate,
+        failed,
         data,
         previewHtml:
           channels.includes('email')
@@ -595,7 +597,13 @@ export default function EnvoyerPage() {
                 <p><strong>Erreur :</strong> {result.error}</p>
               ) : (
                 <>
-                  <p><strong>Envoi terminé</strong> — {result.data.managers} manager(s) traité(s)</p>
+                  {result.duplicate ? (
+                    <p><strong>Déjà envoyé</strong> — même message testé il y a moins de 15 min (anti-doublon). Attendez ou modifiez légèrement le texte.</p>
+                  ) : result.failed ? (
+                    <p><strong>Échec</strong> — aucun message parti. Voir le détail ci-dessous.</p>
+                  ) : (
+                    <p><strong>Envoi terminé</strong> — {result.data.managers} manager(s) traité(s)</p>
+                  )}
                   {result.partial && result.data.warnings?.length > 0 && (
                     <p className="result-warn">
                       <strong>Envoi partiel :</strong> {result.data.warnings.join(' · ')}
