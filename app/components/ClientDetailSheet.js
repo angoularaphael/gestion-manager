@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { parseApiJson } from '../../lib/apiJson';
-import { clientDisplayName } from '../../lib/clientDisplay';
+import { clientDisplayName, formatClientPhone } from '../../lib/clientDisplay';
 import { BOXING_CENTER_SALLES } from '../../lib/boxingCenterSalles';
 import { useSingleAction } from '../../lib/useSingleAction';
 import ActionButton from './ActionButton';
@@ -101,7 +101,7 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
                 </label>
                 <label>
                   Téléphone
-                  <input name="telephone" defaultValue={client.telephone || ''} />
+                  <input name="telephone" defaultValue={formatClientPhone(client.telephone) || ''} />
                 </label>
                 <label>
                   Salle
@@ -133,7 +133,7 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
                   <dt>Email</dt>
                   <dd>{client.email || '—'}</dd>
                   <dt>Téléphone</dt>
-                  <dd>{client.telephone || '—'}</dd>
+                  <dd>{formatClientPhone(client.telephone) || '—'}</dd>
                   <dt>Salle</dt>
                   <dd>{client.salle || '—'}</dd>
                 </dl>

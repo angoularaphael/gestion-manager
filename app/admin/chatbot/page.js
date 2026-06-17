@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
+import { formatClientPhone } from '../../../lib/phoneFormat';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -156,7 +157,7 @@ export default function ChatbotAdminPage() {
                     <td>{formatDate(lead.created_at)}</td>
                     <td>{lead.name || '—'}</td>
                     <td>{lead.email || '—'}</td>
-                    <td>{lead.phone || '—'}</td>
+                    <td>{formatClientPhone(lead.phone) || '—'}</td>
                     <td>{lead.metier || '—'}</td>
                     <td className="chatbot-message-cell">{lead.message || '—'}</td>
                     <td>{lead.recontact_requested ? 'Oui' : '—'}</td>
@@ -196,7 +197,7 @@ export default function ChatbotAdminPage() {
                     <td>{formatDate(client.updated_at || client.created_at)}</td>
                     <td>{[client.prenom, client.nom].filter(Boolean).join(' ') || client.email || '—'}</td>
                     <td>{client.email || '—'}</td>
-                    <td>{client.telephone || '—'}</td>
+                    <td>{formatClientPhone(client.telephone) || '—'}</td>
                     <td>{client.salle || '—'}</td>
                     <td>
                       <span className="badge">{client.source || '—'}</span>
