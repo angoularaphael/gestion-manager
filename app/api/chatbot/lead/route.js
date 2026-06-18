@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createChatbotLead, trackChatbotEvent } from '../../../../lib/chatbot';
 import { sendChatbotEscalationEmail, chatbotTopicLabel } from '../../../../lib/chatbotEscalationEmail';
+import { sendOffreEteTshirtEmail } from '../../../../lib/offreEteTshirtEmail';
 import { chatbotCorsHeaders } from '../../../../lib/chatbotConfig';
 
 function clientIp(request) {
@@ -94,6 +95,20 @@ export async function POST(request) {
           });
         } catch (mailErr) {
           console.error('[chatbot] escalation email failed:', mailErr);
+        }
+      }
+
+      if (body.source === 'offre_ete_tshirt' && (body.email || body.phone)) {
+        try {
+          await sendOffreEteTshirtEmail({
+            prenom: body.prenom,
+            nom: body.nom,
+            email: body.email,
+            phone: body.phone,
+            salle: body.salle,
+          });
+        } catch (mailErr) {
+          console.error('[offre-ete] tshirt email failed:', mailErr);
         }
       }
 
