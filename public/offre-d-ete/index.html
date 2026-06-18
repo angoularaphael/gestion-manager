@@ -104,6 +104,7 @@ html.in-iframe #hero { min-height: 0; }
     linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
   background-size: 72px 72px;
   animation: gridDrift 25s linear infinite;
+  z-index: 1;
 }
 @keyframes gridDrift { to { transform: translate(72px, 72px); } }
 .hero-glow {
@@ -111,6 +112,7 @@ html.in-iframe #hero { min-height: 0; }
   background:
     radial-gradient(ellipse at 65% 45%, rgba(255,255,255,0.04) 0%, transparent 55%),
     radial-gradient(ellipse at 25% 80%, rgba(227,6,19,0.08) 0%, transparent 45%);
+  z-index: 1;
 }
 .hero-content {
   position: relative; z-index: 2; max-width: 680px;
@@ -238,22 +240,23 @@ html.in-iframe #hero { min-height: 0; }
 
 /* Hero visual */
 .hero-visual {
-  position: absolute; right: 0; top: 0; bottom: 0; width: 48%;
+  position: absolute; inset: 0; width: 100%;
   overflow: hidden;
-  clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%);
   background: #0a0a0a;
+  z-index: 0;
 }
 .hero-visual-img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center center;
+  opacity: 0.6; /* Slight transparency so it blends better with the dark theme */
 }
 .hero-visual-mask {
   position: absolute; inset: 0; z-index: 1;
   background:
-    linear-gradient(to right, var(--bc-dark) 0%, transparent 35%),
-    linear-gradient(to top, var(--bc-dark) 0%, transparent 20%);
+    linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 45%, transparent 100%),
+    linear-gradient(to top, var(--bc-dark) 0%, transparent 30%);
   pointer-events: none;
 }
 
@@ -347,9 +350,13 @@ html.in-iframe #hero { min-height: 0; }
 }
 .disc-card-bg {
   position: absolute; inset: 0;
-  transition: transform .6s var(--transition);
+  transition: transform .6s var(--transition), filter .6s var(--transition);
+  filter: contrast(1.15) saturate(1.1) brightness(0.85);
 }
-.disc-card:hover .disc-card-bg { transform: scale(1.06); }
+.disc-card:hover .disc-card-bg { 
+  transform: scale(1.06); 
+  filter: contrast(1.2) saturate(1.25) brightness(1.05);
+}
 .disc-card-grd {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
@@ -379,21 +386,11 @@ html.in-iframe #hero { min-height: 0; }
 }
 .disc-card:hover .disc-sub { opacity: 1; transform: translateY(0); }
 /* Visuels disciplines */
-.dc1 {
-  background: center / cover no-repeat url('assets/disciplines/boxe.png');
-}
-.dc2 {
-  background: center / cover no-repeat url('assets/disciplines/muay-thai.png');
-}
-.dc3 {
-  background: center / cover no-repeat url('assets/disciplines/mma.png');
-}
-.dc4 {
-  background: center / cover no-repeat url('assets/disciplines/cross-training.jpg');
-}
-.dc5 {
-  background: center / cover no-repeat url('assets/disciplines/acces-libre.png');
-}
+.dc1 { background: center / cover no-repeat url('assets/disciplines/boxe_anglaise.png'); }
+.dc2 { background: center / cover no-repeat url('assets/disciplines/taii.png'); }
+.dc3 { background: center / cover no-repeat url('assets/disciplines/mma.png'); }
+.dc4 { background: center / cover no-repeat url('assets/disciplines/crosscrainnaing.png'); }
+.dc5 { background: center / cover no-repeat url('assets/disciplines/acces_libre.png'); }
 
 /* OFFRE */
 #offre {
@@ -614,7 +611,7 @@ html.in-iframe #hero { min-height: 0; }
 .salle-thumb--ramonville { background-image: url('assets/salles/ramonville.png'); }
 .salle-thumb--saint-cyprien { background-image: url('assets/salles/saint-cyprien.png'); }
 .salle-thumb--portet-sur-garonne { background-image: url('assets/salles/portet-sur-garonne.png'); }
-.salle-thumb--etats-unis { background-image: url('assets/salles/etats-unis.png'); }
+.salle-thumb--etats-unis { background-image: url('assets/salles/etats-unis-new.png'); background-position: center; }
 .salle-thumb--placeholder {
   border: 1px dashed rgba(255,255,255,0.28);
   display: flex; align-items: center; justify-content: center;
@@ -683,9 +680,8 @@ html.in-iframe #hero { min-height: 0; }
   .salles-grid { grid-template-columns: repeat(3, 1fr); }
   .avt-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
   #hero { padding: 60px 24px 80px; }
-  .hero-visual { display: none; }
   .hero-floats, .hero-scroll { display: none; }
   #disciplines, #offre, #avantages, #salles, #cta { padding: 80px 24px; }
   .disc-grid { grid-template-columns: repeat(2, 1fr); }
@@ -703,6 +699,94 @@ html.in-iframe #hero { min-height: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
 }
+/* T-SHIRT WIDGET */
+.promo-widget {
+  position: fixed; bottom: 30px; right: 30px; z-index: 1000;
+  display: flex; align-items: center; gap: 15px;
+  background: var(--bc-dark); border: 1px solid rgba(255,255,255,0.1);
+  padding: 15px 20px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  cursor: pointer; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+  animation: float-tshirt 4s ease-in-out infinite; max-width: 400px;
+}
+.promo-widget:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
+@keyframes float-tshirt { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (max-width: 768px) {
+  .promo-widget { 
+    left: auto; right: 15px; bottom: 15px; max-width: 220px; 
+    padding: 8px 10px; gap: 10px; flex-direction: row; align-items: center;
+  }
+  .promo-widget-img-container { width: 45px; }
+  .promo-widget-title { font-size: 11px; margin-bottom: 2px; line-height: 1.2; }
+  .promo-widget-text { display: none; }
+  .promo-widget-features { display: none; }
+  .promo-widget-stock { display: none; }
+  .promo-widget-btn { font-size: 9px; padding: 4px 8px; margin-top: 2px; }
+  .promo-badge { font-size: 8px; padding: 2px 4px; top: -4px; right: -4px; }
+}
+.promo-widget-img-container { position: relative; width: 80px; flex-shrink: 0; }
+.promo-widget-halo {
+  position: absolute; inset: -10px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 35, 35, 0.3) 0%, transparent 70%);
+  animation: pulse-halo 4s ease-in-out infinite; z-index: -1;
+}
+@keyframes pulse-halo { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 0.8; transform: scale(1.1); } }
+.promo-widget img { width: 100%; height: auto; display: block; transition: transform 0.3s ease; }
+.promo-widget:hover img { transform: scale(1.05); }
+.promo-badge {
+  position: absolute; top: -10px; right: -10px; background: var(--bc-red); color: white;
+  font-family: 'Oswald', sans-serif; font-size: 10px; padding: 3px 8px; border-radius: 4px;
+  font-weight: bold; letter-spacing: 1px; box-shadow: 0 2px 10px rgba(229,35,35,0.4);
+  animation: pulse-badge 2s infinite;
+}
+@keyframes pulse-badge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.promo-widget-content { color: white; flex-grow: 1; }
+.promo-widget-title { font-family: 'Oswald', sans-serif; font-size: 14px; color: var(--bc-red); margin-bottom: 4px; letter-spacing: 0.5px; }
+.promo-widget-text { font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px; line-height: 1.4; }
+.promo-widget-stock { font-size: 11px; color: #ffaa00; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+.promo-widget-features { font-size: 10px; color: rgba(255,255,255,0.5); display: flex; gap: 8px; }
+.promo-widget-btn {
+  margin-top: 10px; background: white; color: var(--bc-dark); font-family: 'Oswald', sans-serif;
+  font-size: 12px; padding: 6px 12px; border-radius: 4px; text-align: center; font-weight: 600;
+  transition: background 0.2s, transform 0.2s; display: inline-block; width: 100%;
+}
+.promo-widget:hover .promo-widget-btn { background: var(--bc-grey); transform: translateY(-2px); }
+
+/* MODAL */
+.tshirt-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
+}
+.tshirt-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.tshirt-modal {
+  background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+  width: 100%; max-width: 400px; padding: 30px; position: relative;
+  transform: translateY(20px); transition: transform 0.3s ease; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+.tshirt-modal-overlay.active .tshirt-modal { transform: translateY(0); }
+.tshirt-modal-close {
+  position: absolute; top: 15px; right: 15px; color: rgba(255,255,255,0.5);
+  cursor: pointer; font-size: 20px; transition: color 0.2s; background: none; border: none;
+}
+.tshirt-modal-close:hover { color: white; }
+.tshirt-modal h3 { font-family: 'Oswald', sans-serif; font-size: 24px; color: white; margin-bottom: 20px; text-align: center; }
+.tshirt-form .form-group { margin-bottom: 15px; }
+.tshirt-form label { display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 5px; }
+.tshirt-form input, .tshirt-form select {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: white; padding: 10px 12px; border-radius: 6px; font-family: 'Inter', sans-serif;
+  font-size: 14px; outline: none; transition: border-color 0.2s;
+}
+.tshirt-form input:focus, .tshirt-form select:focus { border-color: var(--bc-red); }
+.tshirt-form button[type="submit"] {
+  width: 100%; background: var(--bc-red); color: white; font-family: 'Oswald', sans-serif;
+  font-size: 16px; padding: 12px; border: none; border-radius: 6px; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: background 0.2s;
+}
+.tshirt-form button[type="submit"]:hover { background: #ff3333; }
+.tshirt-success { display: none; text-align: center; color: white; padding: 20px 0; }
+.tshirt-success.active { display: block; }
+.tshirt-success svg { width: 50px; height: 50px; color: #4CAF50; margin-bottom: 15px; }
 </style>
 </head>
 <body>
@@ -772,7 +856,7 @@ html.in-iframe #hero { min-height: 0; }
   </div>
 
   <div class="hero-visual" aria-hidden="true">
-    <img class="hero-visual-img" src="assets/hero-offre.png" alt="" width="1200" height="1200" decoding="async" />
+    <img class="hero-visual-img" src="assets/hero-offre-new2.png" alt="" width="1200" height="1200" decoding="async" />
     <div class="hero-visual-mask"></div>
   </div>
 
@@ -1033,6 +1117,71 @@ html.in-iframe #hero { min-height: 0; }
   <p class="cta-note reveal">Sans engagement longue durée — boutique en ligne Boxing Center</p>
 </section>
 
+<div class="promo-widget" id="promoWidget">
+  <div class="promo-widget-img-container">
+    <div class="promo-widget-halo"></div>
+    <div class="promo-badge">OFFERT</div>
+    <img src="assets/shirt.png" alt="T-shirt Officiel Boxing Center" />
+  </div>
+  <div class="promo-widget-content">
+    <div class="promo-widget-title">🎁 OFFERT AUX 5 PROCHAINS INSCRITS</div>
+    <div class="promo-widget-text">Recevez gratuitement le t-shirt officiel Boxing Center. (Valeur 20€)</div>
+    <div class="promo-widget-stock">⚠️ Plus que 5 exemplaires</div>
+    <div class="promo-widget-features">
+      <span>✓ Gratuit</span>
+      <span>✓ Sans engagement</span>
+      <span>✓ Réponse 24h</span>
+    </div>
+    <div class="promo-widget-btn">JE RÉSERVE MON T-SHIRT</div>
+  </div>
+</div>
+
+<div class="tshirt-modal-overlay" id="tshirtModal">
+  <div class="tshirt-modal">
+    <button class="tshirt-modal-close" id="tshirtClose">&times;</button>
+    <div id="tshirtFormContainer">
+      <h3>🎁 Réservez votre t-shirt</h3>
+      <form class="tshirt-form" id="tshirtForm">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" name="prenom" required />
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" name="nom" required />
+        </div>
+        <div class="form-group">
+          <label>Téléphone</label>
+          <input type="tel" name="phone" required />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label>Salle de récupération</label>
+          <select name="salle" required>
+            <option value="">Choisissez une salle...</option>
+            <option value="minimes">Les Minimes</option>
+            <option value="ramonville">Ramonville</option>
+            <option value="saint-cyprien">Saint-Cyprien</option>
+            <option value="portet">Portet-sur-Garonne</option>
+            <option value="etats-unis">États-Unis</option>
+          </select>
+        </div>
+        <button type="submit" id="tshirtSubmitBtn">RÉSERVER MON T-SHIRT</button>
+      </form>
+    </div>
+    <div class="tshirt-success" id="tshirtSuccess">
+      <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <h3>C'est noté !</h3>
+      <p style="color:rgba(255,255,255,0.7); font-size:14px; margin-top:10px;">
+        Votre réservation a bien été enregistrée. Nous vous contacterons sous 24h.
+      </p>
+    </div>
+  </div>
+</div>
+
 </div><!-- /#main-site -->
 
 <script>
@@ -1096,6 +1245,42 @@ document.addEventListener('mousemove', e => {
   const y = (e.clientY / window.innerHeight - .5) * 18;
   hg.style.transform = `translate(${x}px, ${y}px)`;
 });
+/* PROMO TSHIRT */
+const widget = document.getElementById('promoWidget');
+const modal = document.getElementById('tshirtModal');
+const closeBtn = document.getElementById('tshirtClose');
+const form = document.getElementById('tshirtForm');
+const formContainer = document.getElementById('tshirtFormContainer');
+const successMsg = document.getElementById('tshirtSuccess');
+const submitBtn = document.getElementById('tshirtSubmitBtn');
+
+if(widget) { widget.addEventListener('click', () => modal.classList.add('active')); }
+if(closeBtn) { closeBtn.addEventListener('click', () => modal.classList.remove('active')); }
+if(modal) { modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.remove('active'); }); }
+if(form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.textContent = 'Envoi...'; submitBtn.disabled = true;
+    const fd = new FormData(form);
+    const data = {
+      event: 'lead_collected', source: 'offre_ete_tshirt',
+      prenom: fd.get('prenom'), nom: fd.get('nom'),
+      phone: fd.get('phone'), email: fd.get('email'), salle: fd.get('salle'),
+      message: 'Réservation T-Shirt Promotionnel',
+    };
+    try {
+      const res = await fetch('/api/chatbot/lead', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Erreur API');
+      formContainer.style.display = 'none'; successMsg.classList.add('active');
+      setTimeout(() => { modal.classList.remove('active'); widget.style.display = 'none'; }, 5000);
+    } catch(err) {
+      console.error(err); submitBtn.textContent = 'Erreur, réessayer'; submitBtn.disabled = false;
+    }
+  });
+}
 </script>
 </body>
 </html>
