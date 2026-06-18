@@ -25,7 +25,7 @@
   --bc-dark-2: #0a0a0a;
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-html { scroll-behavior: smooth; overflow-x: hidden; }
+html { scroll-behavior: smooth; }
 body {
   background: var(--bc-dark);
   color: var(--bc-white);
@@ -680,178 +680,26 @@ html.in-iframe #hero { min-height: 0; }
   .salles-grid { grid-template-columns: repeat(3, 1fr); }
   .avt-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 768px) {
-  #hero { padding: 72px 20px 64px; min-height: auto; }
-  .hero-content { max-width: 100%; position: relative; z-index: 3; }
-  .hero-visual { z-index: 0; }
-  .hero-visual-img { opacity: 0.35; object-position: 70% center; }
-  .hero-visual-mask {
-    background:
-      linear-gradient(to bottom, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.5) 100%),
-      linear-gradient(to right, rgba(0,0,0,0.9) 0%, transparent 100%);
-  }
-  .hero-h1 { font-size: clamp(48px, 14vw, 80px); margin-bottom: 12px; }
-  .hero-eyebrow { font-size: 10px; letter-spacing: 0.28em; margin-bottom: 24px; gap: 10px; }
-  .hero-eyebrow::before { width: 24px; }
-  .p-new { font-size: clamp(56px, 18vw, 80px); }
-  .p-old { font-size: 20px; }
-  .p-badge strong { font-size: 16px; }
-  .hero-deadline { max-width: 100%; padding: 14px 16px; margin-bottom: 20px; }
-  .hero-desc { font-size: 13px; margin-bottom: 28px; max-width: 100%; }
+  @media (max-width: 768px) {
+  #hero { padding: 60px 24px 80px; }
   .hero-floats, .hero-scroll { display: none; }
-  #disciplines, #offre, #avantages, #salles, #cta { padding: 72px 20px; }
-  .s-sub { margin-bottom: 40px; }
+  #disciplines, #offre, #avantages, #salles, #cta { padding: 80px 24px; }
   .disc-grid { grid-template-columns: repeat(2, 1fr); }
-  .offre-grid { grid-template-columns: 1fr; gap: 36px; }
-  .offre-big { font-size: clamp(72px, 22vw, 120px); }
-  .offre-3mois { font-size: clamp(40px, 12vw, 64px); }
-  .offre-ghost { font-size: clamp(32px, 10vw, 48px); }
+  .offre-grid { grid-template-columns: 1fr; gap: 48px; }
   .avt-grid { grid-template-columns: 1fr; }
-  .avt-ghost { font-size: clamp(80px, 24vw, 140px); white-space: normal; text-align: center; width: 100%; }
-  .salles-head { grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px; }
-  .salles-head .reveal-r { text-align: left; }
+  .salles-head { grid-template-columns: 1fr; }
   .salles-grid { grid-template-columns: repeat(2, 1fr); }
   .cd-grid { grid-template-columns: repeat(2, 1fr); }
-  .cd-n { font-size: clamp(28px, 8vw, 40px); }
-  .hero-actions { flex-direction: column; align-items: stretch; width: 100%; }
-  .hero-actions .btn-primary { width: 100%; justify-content: center; padding: 16px 20px; font-size: 12px; }
-  .btn-primary { padding: 15px 24px; font-size: 12px; letter-spacing: 0.12em; }
-  .cta-hl { font-size: clamp(40px, 12vw, 64px); }
-  .cta-btns .btn-primary { width: 100%; max-width: 100%; justify-content: center; padding: 18px 20px !important; font-size: 13px !important; }
-  #cta { padding-bottom: max(100px, calc(72px + env(safe-area-inset-bottom))); }
-  .tshirt-end-banner { flex-direction: column; text-align: center; padding: 24px 20px; }
-  .tshirt-end-banner__img { width: 100px; margin: 0 auto; }
-  .tshirt-end-banner__actions { width: 100%; }
-  .tshirt-end-banner__actions button { width: 100%; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 480px) {
-  #hero { padding-top: 64px; }
-  .hero-h1 { font-size: clamp(42px, 13vw, 56px); }
-  .disc-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
-  .disc-name { font-size: 20px; }
+  .disc-grid { grid-template-columns: 1fr 1fr; }
   .salles-grid { grid-template-columns: 1fr; }
-  .cd-grid--hero .cd-unit { padding: 10px 6px; }
-  .cd-grid--hero .cd-n { font-size: 28px; }
-  .s-title { font-size: clamp(36px, 11vw, 48px); }
-  .promo-widget {
-    left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom));
-    max-width: none; width: auto;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
 }
-
-/* T-SHIRT TUNNEL */
-.tshirt-tunnel {
-  position: fixed; inset: 0; z-index: 15000;
-  background: linear-gradient(165deg, #0a0a0a 0%, #1a0508 45%, #000 100%);
-  display: flex; align-items: center; justify-content: center;
-  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-}
-.tshirt-tunnel.active { opacity: 1; visibility: visible; pointer-events: auto; }
-.tshirt-confetti {
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 1;
-}
-.tshirt-tunnel-inner {
-  position: relative; z-index: 2; width: 100%; max-width: 440px;
-  margin: auto;
-}
-.tshirt-tunnel-close {
-  position: absolute; top: 0; right: 0;
-  color: rgba(255,255,255,0.5); cursor: pointer; font-size: 28px;
-  background: none; border: none; line-height: 1; padding: 4px 8px;
-  transition: color 0.2s; z-index: 3;
-}
-.tshirt-tunnel-close:hover { color: white; }
-.tshirt-step { display: none; text-align: center; color: white; padding: 8px 0 24px; }
-.tshirt-step.active { display: block; animation: tunnelFadeIn 0.5s ease; }
-@keyframes tunnelFadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-.tshirt-tunnel-badge {
-  display: inline-block; background: var(--bc-red); color: white;
-  font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 600;
-  letter-spacing: 0.15em; text-transform: uppercase;
-  padding: 6px 14px; border-radius: 20px; margin-bottom: 20px;
-}
-.tshirt-tunnel-img {
-  width: min(200px, 55vw); height: auto; margin: 0 auto 24px; display: block;
-  filter: drop-shadow(0 12px 40px rgba(227,6,19,0.35));
-  animation: float-tshirt 4s ease-in-out infinite;
-}
-.tshirt-tunnel h2 {
-  font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 10vw, 48px);
-  letter-spacing: 0.04em; margin-bottom: 16px; line-height: 1.05;
-}
-.tshirt-tunnel h2 em { font-style: normal; color: var(--bc-red); }
-.tshirt-tunnel-lead {
-  font-size: clamp(15px, 4vw, 17px); line-height: 1.6;
-  color: rgba(255,255,255,0.9); margin-bottom: 12px;
-}
-.tshirt-tunnel-sub {
-  font-size: 14px; color: var(--bc-grey); line-height: 1.55; margin-bottom: 28px;
-}
-.tshirt-tunnel-actions { display: flex; flex-direction: column; gap: 12px; }
-.tshirt-tunnel-btn {
-  width: 100%; background: var(--bc-red); color: white;
-  font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 16px 20px; border: none; border-radius: 6px; cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-}
-.tshirt-tunnel-btn:hover { background: #ff1a28; transform: translateY(-1px); }
-.tshirt-tunnel-btn:disabled { opacity: 0.6; cursor: wait; }
-.tshirt-tunnel-btn--ghost {
-  background: transparent; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
-}
-.tshirt-tunnel-btn--ghost:hover { border-color: white; color: white; background: rgba(255,255,255,0.06); }
-.tshirt-link-btn {
-  background: none; border: none; color: rgba(255,255,255,0.45);
-  font-size: 13px; cursor: pointer; text-decoration: underline;
-  text-underline-offset: 3px; padding: 8px; margin-top: 4px;
-}
-.tshirt-link-btn:hover { color: rgba(255,255,255,0.75); }
-.tshirt-form .form-group { margin-bottom: 14px; text-align: left; }
-.tshirt-form label { display: block; font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
-.tshirt-form input, .tshirt-form select {
-  width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-  color: white; padding: 12px 14px; border-radius: 6px; font-family: 'Inter', sans-serif;
-  font-size: 16px; outline: none; transition: border-color 0.2s;
-}
-.tshirt-form select option { background: #111; color: white; }
-.tshirt-form input:focus, .tshirt-form select:focus { border-color: var(--bc-red); }
-.tshirt-success svg { width: 56px; height: 56px; color: #4CAF50; margin-bottom: 16px; }
-.tshirt-success p { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 10px; line-height: 1.6; }
-
-/* T-SHIRT END BANNER */
-.tshirt-end-banner {
-  position: relative; z-index: 2;
-  display: flex; align-items: center; gap: 24px;
-  max-width: 640px; margin: 0 auto 40px;
-  padding: 28px 32px; text-align: left;
-  background: rgba(227,6,19,0.12); border: 1px solid rgba(227,6,19,0.35);
-  border-radius: 12px;
-}
-.tshirt-end-banner__img { width: 90px; flex-shrink: 0; }
-.tshirt-end-banner__img img { width: 100%; height: auto; display: block; }
-.tshirt-end-banner__title {
-  font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600;
-  color: var(--bc-red); margin-bottom: 6px; letter-spacing: 0.04em;
-}
-.tshirt-end-banner__text { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5; margin-bottom: 14px; }
-.tshirt-end-banner__actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.tshirt-end-banner__actions button {
-  font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 10px 18px; border-radius: 4px; cursor: pointer; border: none;
-}
-.tshirt-end-banner__cta { background: var(--bc-red); color: white; }
-.tshirt-end-banner__cta:hover { background: #ff1a28; }
-
-/* T-SHIRT FLOATING WIDGET */
+/* T-SHIRT WIDGET */
 .promo-widget {
   position: fixed; bottom: 30px; right: 30px; z-index: 1000;
   display: flex; align-items: center; gap: 15px;
@@ -861,20 +709,19 @@ html.in-iframe #hero { min-height: 0; }
   animation: float-tshirt 4s ease-in-out infinite; max-width: 400px;
 }
 .promo-widget:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
-.promo-widget.hidden { display: none !important; }
 @keyframes float-tshirt { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @media (max-width: 768px) {
-  .promo-widget {
-    right: 12px; left: auto; bottom: max(12px, env(safe-area-inset-bottom));
-    max-width: min(280px, calc(100vw - 24px)); padding: 10px 12px; gap: 10px;
+  .promo-widget { 
+    left: auto; right: 15px; bottom: 15px; max-width: 220px; 
+    padding: 8px 10px; gap: 10px; flex-direction: row; align-items: center;
   }
-  .promo-widget-img-container { width: 52px; }
-  .promo-widget-title { font-size: 11px; margin-bottom: 2px; line-height: 1.25; }
-  .promo-widget-text { font-size: 10px; margin-bottom: 4px; display: block; line-height: 1.3; }
-  .promo-widget-stock { font-size: 10px; margin-bottom: 4px; }
+  .promo-widget-img-container { width: 45px; }
+  .promo-widget-title { font-size: 11px; margin-bottom: 2px; line-height: 1.2; }
+  .promo-widget-text { display: none; }
   .promo-widget-features { display: none; }
-  .promo-widget-btn { font-size: 9px; padding: 5px 8px; margin-top: 4px; }
-  .promo-badge { font-size: 8px; padding: 2px 5px; top: -6px; right: -6px; }
+  .promo-widget-stock { display: none; }
+  .promo-widget-btn { font-size: 9px; padding: 4px 8px; margin-top: 2px; }
+  .promo-badge { font-size: 8px; padding: 2px 4px; top: -4px; right: -4px; }
 }
 .promo-widget-img-container { position: relative; width: 80px; flex-shrink: 0; }
 .promo-widget-halo {
@@ -904,6 +751,43 @@ html.in-iframe #hero { min-height: 0; }
 }
 .promo-widget:hover .promo-widget-btn { background: var(--bc-grey); transform: translateY(-2px); }
 
+/* MODAL */
+.tshirt-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
+}
+.tshirt-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.tshirt-modal {
+  background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+  width: 100%; max-width: 400px; padding: 30px; position: relative;
+  transform: translateY(20px); transition: transform 0.3s ease; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+.tshirt-modal-overlay.active .tshirt-modal { transform: translateY(0); }
+.tshirt-modal-close {
+  position: absolute; top: 15px; right: 15px; color: rgba(255,255,255,0.5);
+  cursor: pointer; font-size: 20px; transition: color 0.2s; background: none; border: none;
+}
+.tshirt-modal-close:hover { color: white; }
+.tshirt-modal h3 { font-family: 'Oswald', sans-serif; font-size: 24px; color: white; margin-bottom: 20px; text-align: center; }
+.tshirt-form .form-group { margin-bottom: 15px; }
+.tshirt-form label { display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 5px; }
+.tshirt-form input, .tshirt-form select {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: white; padding: 10px 12px; border-radius: 6px; font-family: 'Inter', sans-serif;
+  font-size: 14px; outline: none; transition: border-color 0.2s;
+}
+.tshirt-form select option { background: #111; color: white; }
+.tshirt-form input:focus, .tshirt-form select:focus { border-color: var(--bc-red); }
+.tshirt-form button[type="submit"] {
+  width: 100%; background: var(--bc-red); color: white; font-family: 'Oswald', sans-serif;
+  font-size: 16px; padding: 12px; border: none; border-radius: 6px; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: background 0.2s;
+}
+.tshirt-form button[type="submit"]:hover { background: #ff3333; }
+.tshirt-success { display: none; text-align: center; color: white; padding: 20px 0; }
+.tshirt-success.active { display: block; }
+.tshirt-success svg { width: 50px; height: 50px; color: #4CAF50; margin-bottom: 15px; }
 </style>
 </head>
 <body>
@@ -1224,19 +1108,6 @@ html.in-iframe #hero { min-height: 0; }
   </h2>
   <p class="cta-p reveal">3 mois d'entraînement illimité à 89€. Accès aux 5 salles, tous les cours, coaching personnalisé. Uniquement disponible été 2026.</p>
 
-  <div class="tshirt-end-banner reveal" id="tshirtEndBanner">
-    <div class="tshirt-end-banner__img">
-      <img src="assets/shirt.png" alt="T-shirt Boxing Center offert" />
-    </div>
-    <div>
-      <div class="tshirt-end-banner__title">🎁 T-shirt officiel offert</div>
-      <p class="tshirt-end-banner__text">Vous êtes parmi les derniers à pouvoir récupérer le t-shirt Boxing Center gratuitement. Indiquez votre salle de retrait.</p>
-      <div class="tshirt-end-banner__actions">
-        <button type="button" class="tshirt-end-banner__cta" id="tshirtEndCta">Réserver mon t-shirt</button>
-      </div>
-    </div>
-  </div>
-
   <div class="cta-btns reveal">
     <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener" style="padding:20px 56px;font-size:15px">
       JE PROFITE DE L'OFFRE
@@ -1254,59 +1125,44 @@ html.in-iframe #hero { min-height: 0; }
     <img src="assets/shirt.png" alt="T-shirt Officiel Boxing Center" />
   </div>
   <div class="promo-widget-content">
-    <div class="promo-widget-title">🎁 T-SHIRT OFFERT</div>
-    <div class="promo-widget-text">Récupérez le t-shirt officiel Boxing Center dans votre salle.</div>
-    <div class="promo-widget-stock">⚠️ Plus que 2 places</div>
+    <div class="promo-widget-title">🎁 OFFERT AUX 5 PROCHAINS INSCRITS</div>
+    <div class="promo-widget-text">Recevez gratuitement le t-shirt officiel Boxing Center. (Valeur 20€)</div>
+    <div class="promo-widget-stock">⚠️ Plus que 5 exemplaires</div>
     <div class="promo-widget-features">
       <span>✓ Gratuit</span>
       <span>✓ Sans engagement</span>
+      <span>✓ Réponse 24h</span>
     </div>
     <div class="promo-widget-btn">JE RÉSERVE MON T-SHIRT</div>
   </div>
 </div>
 
-<div class="tshirt-tunnel" id="tshirtTunnel" role="dialog" aria-modal="true" aria-labelledby="tshirtTunnelTitle">
-  <canvas class="tshirt-confetti" id="tshirtConfetti" aria-hidden="true"></canvas>
-  <div class="tshirt-tunnel-inner">
-
-    <div class="tshirt-step active" id="tshirtStepCongrats">
-      <button type="button" class="tshirt-tunnel-close" id="tshirtClose" aria-label="Fermer">&times;</button>
-      <span class="tshirt-tunnel-badge">Offre exclusive</span>
-      <img class="tshirt-tunnel-img" src="assets/shirt.png" alt="T-shirt Boxing Center" />
-      <h2 id="tshirtTunnelTitle">Félicitations !<br><em>Vous êtes l'avant-dernier</em></h2>
-      <p class="tshirt-tunnel-lead">À bénéficier du t-shirt officiel Boxing Center offert (valeur 20€).</p>
-      <p class="tshirt-tunnel-sub">Remplissez le formulaire et indiquez votre salle pour venir le récupérer.</p>
-      <div class="tshirt-tunnel-actions">
-        <button type="button" class="tshirt-tunnel-btn" id="tshirtStartForm">Je réserve mon t-shirt</button>
-        <button type="button" class="tshirt-link-btn" id="tshirtRenounce">Non merci, je renonce</button>
-      </div>
-    </div>
-
-    <div class="tshirt-step" id="tshirtStepForm">
-      <button type="button" class="tshirt-tunnel-close" id="tshirtCloseForm" aria-label="Fermer">&times;</button>
-      <h2>Réservez votre <em>t-shirt</em></h2>
-      <p class="tshirt-tunnel-sub" style="margin-bottom:20px">Nous vous contacterons sous 24h pour confirmer le retrait en salle.</p>
+<div class="tshirt-modal-overlay" id="tshirtModal">
+  <div class="tshirt-modal">
+    <button class="tshirt-modal-close" id="tshirtClose">&times;</button>
+    <div id="tshirtFormContainer">
+      <h3>🎁 Réservez votre t-shirt</h3>
       <form class="tshirt-form" id="tshirtForm">
         <div class="form-group">
-          <label for="tshirtPrenom">Prénom</label>
-          <input type="text" id="tshirtPrenom" name="prenom" required autocomplete="given-name" />
+          <label>Prénom</label>
+          <input type="text" name="prenom" required />
         </div>
         <div class="form-group">
-          <label for="tshirtNom">Nom</label>
-          <input type="text" id="tshirtNom" name="nom" required autocomplete="family-name" />
+          <label>Nom</label>
+          <input type="text" name="nom" required />
         </div>
         <div class="form-group">
-          <label for="tshirtPhone">Téléphone</label>
-          <input type="tel" id="tshirtPhone" name="phone" required autocomplete="tel" />
+          <label>Téléphone</label>
+          <input type="tel" name="phone" required />
         </div>
         <div class="form-group">
-          <label for="tshirtEmail">Email</label>
-          <input type="email" id="tshirtEmail" name="email" required autocomplete="email" />
+          <label>Email</label>
+          <input type="email" name="email" required />
         </div>
         <div class="form-group">
-          <label for="tshirtSalle">Salle de récupération</label>
-          <select id="tshirtSalle" name="salle" required>
-            <option value="">Choisissez une salle…</option>
+          <label>Salle de récupération</label>
+          <select name="salle" required>
+            <option value="">Choisissez une salle...</option>
             <option value="minimes">Les Minimes</option>
             <option value="ramonville">Ramonville</option>
             <option value="saint-cyprien">Saint-Cyprien</option>
@@ -1314,28 +1170,16 @@ html.in-iframe #hero { min-height: 0; }
             <option value="etats-unis">États-Unis</option>
           </select>
         </div>
-        <button type="submit" class="tshirt-tunnel-btn" id="tshirtSubmitBtn">Confirmer ma réservation</button>
-        <button type="button" class="tshirt-link-btn" id="tshirtRenounceForm">Je renonce à l'offre</button>
+        <button type="submit" id="tshirtSubmitBtn">RÉSERVER MON T-SHIRT</button>
       </form>
     </div>
-
-    <div class="tshirt-step" id="tshirtStepRenounce">
-      <h2>Êtes-vous sûr ?</h2>
-      <p class="tshirt-tunnel-lead">Vous êtes sur le point de renoncer au t-shirt offert.</p>
-      <p class="tshirt-tunnel-sub">Cette offre est limitée — il ne reste qu'une place après vous.</p>
-      <div class="tshirt-tunnel-actions">
-        <button type="button" class="tshirt-tunnel-btn" id="tshirtBackToForm">Non, je veux mon t-shirt</button>
-        <button type="button" class="tshirt-tunnel-btn tshirt-tunnel-btn--ghost" id="tshirtConfirmRenounce">Oui, je renonce</button>
-      </div>
+    <div class="tshirt-success" id="tshirtSuccess">
+      <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <h3>C'est noté !</h3>
+      <p style="color:rgba(255,255,255,0.7); font-size:14px; margin-top:10px;">
+        Votre réservation a bien été enregistrée. Nous vous contacterons sous 24h.
+      </p>
     </div>
-
-    <div class="tshirt-step tshirt-success" id="tshirtStepSuccess">
-      <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-      <h2>C'est noté !</h2>
-      <p>Votre réservation a bien été enregistrée. Rendez-vous dans votre salle pour récupérer votre t-shirt. Nous vous contacterons sous 24h.</p>
-      <button type="button" class="tshirt-tunnel-btn" id="tshirtSuccessClose" style="margin-top:24px">Continuer sur la page</button>
-    </div>
-
   </div>
 </div>
 
@@ -1343,8 +1187,6 @@ html.in-iframe #hero { min-height: 0; }
 
 <script>
 window.OFFRE_ETE_TRACK_API = 'https://gestion-manager.vercel.app/api/offre-ete/track';
-window.OFFRE_ETE_LEAD_API = 'https://gestion-manager.vercel.app/api/chatbot/lead';
-window.OFFRE_ETE_SHOP_URL = 'https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien';
 </script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
@@ -1404,180 +1246,42 @@ document.addEventListener('mousemove', e => {
   const y = (e.clientY / window.innerHeight - .5) * 18;
   hg.style.transform = `translate(${x}px, ${y}px)`;
 });
-/* PROMO TSHIRT — tunnel plein écran */
-(function initTshirtTunnel() {
-  const TUNNEL_KEY = 'offre_ete_tshirt_done';
-  const DISMISS_KEY = 'offre_ete_tshirt_dismissed';
-  const SHOP_URL = window.OFFRE_ETE_SHOP_URL;
-  const LEAD_API = window.OFFRE_ETE_LEAD_API;
+/* PROMO TSHIRT */
+const widget = document.getElementById('promoWidget');
+const modal = document.getElementById('tshirtModal');
+const closeBtn = document.getElementById('tshirtClose');
+const form = document.getElementById('tshirtForm');
+const formContainer = document.getElementById('tshirtFormContainer');
+const successMsg = document.getElementById('tshirtSuccess');
+const submitBtn = document.getElementById('tshirtSubmitBtn');
 
-  const tunnel = document.getElementById('tshirtTunnel');
-  const widget = document.getElementById('promoWidget');
-  const endCta = document.getElementById('tshirtEndCta');
-  const confettiCanvas = document.getElementById('tshirtConfetti');
-  const form = document.getElementById('tshirtForm');
-  const submitBtn = document.getElementById('tshirtSubmitBtn');
-
-  const steps = {
-    congrats: document.getElementById('tshirtStepCongrats'),
-    form: document.getElementById('tshirtStepForm'),
-    renounce: document.getElementById('tshirtStepRenounce'),
-    success: document.getElementById('tshirtStepSuccess'),
-  };
-
-  if (!tunnel) return;
-
-  let confettiAnim = null;
-  let confettiPieces = [];
-
-  function showStep(name) {
-    Object.values(steps).forEach((el) => el && el.classList.remove('active'));
-    if (steps[name]) steps[name].classList.add('active');
-  }
-
-  function openTunnel(step) {
-    if (sessionStorage.getItem(TUNNEL_KEY)) return;
-    showStep(step || 'congrats');
-    tunnel.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    if (step === 'congrats' || !step) startConfetti();
-  }
-
-  function closeTunnel() {
-    tunnel.classList.remove('active');
-    document.body.style.overflow = '';
-    stopConfetti();
-    if (!sessionStorage.getItem(TUNNEL_KEY)) {
-      sessionStorage.setItem(DISMISS_KEY, '1');
-    }
-  }
-
-  function startConfetti() {
-    if (!confettiCanvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const ctx = confettiCanvas.getContext('2d');
-    const resize = () => {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
+if(widget) { widget.addEventListener('click', () => modal.classList.add('active')); }
+if(closeBtn) { closeBtn.addEventListener('click', () => modal.classList.remove('active')); }
+if(modal) { modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.remove('active'); }); }
+if(form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.textContent = 'Envoi...'; submitBtn.disabled = true;
+    const fd = new FormData(form);
+    const data = {
+      event: 'lead_collected', source: 'offre_ete_tshirt',
+      prenom: fd.get('prenom'), nom: fd.get('nom'),
+      phone: fd.get('phone'), email: fd.get('email'), salle: fd.get('salle'),
+      message: 'Réservation T-Shirt Promotionnel',
     };
-    resize();
-    const colors = ['#E30613', '#fff', '#fbbf24', '#ff6b6b', '#fcd34d'];
-    confettiPieces = Array.from({ length: 120 }, () => ({
-      x: Math.random() * confettiCanvas.width,
-      y: Math.random() * confettiCanvas.height - confettiCanvas.height,
-      w: 6 + Math.random() * 6,
-      h: 4 + Math.random() * 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      rot: Math.random() * 360,
-      spin: (Math.random() - 0.5) * 8,
-      vy: 2 + Math.random() * 4,
-      vx: (Math.random() - 0.5) * 2,
-    }));
-
-    function frame() {
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      confettiPieces.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.spin;
-        if (p.y > confettiCanvas.height) {
-          p.y = -10;
-          p.x = Math.random() * confettiCanvas.width;
-        }
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rot * Math.PI) / 180);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-        ctx.restore();
+    try {
+      const res = await fetch('/api/chatbot/lead', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-      confettiAnim = requestAnimationFrame(frame);
+      if (!res.ok) throw new Error('Erreur API');
+      formContainer.style.display = 'none'; successMsg.classList.add('active');
+      setTimeout(() => { modal.classList.remove('active'); widget.style.display = 'none'; }, 5000);
+    } catch(err) {
+      console.error(err); submitBtn.textContent = 'Erreur, réessayer'; submitBtn.disabled = false;
     }
-    frame();
-    window.addEventListener('resize', resize);
-  }
-
-  function stopConfetti() {
-    if (confettiAnim) cancelAnimationFrame(confettiAnim);
-    confettiAnim = null;
-    if (confettiCanvas) {
-      const ctx = confettiCanvas.getContext('2d');
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-    }
-  }
-
-  function hideWidget() {
-    if (widget) widget.classList.add('hidden');
-  }
-
-  function tryAutoOpen() {
-    if (sessionStorage.getItem(TUNNEL_KEY) || sessionStorage.getItem(DISMISS_KEY)) return;
-    setTimeout(() => openTunnel('congrats'), 400);
-  }
-
-  document.getElementById('tshirtClose')?.addEventListener('click', closeTunnel);
-  document.getElementById('tshirtCloseForm')?.addEventListener('click', closeTunnel);
-  document.getElementById('tshirtStartForm')?.addEventListener('click', () => {
-    stopConfetti();
-    showStep('form');
   });
-  document.getElementById('tshirtRenounce')?.addEventListener('click', () => showStep('renounce'));
-  document.getElementById('tshirtRenounceForm')?.addEventListener('click', () => showStep('renounce'));
-  document.getElementById('tshirtBackToForm')?.addEventListener('click', () => showStep('form'));
-  document.getElementById('tshirtConfirmRenounce')?.addEventListener('click', () => {
-    sessionStorage.setItem(DISMISS_KEY, '1');
-    window.location.href = SHOP_URL;
-  });
-  document.getElementById('tshirtSuccessClose')?.addEventListener('click', () => {
-    closeTunnel();
-    hideWidget();
-  });
-
-  widget?.addEventListener('click', () => openTunnel('congrats'));
-  endCta?.addEventListener('click', () => openTunnel('congrats'));
-
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!LEAD_API) return;
-      submitBtn.textContent = 'Envoi en cours…';
-      submitBtn.disabled = true;
-      const fd = new FormData(form);
-      const data = {
-        event: 'lead_collected',
-        source: 'offre_ete_tshirt',
-        prenom: fd.get('prenom'),
-        nom: fd.get('nom'),
-        phone: fd.get('phone'),
-        email: fd.get('email'),
-        salle: fd.get('salle'),
-        message: 'Réservation T-Shirt Promotionnel — Offre Été 2026',
-      };
-      try {
-        const res = await fetch(LEAD_API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-        if (!res.ok) throw new Error('Erreur API');
-        sessionStorage.setItem(TUNNEL_KEY, '1');
-        stopConfetti();
-        showStep('success');
-        startConfetti();
-      } catch (err) {
-        console.error(err);
-        submitBtn.textContent = 'Erreur — réessayer';
-        submitBtn.disabled = false;
-      }
-    });
-  }
-
-  if (sessionStorage.getItem(TUNNEL_KEY)) hideWidget();
-
-  window.addEventListener('offre-ete-intro-done', tryAutoOpen);
-  if (document.querySelector('.main-site:not(.main-site--hidden)')) {
-    tryAutoOpen();
-  }
-})();
+}
 </script>
 </body>
 </html>
