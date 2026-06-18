@@ -442,6 +442,9 @@
       lastReportedHeight = 0;
       notifyParentHeight();
       window.dispatchEvent(new CustomEvent('offre-ete-intro-done'));
+      window.setTimeout(() => {
+        if (typeof window.openOffreEteTeaser === 'function') window.openOffreEteTeaser();
+      }, 250);
     }, 500);
   }
 

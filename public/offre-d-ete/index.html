@@ -817,7 +817,7 @@ html.in-iframe .progress-bar { display: none !important; }
 
 /* POPUP TEASER (après intro) */
 .tshirt-teaser-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9000;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10050;
   background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
   display: flex; align-items: flex-start; justify-content: center;
   padding: max(16px, env(safe-area-inset-top)) 20px 20px;
@@ -868,7 +868,7 @@ html.in-iframe .progress-bar { display: none !important; }
 
 /* TUNNEL T-SHIRT */
 .tshirt-tunnel {
-  position: fixed; inset: 0; z-index: 9500;
+  position: fixed; inset: 0; z-index: 10100;
   background: #000; overflow-y: auto; -webkit-overflow-scrolling: touch;
   opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity 0.4s ease, visibility 0.4s ease;
@@ -1098,22 +1098,26 @@ html.in-iframe .progress-bar { display: none !important; }
 </div>
 
 <script>
-/* Écouteur teaser AVANT le chargement de intro.js — évite la course au démarrage */
+/* Teaser — affiché après l'animation gants (une fois par chargement de page) */
 (function () {
-  var TEASER_KEY = 'offre_ete_tshirt_teaser_v3';
   function showTeaser() {
+    if (window.__offreEteTeaserDismissed || window.__offreEteTeaserShown) return;
     var t = document.getElementById('tshirtTeaser');
-    if (!t || sessionStorage.getItem(TEASER_KEY)) return;
+    if (!t) return;
+    window.__offreEteTeaserShown = true;
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     t.classList.add('active');
     t.setAttribute('aria-hidden', 'false');
-    try { window.parent.postMessage({ type: 'offre-ete-resize', height: Math.max(window.innerHeight, document.body.offsetHeight) }, '*'); } catch (_) {}
+    try {
+      window.parent.postMessage({
+        type: 'offre-ete-resize',
+        height: Math.max(window.innerHeight || 600, document.body.offsetHeight || 600),
+      }, '*');
+    } catch (_) {}
   }
   window.openOffreEteTeaser = showTeaser;
-  window.addEventListener('offre-ete-intro-done', function () { setTimeout(showTeaser, 350); });
-  if (document.body.classList.contains('intro-done')) setTimeout(showTeaser, 400);
 })();
 </script>
 
@@ -1543,7 +1547,6 @@ document.addEventListener('mousemove', e => {
 (function () {
   const BOUTIQUE = window.OFFRE_ETE_BOUTIQUE_URL;
   const LEAD_API = window.OFFRE_ETE_LEAD_API;
-  const TEASER_KEY = 'offre_ete_tshirt_teaser_v3';
 
   const teaser = document.getElementById('tshirtTeaser');
   const teaserClose = document.getElementById('tshirtTeaserClose');
@@ -1575,7 +1578,7 @@ document.addEventListener('mousemove', e => {
       window.openOffreEteTeaser();
       return;
     }
-    if (!teaser || sessionStorage.getItem(TEASER_KEY)) return;
+    if (!teaser || window.__offreEteTeaserDismissed) return;
     scrollToTop();
     teaser.classList.add('active');
     teaser.setAttribute('aria-hidden', 'false');
@@ -1585,7 +1588,7 @@ document.addEventListener('mousemove', e => {
     if (!teaser) return;
     teaser.classList.remove('active');
     teaser.setAttribute('aria-hidden', 'true');
-    if (persist) sessionStorage.setItem(TEASER_KEY, '1');
+    if (persist) window.__offreEteTeaserDismissed = true;
   }
 
   function resizeConfetti() {
@@ -1736,7 +1739,7 @@ document.addEventListener('mousemove', e => {
   }
 
   window.addEventListener('offre-ete-intro-done', () => {
-    setTimeout(openTeaser, 400);
+    setTimeout(openTeaser, 300);
   });
   window.addEventListener('resize', resizeConfetti);
 })();
