@@ -743,7 +743,7 @@ html.in-iframe #hero { min-height: 0; }
 
 /* T-SHIRT PROMO — bandeau hero, section bas, widget */
 .tshirt-hero-banner {
-  margin-top: 24px; padding: 16px 18px;
+  margin-top: 0; margin-bottom: 28px; padding: 16px 18px;
   border: 1px solid rgba(227, 6, 19, 0.5);
   background: linear-gradient(135deg, rgba(227,6,19,0.12) 0%, rgba(0,0,0,0.4) 100%);
   border-radius: 10px; display: flex; align-items: center; gap: 16px;
@@ -800,20 +800,24 @@ html.in-iframe #hero { min-height: 0; }
 
 /* POPUP TEASER (après intro) */
 .tshirt-teaser-overlay {
-  position: fixed; inset: 0; z-index: 9000;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9000;
   background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px; opacity: 0; pointer-events: none;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) 20px 20px;
+  opacity: 0; pointer-events: none;
   transition: opacity 0.35s ease;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
 .tshirt-teaser-overlay.active { opacity: 1; pointer-events: auto; }
 .tshirt-teaser {
   background: #111; border: 1px solid rgba(227,6,19,0.4);
   border-radius: 16px; max-width: 420px; width: 100%;
   padding: 28px 24px 24px; position: relative;
-  transform: translateY(24px) scale(0.96);
+  margin-top: 0;
+  transform: translateY(-12px) scale(0.96);
   transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  flex-shrink: 0;
 }
 .tshirt-teaser-overlay.active .tshirt-teaser { transform: translateY(0) scale(1); }
 .tshirt-teaser-close {
@@ -971,6 +975,75 @@ html.in-iframe #hero { min-height: 0; }
   </div>
 </div>
 
+<!-- POPUP TEASER + TUNNEL (hors main-site pour position fixe en haut) -->
+<div class="tshirt-teaser-overlay" id="tshirtTeaser" aria-hidden="true">
+  <div class="tshirt-teaser" role="dialog" aria-labelledby="tshirtTeaserTitle">
+    <button class="tshirt-teaser-close" id="tshirtTeaserClose" aria-label="Fermer">&times;</button>
+    <div class="tshirt-teaser-visual">
+      <img src="assets/shirt.png" alt="T-shirt Boxing Center" />
+    </div>
+    <h3 id="tshirtTeaserTitle">🎁 89€ + t-shirt offert</h3>
+    <p>Profitez de l'offre été à 89€ pour 3 mois illimités. En remplissant le formulaire, vous recevez aussi le t-shirt officiel Boxing Center gratuitement. Vous êtes l'avant-dernier bénéficiaire.</p>
+    <div class="tshirt-teaser-btns">
+      <button type="button" class="btn-primary js-open-tunnel">J'en profite</button>
+      <button type="button" class="tshirt-teaser-later" id="tshirtTeaserLater">Plus tard</button>
+    </div>
+  </div>
+</div>
+
+<div class="tshirt-tunnel" id="tshirtTunnel" aria-hidden="true">
+  <canvas class="tshirt-tunnel-canvas" id="tshirtConfetti"></canvas>
+  <button class="tshirt-tunnel-close" id="tshirtTunnelClose" aria-label="Fermer">&times;</button>
+  <div class="tshirt-tunnel-inner">
+    <div class="tshirt-tunnel-form-wrap" id="tshirtTunnelFormWrap">
+      <div class="tshirt-tunnel-celebrate">
+        <span class="emoji">🎉</span>
+        <h2>FÉLICITATIONS !<br><em>89€ + T-SHIRT OFFERT</em></h2>
+        <p>Vous êtes l'avant-dernier à bénéficier de l'offre : 3 mois illimités à 89€ et le t-shirt officiel offert. Remplissez le formulaire et indiquez votre salle pour récupérer votre t-shirt, puis accédez à la boutique.</p>
+      </div>
+      <form class="tshirt-tunnel-form" id="tshirtTunnelForm">
+        <div class="form-group">
+          <label for="tunnel-prenom">Prénom</label>
+          <input type="text" id="tunnel-prenom" name="prenom" required autocomplete="given-name" />
+        </div>
+        <div class="form-group">
+          <label for="tunnel-nom">Nom</label>
+          <input type="text" id="tunnel-nom" name="nom" required autocomplete="family-name" />
+        </div>
+        <div class="form-group">
+          <label for="tunnel-phone">Téléphone</label>
+          <input type="tel" id="tunnel-phone" name="phone" required autocomplete="tel" />
+        </div>
+        <div class="form-group">
+          <label for="tunnel-email">Email</label>
+          <input type="email" id="tunnel-email" name="email" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="tunnel-salle">Salle de récupération</label>
+          <select id="tunnel-salle" name="salle" required>
+            <option value="">Choisissez une salle...</option>
+            <option value="minimes">Les Minimes</option>
+            <option value="ramonville">Ramonville</option>
+            <option value="saint-cyprien">Saint-Cyprien</option>
+            <option value="portet">Portet-sur-Garonne</option>
+            <option value="etats-unis">États-Unis</option>
+          </select>
+        </div>
+        <button type="submit" id="tshirtTunnelSubmit">Valider — 89€ + t-shirt offert</button>
+      </form>
+      <button type="button" class="tshirt-tunnel-skip" id="tshirtTunnelSkip">Je ne souhaite pas le t-shirt (89€ seulement)</button>
+    </div>
+    <div class="tshirt-tunnel-confirm" id="tshirtTunnelConfirm">
+      <h3>Êtes-vous sûr de vouloir renoncer au t-shirt ?</h3>
+      <p>Vous pourrez toujours profiter de l'offre à 89€, mais sans le t-shirt offert. Vous serez redirigé vers la boutique.</p>
+      <div class="tshirt-tunnel-confirm-btns">
+        <button type="button" class="tshirt-tunnel-confirm-no" id="tshirtTunnelBack">Non, je veux 89€ + t-shirt</button>
+        <button type="button" class="tshirt-tunnel-confirm-yes" id="tshirtTunnelGiveUp">Oui, je renonce</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="main-site" class="main-site main-site--hidden">
 
 <div class="progress-bar" id="pbar"></div>
@@ -982,6 +1055,15 @@ html.in-iframe #hero { min-height: 0; }
 
   <div class="hero-content">
     <div class="hero-eyebrow">Offre Été 2026 — Toulouse &amp; Agglomération</div>
+
+    <div class="tshirt-hero-banner reveal" id="tshirtHeroBanner" role="button" tabindex="0" aria-label="Offre 89 euros avec t-shirt offert">
+      <img src="assets/shirt.png" alt="" />
+      <div class="tshirt-hero-banner-text">
+        <div class="tshirt-hero-banner-title">🎁 89€ + t-shirt offert</div>
+        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€ et le t-shirt officiel offert en remplissant le formulaire (valeur 20€)</div>
+      </div>
+      <span class="tshirt-hero-banner-cta">J'en profite</span>
+    </div>
 
     <h1 class="hero-h1">
       <span class="ln"><span class="lni">3 MOIS</span></span>
@@ -1021,14 +1103,6 @@ html.in-iframe #hero { min-height: 0; }
       </a>
     </div>
 
-    <div class="tshirt-hero-banner reveal" id="tshirtHeroBanner" role="button" tabindex="0" aria-label="Offre 89 euros avec t-shirt offert">
-      <img src="assets/shirt.png" alt="" />
-      <div class="tshirt-hero-banner-text">
-        <div class="tshirt-hero-banner-title">🎁 89€ + t-shirt offert</div>
-        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€ et le t-shirt officiel offert en remplissant le formulaire (valeur 20€)</div>
-      </div>
-      <span class="tshirt-hero-banner-cta">J'en profite</span>
-    </div>
   </div>
 
   <div class="hero-visual" aria-hidden="true">
@@ -1312,6 +1386,8 @@ html.in-iframe #hero { min-height: 0; }
   <p class="cta-note reveal">Sans engagement longue durée — boutique en ligne Boxing Center</p>
 </section>
 
+</div><!-- /#main-site -->
+
 <div class="promo-widget" id="promoWidget" role="button" tabindex="0" aria-label="Offre 89 euros avec t-shirt offert">
   <div class="promo-widget-img-container">
     <div class="promo-widget-halo"></div>
@@ -1324,78 +1400,6 @@ html.in-iframe #hero { min-height: 0; }
     <div class="promo-widget-btn">J'EN PROFITE</div>
   </div>
 </div>
-
-<!-- POPUP TEASER (après animation boxe) -->
-<div class="tshirt-teaser-overlay" id="tshirtTeaser" aria-hidden="true">
-  <div class="tshirt-teaser" role="dialog" aria-labelledby="tshirtTeaserTitle">
-    <button class="tshirt-teaser-close" id="tshirtTeaserClose" aria-label="Fermer">&times;</button>
-    <div class="tshirt-teaser-visual">
-      <img src="assets/shirt.png" alt="T-shirt Boxing Center" />
-    </div>
-    <h3 id="tshirtTeaserTitle">🎁 89€ + t-shirt offert</h3>
-    <p>Profitez de l'offre été à 89€ pour 3 mois illimités. En remplissant le formulaire, vous recevez aussi le t-shirt officiel Boxing Center gratuitement. Vous êtes l'avant-dernier bénéficiaire.</p>
-    <div class="tshirt-teaser-btns">
-      <button type="button" class="btn-primary js-open-tunnel">J'en profite</button>
-      <button type="button" class="tshirt-teaser-later" id="tshirtTeaserLater">Plus tard</button>
-    </div>
-  </div>
-</div>
-
-<!-- TUNNEL T-SHIRT -->
-<div class="tshirt-tunnel" id="tshirtTunnel" aria-hidden="true">
-  <canvas class="tshirt-tunnel-canvas" id="tshirtConfetti"></canvas>
-  <button class="tshirt-tunnel-close" id="tshirtTunnelClose" aria-label="Fermer">&times;</button>
-  <div class="tshirt-tunnel-inner">
-    <div class="tshirt-tunnel-form-wrap" id="tshirtTunnelFormWrap">
-      <div class="tshirt-tunnel-celebrate">
-        <span class="emoji">🎉</span>
-        <h2>FÉLICITATIONS !<br><em>89€ + T-SHIRT OFFERT</em></h2>
-        <p>Vous êtes l'avant-dernier à bénéficier de l'offre : 3 mois illimités à 89€ et le t-shirt officiel offert. Remplissez le formulaire et indiquez votre salle pour récupérer votre t-shirt, puis accédez à la boutique.</p>
-      </div>
-      <form class="tshirt-tunnel-form" id="tshirtTunnelForm">
-        <div class="form-group">
-          <label for="tunnel-prenom">Prénom</label>
-          <input type="text" id="tunnel-prenom" name="prenom" required autocomplete="given-name" />
-        </div>
-        <div class="form-group">
-          <label for="tunnel-nom">Nom</label>
-          <input type="text" id="tunnel-nom" name="nom" required autocomplete="family-name" />
-        </div>
-        <div class="form-group">
-          <label for="tunnel-phone">Téléphone</label>
-          <input type="tel" id="tunnel-phone" name="phone" required autocomplete="tel" />
-        </div>
-        <div class="form-group">
-          <label for="tunnel-email">Email</label>
-          <input type="email" id="tunnel-email" name="email" required autocomplete="email" />
-        </div>
-        <div class="form-group">
-          <label for="tunnel-salle">Salle de récupération</label>
-          <select id="tunnel-salle" name="salle" required>
-            <option value="">Choisissez une salle...</option>
-            <option value="minimes">Les Minimes</option>
-            <option value="ramonville">Ramonville</option>
-            <option value="saint-cyprien">Saint-Cyprien</option>
-            <option value="portet">Portet-sur-Garonne</option>
-            <option value="etats-unis">États-Unis</option>
-          </select>
-        </div>
-        <button type="submit" id="tshirtTunnelSubmit">Valider — 89€ + t-shirt offert</button>
-      </form>
-      <button type="button" class="tshirt-tunnel-skip" id="tshirtTunnelSkip">Je ne souhaite pas le t-shirt (89€ seulement)</button>
-    </div>
-    <div class="tshirt-tunnel-confirm" id="tshirtTunnelConfirm">
-      <h3>Êtes-vous sûr de vouloir renoncer au t-shirt ?</h3>
-      <p>Vous pourrez toujours profiter de l'offre à 89€, mais sans le t-shirt offert. Vous serez redirigé vers la boutique.</p>
-      <div class="tshirt-tunnel-confirm-btns">
-        <button type="button" class="tshirt-tunnel-confirm-no" id="tshirtTunnelBack">Non, je veux 89€ + t-shirt</button>
-        <button type="button" class="tshirt-tunnel-confirm-yes" id="tshirtTunnelGiveUp">Oui, je renonce</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /#main-site -->
 
 <script>
 window.OFFRE_ETE_TRACK_API = 'https://gestion-manager.vercel.app/api/offre-ete/track';
@@ -1484,8 +1488,16 @@ document.addEventListener('mousemove', e => {
   let confettiAnim = null;
   let confettiPieces = [];
 
+  function scrollToTop() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    try { window.parent.scrollTo(0, 0); } catch (_) {}
+  }
+
   function openTeaser() {
     if (!teaser || sessionStorage.getItem(TEASER_KEY)) return;
+    scrollToTop();
     teaser.classList.add('active');
     teaser.setAttribute('aria-hidden', 'false');
   }
@@ -1564,6 +1576,7 @@ document.addEventListener('mousemove', e => {
 
   function openTunnel() {
     closeTeaser(true);
+    scrollToTop();
     resetTunnelSteps();
     tunnel.classList.add('active');
     tunnel.setAttribute('aria-hidden', 'false');
