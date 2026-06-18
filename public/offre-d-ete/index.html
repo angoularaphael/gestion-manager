@@ -881,7 +881,7 @@ html.in-iframe .progress-bar { display: none !important; }
   position: relative; z-index: 2;
   min-height: auto; display: flex; flex-direction: column;
   align-items: stretch; justify-content: flex-start;
-  padding: max(52px, env(safe-area-inset-top) + 44px) 20px 28px;
+  padding: max(24px, env(safe-area-inset-top) + 16px) 20px 28px;
   max-width: 440px; margin: 0 auto; width: 100%;
 }
 .tshirt-tunnel-celebrate { text-align: center; margin-bottom: 18px; }
@@ -919,6 +919,14 @@ html.in-iframe .progress-bar { display: none !important; }
 }
 .tshirt-tunnel-form { width: 100%; }
 .tshirt-tunnel-form .form-group { margin-bottom: 10px; }
+.tshirt-tunnel-form .form-group--priority label { color: rgba(255,255,255,0.85); font-weight: 600; font-size: 12px; }
+.tshirt-tunnel-form .form-group--priority input {
+  border-color: rgba(227, 6, 19, 0.45);
+  background: rgba(227, 6, 19, 0.08);
+  padding: 14px 14px;
+  font-size: 16px;
+}
+.tshirt-tunnel-form .form-group--priority input:focus { border-color: var(--bc-red); box-shadow: 0 0 0 2px rgba(227, 6, 19, 0.2); }
 .tshirt-tunnel-form label { display: block; font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; }
 .tshirt-tunnel-form input, .tshirt-tunnel-form select {
   width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
@@ -1047,21 +1055,21 @@ html.in-iframe .progress-bar { display: none !important; }
         <p class="tshirt-tunnel-desc">3 mois illimités à 89€. Le t-shirt officiel coûte d'habitude <s style="color:rgba(255,255,255,0.4)">29,99€</s> — <strong style="color:#ffcc00">offert aujourd'hui</strong>. Complétez le formulaire et indiquez votre salle pour le récupérer.</p>
       </div>
       <form class="tshirt-tunnel-form" id="tshirtTunnelForm">
+        <div class="form-group form-group--priority">
+          <label for="tunnel-email">Email</label>
+          <input type="email" id="tunnel-email" name="email" required autocomplete="email" inputmode="email" />
+        </div>
+        <div class="form-group form-group--priority">
+          <label for="tunnel-nom">Nom</label>
+          <input type="text" id="tunnel-nom" name="nom" required autocomplete="family-name" />
+        </div>
         <div class="form-group">
           <label for="tunnel-prenom">Prénom</label>
           <input type="text" id="tunnel-prenom" name="prenom" required autocomplete="given-name" />
         </div>
         <div class="form-group">
-          <label for="tunnel-nom">Nom</label>
-          <input type="text" id="tunnel-nom" name="nom" required autocomplete="family-name" />
-        </div>
-        <div class="form-group">
           <label for="tunnel-phone">Téléphone</label>
           <input type="tel" id="tunnel-phone" name="phone" required autocomplete="tel" />
-        </div>
-        <div class="form-group">
-          <label for="tunnel-email">Email</label>
-          <input type="email" id="tunnel-email" name="email" required autocomplete="email" />
         </div>
         <div class="form-group">
           <label for="tunnel-salle">Salle de récupération</label>
@@ -1166,7 +1174,7 @@ html.in-iframe .progress-bar { display: none !important; }
     </p>
 
     <div class="hero-actions">
-      <button type="button" class="btn-primary btn-offre js-open-tunnel">
+      <button type="button" class="btn-primary js-open-tunnel">
         J'en profite
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </button>
@@ -1282,7 +1290,7 @@ html.in-iframe .progress-bar { display: none !important; }
       <div class="offre-big">89<sup>€</sup></div>
       <div class="offre-ghost">au lieu de 150€</div>
       <p class="offre-meta">Inscription avant le 30 juin 2026</p>
-      <button type="button" class="btn-primary btn-offre js-open-tunnel">
+      <button type="button" class="btn-primary js-open-tunnel">
         J'en profite
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </button>
@@ -1448,7 +1456,7 @@ html.in-iframe .progress-bar { display: none !important; }
   <p class="cta-p reveal">3 mois d'entraînement illimité à 89€ + t-shirt offert (29,99€ d'habitude). Accès aux 5 salles, tous les cours, coaching personnalisé.</p>
 
   <div class="cta-btns reveal">
-    <button type="button" class="btn-primary btn-offre js-open-tunnel" style="padding:20px 56px;font-size:15px">
+    <button type="button" class="btn-primary js-open-tunnel" style="padding:20px 56px;font-size:15px">
       J'EN PROFITE
       <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
     </button>
@@ -1656,6 +1664,10 @@ document.addEventListener('mousemove', e => {
     tunnel.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     startConfetti();
+    setTimeout(() => {
+      const email = document.getElementById('tunnel-email');
+      if (email) email.focus();
+    }, 150);
   }
 
   function closeTunnel() {
@@ -1671,11 +1683,7 @@ document.addEventListener('mousemove', e => {
   }
 
   document.querySelectorAll('.js-open-tunnel').forEach((el) => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      openTunnel();
-    });
+    el.addEventListener('click', (e) => { e.stopPropagation(); openTunnel(); });
   });
 
   if (widget) {
