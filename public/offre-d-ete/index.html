@@ -1730,10 +1730,12 @@ document.addEventListener('mousemove', e => {
   if (tunnelSkip) tunnelSkip.addEventListener('click', () => {
     tunnelFormWrap.classList.add('hidden');
     tunnelConfirm.classList.add('active');
+    scrollTunnelToConfirm();
   });
   if (tunnelBack) tunnelBack.addEventListener('click', () => {
     tunnelConfirm.classList.remove('active');
     tunnelFormWrap.classList.remove('hidden');
+    scrollTunnelToForm(true);
   });
   if (tunnelGiveUp) tunnelGiveUp.addEventListener('click', goBoutique);
 
