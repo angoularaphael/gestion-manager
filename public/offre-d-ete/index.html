@@ -1570,6 +1570,35 @@ document.addEventListener('mousemove', e => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     try { window.parent.scrollTo(0, 0); } catch (_) {}
+    try { window.parent.postMessage({ type: 'offre-ete-scroll-top' }, '*'); } catch (_) {}
+  }
+
+  function scrollTunnelToForm(focusEmail) {
+    scrollToTop();
+    if (tunnel) tunnel.scrollTop = 0;
+    requestAnimationFrame(() => {
+      if (tunnel) tunnel.scrollTop = 0;
+      const formWrap = document.getElementById('tshirtTunnelFormWrap');
+      const form = document.getElementById('tshirtTunnelForm');
+      const target = form || formWrap;
+      if (target) target.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'instant' });
+    });
+    if (focusEmail) {
+      setTimeout(() => {
+        const email = document.getElementById('tunnel-email');
+        if (email) email.focus();
+      }, 200);
+    }
+  }
+
+  function scrollTunnelToConfirm() {
+    scrollToTop();
+    if (tunnel) tunnel.scrollTop = 0;
+    requestAnimationFrame(() => {
+      if (tunnel) tunnel.scrollTop = 0;
+      const confirm = document.getElementById('tshirtTunnelConfirm');
+      if (confirm) confirm.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'instant' });
+    });
   }
 
   function openTeaser() {
@@ -1657,17 +1686,18 @@ document.addEventListener('mousemove', e => {
 
   function openTunnel() {
     closeTeaser(true);
-    scrollToTop();
     resetTunnelSteps();
-    if (tunnel) tunnel.scrollTop = 0;
     tunnel.classList.add('active');
     tunnel.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     startConfetti();
-    setTimeout(() => {
-      const email = document.getElementById('tunnel-email');
-      if (email) email.focus();
-    }, 150);
+    scrollTunnelToForm(true);
+    try {
+      window.parent.postMessage({
+        type: 'offre-ete-resize',
+        height: Math.max(window.innerHeight || 600, document.body.offsetHeight || 600),
+      }, '*');
+    } catch (_) {}
   }
 
   function closeTunnel() {
