@@ -85,11 +85,35 @@ body {
 /* En iframe WordPress : hauteur = contenu réel (évite boucle infinie) */
 html.in-iframe, html.in-iframe body {
   height: auto !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
-html.in-iframe .main-site { min-height: 0 !important; }
-html.in-iframe #hero { min-height: 0; }
+html.in-iframe .main-site { min-height: 100vh !important; min-height: 100dvh !important; }
+html.in-iframe #hero {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: 20px;
+  padding-bottom: 48px;
+}
+html.in-iframe .progress-bar { display: none !important; }
+html.in-iframe .hero-visual { opacity: 0.85; }
+html.in-iframe .hero-visual-img {
+  object-fit: cover;
+  object-position: center 30%;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  transform: scale(1.05);
+}
+html.in-iframe .hero-visual-mask {
+  background:
+    linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 42%, transparent 100%),
+    linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 18%);
+}
 
 /* HERO */
 #hero {
@@ -1096,6 +1120,26 @@ html.in-iframe #hero { min-height: 0; }
   </div>
 </div>
 
+<script>
+/* Écouteur teaser AVANT le chargement de intro.js — évite la course au démarrage */
+(function () {
+  var TEASER_KEY = 'offre_ete_tshirt_teaser_v3';
+  function showTeaser() {
+    var t = document.getElementById('tshirtTeaser');
+    if (!t || sessionStorage.getItem(TEASER_KEY)) return;
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    t.classList.add('active');
+    t.setAttribute('aria-hidden', 'false');
+    try { window.parent.postMessage({ type: 'offre-ete-resize', height: Math.max(window.innerHeight, document.body.offsetHeight) }, '*'); } catch (_) {}
+  }
+  window.openOffreEteTeaser = showTeaser;
+  window.addEventListener('offre-ete-intro-done', function () { setTimeout(showTeaser, 350); });
+  if (document.body.classList.contains('intro-done')) setTimeout(showTeaser, 400);
+})();
+</script>
+
 <div id="main-site" class="main-site main-site--hidden">
 
 <div class="progress-bar" id="pbar"></div>
@@ -1522,7 +1566,7 @@ document.addEventListener('mousemove', e => {
 (function () {
   const BOUTIQUE = window.OFFRE_ETE_BOUTIQUE_URL;
   const LEAD_API = window.OFFRE_ETE_LEAD_API;
-  const TEASER_KEY = 'offre_ete_tshirt_teaser_dismissed';
+  const TEASER_KEY = 'offre_ete_tshirt_teaser_v3';
 
   const teaser = document.getElementById('tshirtTeaser');
   const teaserClose = document.getElementById('tshirtTeaserClose');
@@ -1550,6 +1594,10 @@ document.addEventListener('mousemove', e => {
   }
 
   function openTeaser() {
+    if (typeof window.openOffreEteTeaser === 'function') {
+      window.openOffreEteTeaser();
+      return;
+    }
     if (!teaser || sessionStorage.getItem(TEASER_KEY)) return;
     scrollToTop();
     teaser.classList.add('active');
@@ -1713,12 +1761,8 @@ document.addEventListener('mousemove', e => {
   window.addEventListener('offre-ete-intro-done', () => {
     setTimeout(openTeaser, 400);
   });
-  if (document.body.classList.contains('intro-done') || !document.getElementById('intro-stage')) {
-    setTimeout(openTeaser, 600);
-  }
   window.addEventListener('resize', resizeConfetti);
 })();
-</script>
 </script>
 </body>
 </html>
