@@ -85,35 +85,12 @@ body {
 /* En iframe WordPress : hauteur = contenu réel (évite boucle infinie) */
 html.in-iframe, html.in-iframe body {
   height: auto !important;
-  min-height: 100vh !important;
-  min-height: 100dvh !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
-html.in-iframe .main-site { min-height: 100vh !important; min-height: 100dvh !important; }
-html.in-iframe #hero {
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-top: 20px;
-  padding-bottom: 48px;
-}
+html.in-iframe .main-site { min-height: 0 !important; }
+html.in-iframe #hero { min-height: 0; }
 html.in-iframe .progress-bar { display: none !important; }
-html.in-iframe .hero-visual { opacity: 0.85; }
-html.in-iframe .hero-visual-img {
-  object-fit: cover;
-  object-position: center 30%;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  transform: scale(1.05);
-}
-html.in-iframe .hero-visual-mask {
-  background:
-    linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 42%, transparent 100%),
-    linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 18%);
-}
 
 /* HERO */
 #hero {
