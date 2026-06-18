@@ -445,14 +445,14 @@
     logoOverlay.style.visibility = 'visible';
     const onDone = () => {
       particles = particles.filter((p) => p.phase !== 'text');
-      window.setTimeout(finishIntro, 350);
+      window.setTimeout(finishIntro, 200);
     };
     if (typeof gsap !== 'undefined') {
-      gsap.to(logoOverlay, { opacity: 1, duration: 0.5, ease: 'power2.out', onComplete: onDone });
+      gsap.to(logoOverlay, { opacity: 1, duration: 0.35, ease: 'power2.out', onComplete: onDone });
     } else {
-      logoOverlay.style.transition = 'opacity 0.5s ease-out';
+      logoOverlay.style.transition = 'opacity 0.35s ease-out';
       logoOverlay.style.opacity = '1';
-      window.setTimeout(onDone, 520);
+      window.setTimeout(onDone, 370);
     }
   }
 
@@ -534,15 +534,15 @@
       rightGlove.style.opacity = '1';
       spawnSparks(80);
       spawn3DImpact();
-      shakeCamera3D(0.12, 280);
+      shakeCamera3D(0.12, 200);
       window.setTimeout(() => {
         spawnGlitter(200);
         window.setTimeout(() => {
           spawnLogoParticles();
           animationPhase = 'text';
-          window.setTimeout(revealLogo, 1400);
-        }, 450);
-      }, 200);
+          window.setTimeout(revealLogo, 700);
+        }, 250);
+      }, 120);
       return;
     }
 
@@ -563,29 +563,29 @@
 
     const tl = gsap.timeline({ delay: 0.05 });
     tl.set([leftGlove, rightGlove], { visibility: 'visible', opacity: 1 })
-      .to(leftGlove, { x: -meetOffset, y: 0, rotation: 8, scale: 1.04, duration: 0.55, ease: 'power4.in' })
-      .to(rightGlove, { x: meetOffset, y: 0, rotation: -8, scale: 1.04, duration: 0.55, ease: 'power4.in' }, '<')
+      .to(leftGlove, { x: -meetOffset, y: 0, rotation: 8, scale: 1.04, duration: 0.38, ease: 'power4.in' })
+      .to(rightGlove, { x: meetOffset, y: 0, rotation: -8, scale: 1.04, duration: 0.38, ease: 'power4.in' }, '<')
       .add(() => {
         animationPhase = 'sparks';
         spawnSparks(150);
         spawn3DImpact();
-        shakeCamera3D(0.16, 280);
+        shakeCamera3D(0.16, 200);
       }, '-=0.03')
-      .to(stage, { x: -14, y: 6, duration: 0.03, yoyo: true, repeat: 5, ease: 'power1.inOut', onComplete: () => gsap.set(stage, { x: 0, y: 0 }) }, '<')
-      .to(leftGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.22, ease: 'power2.in' }, '-=0.08')
-      .to(rightGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.22, ease: 'power2.in' }, '<')
+      .to(stage, { x: -14, y: 6, duration: 0.03, yoyo: true, repeat: 3, ease: 'power1.inOut', onComplete: () => gsap.set(stage, { x: 0, y: 0 }) }, '<')
+      .to(leftGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.18, ease: 'power2.in' }, '-=0.06')
+      .to(rightGlove, { opacity: 0, y: 0, scale: 1.22, duration: 0.18, ease: 'power2.in' }, '<')
       .add(() => {
         animationPhase = 'glitter';
         spawnGlitter(480);
       })
-      .to({}, { duration: 0.75 })
+      .to({}, { duration: 0.4 })
       .add(() => {
         animationPhase = 'text';
         particles = particles.filter((p) => p.phase !== 'glitter');
         const hasLogoParticles = spawnLogoParticles();
-        if (!hasLogoParticles) window.setTimeout(revealLogo, 220);
+        if (!hasLogoParticles) window.setTimeout(revealLogo, 150);
       })
-      .to({}, { duration: 1.35, onComplete: revealLogo });
+      .to({}, { duration: 0.7, onComplete: revealLogo });
   }
 
   function boot() {
@@ -607,7 +607,7 @@
       }),
     ])
       .then(() => {
-        safetyTimer = window.setTimeout(finishIntro, 8000);
+        safetyTimer = window.setTimeout(finishIntro, 5000);
         startTimeline();
       })
       .catch(() => {
