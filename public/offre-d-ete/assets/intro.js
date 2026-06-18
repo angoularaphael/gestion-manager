@@ -377,13 +377,16 @@
     if (stage && stage.parentNode && !introFinished) {
       return Math.ceil(window.innerHeight || document.documentElement.clientHeight || 800);
     }
-    const mainH = mainSite ? mainSite.offsetHeight : 0;
     const teaserOpen = document.getElementById('tshirtTeaser')?.classList.contains('active');
     const tunnelOpen = document.getElementById('tshirtTunnel')?.classList.contains('active');
     if (teaserOpen || tunnelOpen) {
+      const mainH = mainSite ? mainSite.offsetHeight : 0;
       return Math.ceil(Math.max(window.innerHeight || 800, mainH));
     }
-    return Math.ceil(Math.max(mainH, window.innerHeight || 800));
+    if (mainSite) {
+      return Math.ceil(mainSite.getBoundingClientRect().height);
+    }
+    return Math.ceil(document.body.offsetHeight);
   }
 
   function notifyParentHeight() {
