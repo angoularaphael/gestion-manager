@@ -884,13 +884,6 @@ html.in-iframe .progress-bar { display: none !important; }
   padding: max(52px, env(safe-area-inset-top) + 44px) 20px 28px;
   max-width: 440px; margin: 0 auto; width: 100%;
 }
-.tshirt-tunnel-close {
-  position: fixed; top: 16px; right: 16px; z-index: 3;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.6); width: 40px; height: 40px; border-radius: 50%;
-  font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.tshirt-tunnel-close:hover { color: white; border-color: rgba(255,255,255,0.4); }
 .tshirt-tunnel-celebrate { text-align: center; margin-bottom: 18px; }
 .tshirt-tunnel-celebrate .emoji { font-size: 32px; margin-bottom: 10px; display: block; line-height: 1; }
 .tshirt-tunnel-rank {
@@ -1044,7 +1037,6 @@ html.in-iframe .progress-bar { display: none !important; }
 
 <div class="tshirt-tunnel" id="tshirtTunnel" aria-hidden="true">
   <canvas class="tshirt-tunnel-canvas" id="tshirtConfetti"></canvas>
-  <button class="tshirt-tunnel-close" id="tshirtTunnelClose" aria-label="Fermer">&times;</button>
   <div class="tshirt-tunnel-inner">
     <div class="tshirt-tunnel-form-wrap" id="tshirtTunnelFormWrap">
       <div class="tshirt-tunnel-celebrate">
@@ -1174,10 +1166,10 @@ html.in-iframe .progress-bar { display: none !important; }
     </p>
 
     <div class="hero-actions">
-      <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener">
-        Je profite de l'offre
+      <button type="button" class="btn-primary btn-offre js-open-tunnel">
+        J'en profite
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
-      </a>
+      </button>
     </div>
 
   </div>
@@ -1290,10 +1282,10 @@ html.in-iframe .progress-bar { display: none !important; }
       <div class="offre-big">89<sup>€</sup></div>
       <div class="offre-ghost">au lieu de 150€</div>
       <p class="offre-meta">Inscription avant le 30 juin 2026</p>
-      <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener">
-        Je profite de l'offre
+      <button type="button" class="btn-primary btn-offre js-open-tunnel">
+        J'en profite
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
-      </a>
+      </button>
     </div>
     <div class="reveal-r">
       <p class="cd-label">OFFRE VALABLE JUSQU'AU 30/06/2026</p>
@@ -1456,10 +1448,10 @@ html.in-iframe .progress-bar { display: none !important; }
   <p class="cta-p reveal">3 mois d'entraînement illimité à 89€ + t-shirt offert (29,99€ d'habitude). Accès aux 5 salles, tous les cours, coaching personnalisé.</p>
 
   <div class="cta-btns reveal">
-    <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener" style="padding:20px 56px;font-size:15px">
-      JE PROFITE DE L'OFFRE
+    <button type="button" class="btn-primary btn-offre js-open-tunnel" style="padding:20px 56px;font-size:15px">
+      J'EN PROFITE
       <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
-    </a>
+    </button>
   </div>
 
   <p class="cta-note reveal">Sans engagement longue durée — boutique en ligne Boxing Center</p>
@@ -1552,7 +1544,6 @@ document.addEventListener('mousemove', e => {
   const teaserClose = document.getElementById('tshirtTeaserClose');
   const teaserLater = document.getElementById('tshirtTeaserLater');
   const tunnel = document.getElementById('tshirtTunnel');
-  const tunnelClose = document.getElementById('tshirtTunnelClose');
   const tunnelForm = document.getElementById('tshirtTunnelForm');
   const tunnelSubmit = document.getElementById('tshirtTunnelSubmit');
   const tunnelSkip = document.getElementById('tshirtTunnelSkip');
@@ -1680,7 +1671,11 @@ document.addEventListener('mousemove', e => {
   }
 
   document.querySelectorAll('.js-open-tunnel').forEach((el) => {
-    el.addEventListener('click', (e) => { e.stopPropagation(); openTunnel(); });
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openTunnel();
+    });
   });
 
   if (widget) {
@@ -1694,7 +1689,6 @@ document.addEventListener('mousemove', e => {
   if (teaserClose) teaserClose.addEventListener('click', () => closeTeaser(true));
   if (teaserLater) teaserLater.addEventListener('click', () => closeTeaser(true));
   if (teaser) teaser.addEventListener('click', (e) => { if (e.target === teaser) closeTeaser(true); });
-  if (tunnelClose) tunnelClose.addEventListener('click', closeTunnel);
   if (tunnelSkip) tunnelSkip.addEventListener('click', () => {
     tunnelFormWrap.classList.add('hidden');
     tunnelConfirm.classList.add('active');
