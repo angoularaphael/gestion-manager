@@ -758,6 +758,8 @@ html.in-iframe #hero { min-height: 0; }
   color: var(--bc-red); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
 }
 .tshirt-hero-banner-desc { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.4; }
+.tshirt-price-note s { color: rgba(255,255,255,0.4); text-decoration: line-through; }
+.tshirt-price-note em { font-style: normal; color: #ffcc00; font-weight: 600; }
 .tshirt-hero-banner-cta {
   font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 600;
   letter-spacing: 0.12em; text-transform: uppercase; color: white;
@@ -1017,7 +1019,7 @@ html.in-iframe #hero { min-height: 0; }
     </div>
     <h3 id="tshirtTeaserTitle">🎁 89€ + t-shirt offert</h3>
     <div class="tshirt-teaser-rank">Avant-dernier bénéficiaire</div>
-    <p>3 mois illimités à 89€. En remplissant le formulaire, vous recevez aussi le t-shirt officiel Boxing Center gratuitement.</p>
+    <p>3 mois illimités à 89€. Le t-shirt officiel <span class="tshirt-price-note">(<s>29,99€</s> <em>offert</em>)</span> en remplissant le formulaire.</p>
     <div class="tshirt-teaser-btns">
       <button type="button" class="btn-primary js-open-tunnel">J'en profite</button>
       <button type="button" class="tshirt-teaser-later" id="tshirtTeaserLater">Plus tard</button>
@@ -1035,7 +1037,7 @@ html.in-iframe #hero { min-height: 0; }
         <div class="tshirt-tunnel-rank">Vous êtes l'avant-dernier bénéficiaire</div>
         <h2>FÉLICITATIONS !</h2>
         <p class="tshirt-tunnel-offer-line">89€ + T-SHIRT OFFERT</p>
-        <p class="tshirt-tunnel-desc">3 mois illimités à 89€. Complétez le formulaire ci-dessous et indiquez votre salle pour récupérer votre t-shirt.</p>
+        <p class="tshirt-tunnel-desc">3 mois illimités à 89€. Le t-shirt officiel coûte d'habitude <s style="color:rgba(255,255,255,0.4)">29,99€</s> — <strong style="color:#ffcc00">offert aujourd'hui</strong>. Complétez le formulaire et indiquez votre salle pour le récupérer.</p>
       </div>
       <form class="tshirt-tunnel-form" id="tshirtTunnelForm">
         <div class="form-group">
@@ -1096,7 +1098,7 @@ html.in-iframe #hero { min-height: 0; }
       <img src="assets/shirt.png" alt="" />
       <div class="tshirt-hero-banner-text">
         <div class="tshirt-hero-banner-title">🎁 89€ + t-shirt offert</div>
-        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€ et le t-shirt officiel offert en remplissant le formulaire (valeur 20€)</div>
+        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€. T-shirt officiel <span class="tshirt-price-note"><s>29,99€</s> <em>offert</em></span> en remplissant le formulaire.</div>
       </div>
       <span class="tshirt-hero-banner-cta">J'en profite</span>
     </div>
@@ -1391,7 +1393,7 @@ html.in-iframe #hero { min-height: 0; }
     </div>
     <div class="tshirt-card-body">
       <h2 class="tshirt-card-title">89€ <em>+ T-SHIRT OFFERT</em></h2>
-      <p class="tshirt-card-desc">Profitez de l'offre été à 89€ pour 3 mois illimités et recevez le t-shirt officiel Boxing Center en remplissant le formulaire. Indiquez votre salle pour le récupérer.</p>
+      <p class="tshirt-card-desc">Profitez de l'offre été à 89€ pour 3 mois illimités. Le t-shirt officiel Boxing Center, d'une valeur de <s style="color:rgba(255,255,255,0.4)">29,99€</s>, est <strong style="color:#ffcc00">offert</strong> en remplissant le formulaire. Indiquez votre salle pour le récupérer.</p>
       <p class="tshirt-card-urgency">⚠️ Offre limitée — avant-dernière place pour le t-shirt</p>
       <div class="tshirt-card-actions">
         <button type="button" class="btn-primary js-open-tunnel">J'en profite</button>
@@ -1410,7 +1412,7 @@ html.in-iframe #hero { min-height: 0; }
     L'ÉTÉ POUR
     <em>TOUT CHANGER</em>
   </h2>
-  <p class="cta-p reveal">3 mois d'entraînement illimité à 89€ + t-shirt offert. Accès aux 5 salles, tous les cours, coaching personnalisé. Remplissez le formulaire pour réserver votre t-shirt.</p>
+  <p class="cta-p reveal">3 mois d'entraînement illimité à 89€ + t-shirt offert (29,99€ d'habitude). Accès aux 5 salles, tous les cours, coaching personnalisé.</p>
 
   <div class="cta-btns reveal">
     <a href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" class="btn-primary btn-offre" target="_blank" rel="noopener" style="padding:20px 56px;font-size:15px">
@@ -1432,7 +1434,7 @@ html.in-iframe #hero { min-height: 0; }
   </div>
   <div class="promo-widget-content">
     <div class="promo-widget-title">🎁 89€ + t-shirt offert</div>
-    <div class="promo-widget-text">3 mois illimités et le t-shirt offert en remplissant le formulaire</div>
+    <div class="promo-widget-text">T-shirt à <s style="opacity:0.5">29,99€</s> — <strong style="color:#ffcc00">offert</strong> avec le formulaire</div>
     <div class="promo-widget-btn">J'EN PROFITE</div>
   </div>
 </div>
