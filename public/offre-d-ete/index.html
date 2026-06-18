@@ -8,7 +8,7 @@
 <link rel="icon" href="https://gestion-manager.vercel.app/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="https://gestion-manager.vercel.app/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Oswald:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Oswald:wght@300;400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
@@ -604,14 +604,28 @@ html.in-iframe #hero { min-height: 0; }
 .salle-thumb {
   margin-top: auto; padding-top: 18px;
   width: 100%; aspect-ratio: 16 / 10;
-  background: center / cover no-repeat rgba(0,0,0,0.22);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #111;
   overflow: hidden;
+  border-radius: 4px;
 }
-.salle-thumb--minimes { background-image: url('assets/salles/minimes.png'); }
-.salle-thumb--ramonville { background-image: url('assets/salles/ramonville.png'); }
-.salle-thumb--saint-cyprien { background-image: url('assets/salles/saint-cyprien.png'); }
-.salle-thumb--portet-sur-garonne { background-image: url('assets/salles/portet-sur-garonne.png'); }
-.salle-thumb--etats-unis { background-image: url('assets/salles/etats-unis-new.png'); background-position: center; }
+.salle-thumb--minimes { background-image: url('assets/salles/minimes.png'); background-position: center bottom; }
+.salle-thumb--ramonville { background-image: url('assets/salles/ramonville.png'); background-position: center bottom; }
+.salle-thumb--saint-cyprien { background-image: url('assets/salles/saint-cyprien.png'); background-position: left bottom; }
+.salle-thumb--portet-sur-garonne { background-image: url('assets/salles/portet-sur-garonne.png'); background-position: center bottom; }
+.salle-thumb--etats-unis { background-image: url('assets/salles/etats-unis-new3.png'); background-position: center 25%; position: relative; }
+.salle-thumb--etats-unis-text {
+  position: absolute; bottom: 8px; left: 10px; color: rgba(255,255,255,0.95);
+  font-family: 'Dancing Script', cursive; font-size: 19px; font-weight: 400;
+  transform: rotate(-3deg); text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  letter-spacing: 0.5px; z-index: 2;
+}
+.salle-thumb--etats-unis-text::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; width: 100%;
+  height: 1px; background: rgba(255,255,255,0.6); border-radius: 1px;
+  transform: rotate(1deg) skewX(-15deg);
+}
 .salle-thumb--placeholder {
   border: 1px dashed rgba(255,255,255,0.28);
   display: flex; align-items: center; justify-content: center;
@@ -1378,7 +1392,9 @@ html.in-iframe #hero { min-height: 0; }
       <div class="salle-idx">05 / 05</div>
       <span class="salle-name">ÉTATS-UNIS</span>
       <p class="salle-addr">Toulouse<br>Quartier États-Unis</p>
-      <div class="salle-thumb salle-thumb--etats-unis" role="img" aria-label="Salle Boxing Center États-Unis"></div>
+      <div class="salle-thumb salle-thumb--etats-unis" role="img" aria-label="Salle Boxing Center États-Unis">
+        <span class="salle-thumb--etats-unis-text">États-Unis</span>
+      </div>
     </article>
   </div>
 </section>
