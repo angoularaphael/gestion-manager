@@ -377,9 +377,8 @@
     if (stage && stage.parentNode && !introFinished) {
       return Math.ceil(window.innerHeight || document.documentElement.clientHeight || 800);
     }
-    const teaserOpen = document.getElementById('tshirtTeaser')?.classList.contains('active');
     const tunnelOpen = document.getElementById('tshirtTunnel')?.classList.contains('active');
-    if (teaserOpen || tunnelOpen) {
+    if (tunnelOpen) {
       const mainH = mainSite ? mainSite.offsetHeight : 0;
       return Math.ceil(Math.max(window.innerHeight || 800, mainH));
     }
@@ -424,6 +423,22 @@
     mainSite.querySelectorAll('.hero-h1 .lni').forEach((el) => {
       el.style.transform = 'translateY(0)';
     });
+    const banner = document.getElementById('tshirtHeroBanner');
+    if (banner) {
+      banner.classList.add('vis', 'tshirt-hero-banner--show');
+    }
+  }
+
+  function showHeroAnnouncement() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    try { window.parent.postMessage({ type: 'offre-ete-scroll-top' }, '*'); } catch (_) {}
+    const banner = document.getElementById('tshirtHeroBanner');
+    if (banner) {
+      banner.classList.add('vis', 'tshirt-hero-banner--show', 'tshirt-hero-banner--pulse');
+      banner.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
   }
 
   function finishIntro() {
@@ -442,9 +457,7 @@
       lastReportedHeight = 0;
       notifyParentHeight();
       window.dispatchEvent(new CustomEvent('offre-ete-intro-done'));
-      window.setTimeout(() => {
-        if (typeof window.openOffreEteTeaser === 'function') window.openOffreEteTeaser();
-      }, 250);
+      window.setTimeout(showHeroAnnouncement, 150);
     }, 500);
   }
 

@@ -781,6 +781,18 @@ html.in-iframe .progress-bar { display: none !important; }
   background: var(--bc-red); padding: 10px 16px; border-radius: 4px; white-space: nowrap;
   flex-shrink: 0;
 }
+.tshirt-hero-banner.vis,
+.tshirt-hero-banner--show {
+  opacity: 1 !important;
+  transform: none !important;
+}
+.tshirt-hero-banner--pulse {
+  animation: banner-pulse 2s ease-in-out 2;
+}
+@keyframes banner-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 6, 19, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(227, 6, 19, 0); }
+}
 @media (max-width: 768px) {
   .tshirt-hero-banner { flex-wrap: wrap; padding: 14px; gap: 12px; }
   .tshirt-hero-banner-cta { width: 100%; text-align: center; }
@@ -815,57 +827,6 @@ html.in-iframe .progress-bar { display: none !important; }
 .tshirt-card-urgency { font-size: 13px; color: #ffaa00; font-weight: 600; margin-bottom: 20px; }
 .tshirt-card-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* POPUP TEASER (après intro) */
-.tshirt-teaser-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10050;
-  background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
-  display: flex; align-items: flex-start; justify-content: center;
-  padding: max(16px, env(safe-area-inset-top)) 20px 20px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.35s ease;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-}
-.tshirt-teaser-overlay.active { opacity: 1; pointer-events: auto; }
-.tshirt-teaser {
-  background: #111; border: 1px solid rgba(227,6,19,0.4);
-  border-radius: 16px; max-width: 420px; width: 100%;
-  padding: 28px 24px 24px; position: relative;
-  margin-top: 0;
-  transform: translateY(-12px) scale(0.96);
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-  flex-shrink: 0;
-}
-.tshirt-teaser-overlay.active .tshirt-teaser { transform: translateY(0) scale(1); }
-.tshirt-teaser-close {
-  position: absolute; top: 12px; right: 14px;
-  background: none; border: none; color: rgba(255,255,255,0.5);
-  font-size: 24px; cursor: pointer; line-height: 1; padding: 4px;
-}
-.tshirt-teaser-close:hover { color: white; }
-.tshirt-teaser-visual { text-align: center; margin-bottom: 16px; }
-.tshirt-teaser-visual img { width: 100px; height: auto; }
-.tshirt-teaser h3 {
-  font-family: 'Oswald', sans-serif; font-size: 20px; color: white;
-  text-align: center; margin-bottom: 10px; line-height: 1.3;
-}
-.tshirt-teaser-rank {
-  display: block; text-align: center; margin-bottom: 14px;
-  padding: 8px 14px; border-radius: 6px;
-  background: rgba(227,6,19,0.15); border: 1px solid var(--bc-red);
-  font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--bc-red);
-}
-.tshirt-teaser p { font-size: 13px; color: rgba(255,255,255,0.7); text-align: center; line-height: 1.5; margin-bottom: 20px; }
-.tshirt-teaser-btns { display: flex; flex-direction: column; gap: 10px; }
-.tshirt-teaser-btns .btn-primary { width: 100%; justify-content: center; }
-.tshirt-teaser-later {
-  background: none; border: none; color: rgba(255,255,255,0.45);
-  font-size: 12px; cursor: pointer; padding: 8px; text-align: center;
-  font-family: 'Inter', sans-serif;
-}
-.tshirt-teaser-later:hover { color: rgba(255,255,255,0.8); }
-
 /* TUNNEL T-SHIRT */
 .tshirt-tunnel {
   position: fixed; inset: 0; z-index: 10100;
@@ -884,31 +845,14 @@ html.in-iframe .progress-bar { display: none !important; }
   padding: max(24px, env(safe-area-inset-top) + 16px) 20px 28px;
   max-width: 440px; margin: 0 auto; width: 100%;
 }
-.tshirt-tunnel-celebrate { text-align: center; margin-bottom: 18px; }
-.tshirt-tunnel-celebrate .emoji { font-size: 32px; margin-bottom: 10px; display: block; line-height: 1; }
-.tshirt-tunnel-rank {
-  display: inline-block; margin-bottom: 14px;
-  padding: 10px 18px; border-radius: 6px;
-  background: linear-gradient(135deg, rgba(227,6,19,0.25) 0%, rgba(227,6,19,0.08) 100%);
-  border: 2px solid var(--bc-red);
-  box-shadow: 0 0 24px rgba(227,6,19,0.35), inset 0 0 20px rgba(227,6,19,0.08);
-  font-family: 'Oswald', sans-serif;
-  font-size: clamp(17px, 4.5vw, 22px); font-weight: 700;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: #fff; line-height: 1.2;
-  animation: tunnel-rank-pulse 2.2s ease-in-out infinite;
-}
-@keyframes tunnel-rank-pulse {
-  0%, 100% { box-shadow: 0 0 24px rgba(227,6,19,0.35), inset 0 0 20px rgba(227,6,19,0.08); transform: scale(1); }
-  50% { box-shadow: 0 0 36px rgba(227,6,19,0.55), inset 0 0 28px rgba(227,6,19,0.12); transform: scale(1.02); }
-}
+.tshirt-tunnel-celebrate { text-align: center; margin-bottom: 16px; }
 .tshirt-tunnel-celebrate h2 {
-  font-family: 'Bebas Neue', sans-serif; font-size: clamp(30px, 8vw, 40px);
-  line-height: 1; margin-bottom: 8px; color: white; letter-spacing: 0.04em;
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(26px, 7vw, 34px);
+  line-height: 1.1; margin-bottom: 8px; color: white; letter-spacing: 0.04em;
 }
 .tshirt-tunnel-offer-line {
-  font-family: 'Bebas Neue', sans-serif; font-size: clamp(26px, 7vw, 34px);
-  color: var(--bc-red); line-height: 1; margin-bottom: 10px; letter-spacing: 0.06em;
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 6vw, 28px);
+  color: var(--bc-red); line-height: 1; margin-bottom: 8px; letter-spacing: 0.06em;
 }
 .tshirt-tunnel-celebrate .tshirt-tunnel-desc {
   font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.5; max-width: 360px; margin: 0 auto;
@@ -1026,33 +970,14 @@ html.in-iframe .progress-bar { display: none !important; }
   </div>
 </div>
 
-<!-- POPUP TEASER + TUNNEL (hors main-site pour position fixe en haut) -->
-<div class="tshirt-teaser-overlay" id="tshirtTeaser" aria-hidden="true">
-  <div class="tshirt-teaser" role="dialog" aria-labelledby="tshirtTeaserTitle">
-    <button class="tshirt-teaser-close" id="tshirtTeaserClose" aria-label="Fermer">&times;</button>
-    <div class="tshirt-teaser-visual">
-      <img src="assets/shirt.png" alt="T-shirt Boxing Center" />
-    </div>
-    <h3 id="tshirtTeaserTitle">🎁 89€ + t-shirt offert</h3>
-    <div class="tshirt-teaser-rank">Avant-dernier bénéficiaire</div>
-    <p>3 mois illimités à 89€. Le t-shirt officiel <span class="tshirt-price-note">(<s>29,99€</s> <em>offert</em>)</span> en remplissant le formulaire.</p>
-    <div class="tshirt-teaser-btns">
-      <button type="button" class="btn-primary js-open-tunnel">J'en profite</button>
-      <button type="button" class="tshirt-teaser-later" id="tshirtTeaserLater">Plus tard</button>
-    </div>
-  </div>
-</div>
-
+<!-- TUNNEL T-SHIRT -->
 <div class="tshirt-tunnel" id="tshirtTunnel" aria-hidden="true">
   <canvas class="tshirt-tunnel-canvas" id="tshirtConfetti"></canvas>
   <div class="tshirt-tunnel-inner">
     <div class="tshirt-tunnel-form-wrap" id="tshirtTunnelFormWrap">
       <div class="tshirt-tunnel-celebrate">
-        <span class="emoji">🎉</span>
-        <div class="tshirt-tunnel-rank">Vous êtes l'avant-dernier bénéficiaire</div>
-        <h2>FÉLICITATIONS !</h2>
-        <p class="tshirt-tunnel-offer-line">89€ + T-SHIRT OFFERT</p>
-        <p class="tshirt-tunnel-desc">3 mois illimités à 89€. Le t-shirt officiel coûte d'habitude <s style="color:rgba(255,255,255,0.4)">29,99€</s> — <strong style="color:#ffcc00">offert aujourd'hui</strong>. Complétez le formulaire et indiquez votre salle pour le récupérer.</p>
+        <h2>89€ + T-SHIRT OFFERT</h2>
+        <p class="tshirt-tunnel-desc">T-shirt officiel à <s style="color:rgba(255,255,255,0.4)">29,99€</s> — <strong style="color:#ffcc00">offert</strong>. Complétez le formulaire et indiquez votre salle.</p>
       </div>
       <form class="tshirt-tunnel-form" id="tshirtTunnelForm">
         <div class="form-group form-group--priority">
@@ -1097,30 +1022,6 @@ html.in-iframe .progress-bar { display: none !important; }
   </div>
 </div>
 
-<script>
-/* Teaser — affiché après l'animation gants (une fois par chargement de page) */
-(function () {
-  function showTeaser() {
-    if (window.__offreEteTeaserDismissed || window.__offreEteTeaserShown) return;
-    var t = document.getElementById('tshirtTeaser');
-    if (!t) return;
-    window.__offreEteTeaserShown = true;
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    t.classList.add('active');
-    t.setAttribute('aria-hidden', 'false');
-    try {
-      window.parent.postMessage({
-        type: 'offre-ete-resize',
-        height: Math.max(window.innerHeight || 600, document.body.offsetHeight || 600),
-      }, '*');
-    } catch (_) {}
-  }
-  window.openOffreEteTeaser = showTeaser;
-})();
-</script>
-
 <div id="main-site" class="main-site main-site--hidden">
 
 <div class="progress-bar" id="pbar"></div>
@@ -1137,7 +1038,7 @@ html.in-iframe .progress-bar { display: none !important; }
       <img src="assets/shirt.png" alt="" />
       <div class="tshirt-hero-banner-text">
         <div class="tshirt-hero-banner-title">🎁 89€ + t-shirt offert</div>
-        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€. T-shirt officiel <span class="tshirt-price-note"><s>29,99€</s> <em>offert</em></span> en remplissant le formulaire.</div>
+        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€. T-shirt officiel <span class="tshirt-price-note"><s>29,99€</s> <em>offert</em></span> — remplissez le formulaire pour le récupérer.</div>
       </div>
       <span class="tshirt-hero-banner-cta">J'en profite</span>
     </div>
@@ -1435,7 +1336,7 @@ html.in-iframe .progress-bar { display: none !important; }
     <div class="tshirt-card-body">
       <h2 class="tshirt-card-title">89€ <em>+ T-SHIRT OFFERT</em></h2>
       <p class="tshirt-card-desc">Profitez de l'offre été à 89€ pour 3 mois illimités. Le t-shirt officiel Boxing Center, d'une valeur de <s style="color:rgba(255,255,255,0.4)">29,99€</s>, est <strong style="color:#ffcc00">offert</strong> en remplissant le formulaire. Indiquez votre salle pour le récupérer.</p>
-      <p class="tshirt-card-urgency">⚠️ Offre limitée — avant-dernière place pour le t-shirt</p>
+      <p class="tshirt-card-urgency">⚠️ Offre limitée — t-shirt offert aux prochains inscrits</p>
       <div class="tshirt-card-actions">
         <button type="button" class="btn-primary js-open-tunnel">J'en profite</button>
       </div>
@@ -1543,14 +1444,11 @@ document.addEventListener('mousemove', e => {
   const y = (e.clientY / window.innerHeight - .5) * 18;
   hg.style.transform = `translate(${x}px, ${y}px)`;
 });
-/* PROMO TSHIRT — tunnel, teaser, confettis */
+/* PROMO TSHIRT — tunnel, confettis */
 (function () {
   const BOUTIQUE = window.OFFRE_ETE_BOUTIQUE_URL;
   const LEAD_API = window.OFFRE_ETE_LEAD_API;
 
-  const teaser = document.getElementById('tshirtTeaser');
-  const teaserClose = document.getElementById('tshirtTeaserClose');
-  const teaserLater = document.getElementById('tshirtTeaserLater');
   const tunnel = document.getElementById('tshirtTunnel');
   const tunnelForm = document.getElementById('tshirtTunnelForm');
   const tunnelSubmit = document.getElementById('tshirtTunnelSubmit');
@@ -1599,24 +1497,6 @@ document.addEventListener('mousemove', e => {
       const confirm = document.getElementById('tshirtTunnelConfirm');
       if (confirm) confirm.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'instant' });
     });
-  }
-
-  function openTeaser() {
-    if (typeof window.openOffreEteTeaser === 'function') {
-      window.openOffreEteTeaser();
-      return;
-    }
-    if (!teaser || window.__offreEteTeaserDismissed) return;
-    scrollToTop();
-    teaser.classList.add('active');
-    teaser.setAttribute('aria-hidden', 'false');
-  }
-
-  function closeTeaser(persist) {
-    if (!teaser) return;
-    teaser.classList.remove('active');
-    teaser.setAttribute('aria-hidden', 'true');
-    if (persist) window.__offreEteTeaserDismissed = true;
   }
 
   function resizeConfetti() {
@@ -1685,7 +1565,6 @@ document.addEventListener('mousemove', e => {
   }
 
   function openTunnel() {
-    closeTeaser(true);
     resetTunnelSteps();
     tunnel.classList.add('active');
     tunnel.setAttribute('aria-hidden', 'false');
@@ -1724,9 +1603,6 @@ document.addEventListener('mousemove', e => {
     heroBanner.addEventListener('click', openTunnel);
     heroBanner.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTunnel(); } });
   }
-  if (teaserClose) teaserClose.addEventListener('click', () => closeTeaser(true));
-  if (teaserLater) teaserLater.addEventListener('click', () => closeTeaser(true));
-  if (teaser) teaser.addEventListener('click', (e) => { if (e.target === teaser) closeTeaser(true); });
   if (tunnelSkip) tunnelSkip.addEventListener('click', () => {
     tunnelFormWrap.classList.add('hidden');
     tunnelConfirm.classList.add('active');
@@ -1772,9 +1648,6 @@ document.addEventListener('mousemove', e => {
     });
   }
 
-  window.addEventListener('offre-ete-intro-done', () => {
-    setTimeout(openTeaser, 300);
-  });
   window.addEventListener('resize', resizeConfetti);
 })();
 </script>
