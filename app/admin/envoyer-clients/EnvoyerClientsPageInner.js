@@ -10,6 +10,11 @@ import { parseApiJson } from '../../../lib/apiJson';
 import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { getOffreEteClientCampaignTemplate } from '../../../lib/offreEteCampaign';
+import {
+  getOffreEteWhatsAppPreviewMessage,
+  OFFRE_ETE_WHATSAPP_VARIANT_COUNT,
+} from '../../../lib/offreEteWhatsAppCampaign';
+import { getCampaignWaveCount, getCampaignWaveIds } from '../../../lib/campaignWaves';
 import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
@@ -38,6 +43,8 @@ export default function EnvoyerClientsPageInner() {
   const [result, setResult] = useState(null);
   const [emailConfig, setEmailConfig] = useState(null);
   const [mailjetSender, setMailjetSender] = useState('1');
+  const [emailWave, setEmailWave] = useState(1);
+  const [waPreview, setWaPreview] = useState('');
   const { run: runSend, pending: sending } = useSingleAction();
 
   const loadClients = useCallback(async () => {
@@ -103,13 +110,38 @@ export default function EnvoyerClientsPageInner() {
   const withEmail = useMemo(() => clients.filter((c) => c.email), [clients]);
   const withPhone = useMemo(() => clients.filter((c) => c.telephone), [clients]);
 
+  const waveLimit = emailConfig?.mailjet?.waveLimit || 8000;
+  const emailIdsOrdered = useMemo(() => withEmail.map((c) => c.id), [withEmail]);
+  const emailWaveCount = useMemo(
+    () => getCampaignWaveCount(emailIdsOrdered.length, waveLimit),
+    [emailIdsOrdered.length, waveLimit]
+  );
+  const emailWaveIds = useMemo(
+    () => getCampaignWaveIds(emailIdsOrdered, emailWave, waveLimit),
+    [emailIdsOrdered, emailWave, waveLimit]
+  );
+
+  useEffect(() => {
+    if (emailWave > emailWaveCount && emailWaveCount > 0) {
+      setEmailWave(emailWaveCount);
+    }
+  }, [emailWave, emailWaveCount]);
+
+  useEffect(() => {
+    if (channels.includes('email') && emailWave >= 1 && emailWave <= 3) {
+      setMailjetSender(String(emailWave));
+    }
+  }, [emailWave, channels]);
+
   const campaignTargetIds = useMemo(() => {
     if (channels.includes('email') && channels.includes('whatsapp')) {
-      return clients.filter((c) => c.email || c.telephone).map((c) => c.id);
+      const phoneIds = withPhone.map((c) => c.id);
+      return [...new Set([...emailWaveIds, ...phoneIds])];
     }
     if (channels.includes('whatsapp')) return withPhone.map((c) => c.id);
+    if (channels.includes('email')) return emailWaveIds;
     return withEmail.map((c) => c.id);
-  }, [channels, clients, withEmail, withPhone]);
+  }, [channels, withEmail, withPhone, emailWaveIds]);
 
   function selectAllFiltered() {
     setSelectedIds(new Set(filtered.map((c) => c.id)));
@@ -118,6 +150,16 @@ export default function EnvoyerClientsPageInner() {
   function useCampaignAudience() {
     setMode('campaign');
     setSelectedIds(new Set());
+  }
+
+  function buildSendPayload(extra = {}) {
+    return {
+      message: channels.includes('email') ? message : 'offre-ete-whatsapp',
+      subject,
+      channels,
+      offre_ete_whatsapp: channels.includes('whatsapp'),
+      ...extra,
+    };
   }
 
   async function sendCampaignEmailChunks({ message, subject, ids }) {
@@ -161,10 +203,17 @@ export default function EnvoyerClientsPageInner() {
   }
 
   async function send({ testOnly = false } = {}) {
-    if (sending || !message.trim() || !channels.length) return;
+    if (sending || !channels.length) return;
+    if (channels.includes('email') && !message.trim()) return;
 
     const isCampaign = mode === 'campaign' && !testOnly;
-    const targetCount = isCampaign ? campaignTargetIds.length : selectedIds.size;
+    const emailOnlyCampaign =
+      isCampaign && channels.length === 1 && channels[0] === 'email';
+    const targetCount = isCampaign
+      ? emailOnlyCampaign
+        ? emailWaveIds.length
+        : campaignTargetIds.length
+      : selectedIds.size;
 
     if (!testOnly && targetCount === 0) {
       setResult({ error: 'Aucun destinataire pour ce canal' });
@@ -177,12 +226,21 @@ export default function EnvoyerClientsPageInner() {
         : channels.includes('whatsapp')
           ? 'WhatsApp'
           : 'email';
-      let warn = `Campagne : envoyer à ${targetCount} client(s) (${channelLabel}) ?`;
-      if (isCampaign && channels.includes('whatsapp') && withPhone.length > 12) {
-        warn +=
-          '\n\n⚠ WhatsApp : seuls ~12 numéros/heure partiront. Les autres devront être relancés plus tard ou par email.';
+      let warn = emailOnlyCampaign
+        ? `Vague ${emailWave}/${emailWaveCount || 1} — envoyer à ${emailWaveIds.length} client(s) email ?`
+        : `Campagne : envoyer à ${targetCount} client(s) (${channelLabel}) ?`;
+      if (emailOnlyCampaign && emailWaveIds.length) {
+        const from = (emailWave - 1) * waveLimit + 1;
+        const to = from + emailWaveIds.length - 1;
+        warn += `\n\nClients email n°${from} à n°${to} (max ${waveLimit} par vague).`;
       }
-      if (isCampaign && channels.length === 1 && channels[0] === 'email') {
+      if (isCampaign && channels.includes('whatsapp')) {
+        warn += `\n\nWhatsApp : ${OFFRE_ETE_WHATSAPP_VARIANT_COUNT} messages différents (tirage aléatoire) — max ~12/h.`;
+        if (withPhone.length > 12) {
+          warn += ' Relancez plus tard pour le reste ou utilisez l\'email.';
+        }
+      }
+      if (emailOnlyCampaign) {
         const waveHint =
           emailConfig?.provider === 'mailjet'
             ? `\n\nExpéditeur Mailjet : ${
@@ -206,7 +264,7 @@ export default function EnvoyerClientsPageInner() {
       if (testOnly) {
         const { data, partial, duplicate, failed } = await runDualChannelSend({
           channels,
-          payload: { message, subject, channels, test_only: true },
+          payload: buildSendPayload({ test_only: true }),
           entityKey: 'clients',
           botPath: '/api/send-to-clients',
           emailPath: '/api/clients/send-email',
@@ -225,9 +283,8 @@ export default function EnvoyerClientsPageInner() {
         return;
       }
 
-      if (isCampaign && channels.length === 1 && channels[0] === 'email') {
-        const ids = withEmail.map((c) => c.id);
-        const data = await sendCampaignEmailChunks({ message, subject, ids });
+      if (emailOnlyCampaign) {
+        const data = await sendCampaignEmailChunks({ message, subject, ids: emailWaveIds });
         setResult({
           success: true,
           partial: (data.email?.failed || 0) > 0,
@@ -237,21 +294,18 @@ export default function EnvoyerClientsPageInner() {
         return;
       }
 
-      const payload = {
-        message,
-        subject,
-        channels,
+      const payload = buildSendPayload({
         test_only: false,
         ...(isCampaign
           ? { broadcast: channels.includes('email') ? 'email' : 'phone', client_ids: undefined }
           : { client_ids: [...selectedIds] }),
-      };
+      });
 
       if (isCampaign && channels.includes('email') && channels.includes('whatsapp')) {
         const emailData = await sendCampaignEmailChunks({
           message,
           subject,
-          ids: withEmail.map((c) => c.id),
+          ids: emailWaveIds,
         });
         let waData = emptySendResult('clients');
         try {
@@ -260,7 +314,11 @@ export default function EnvoyerClientsPageInner() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               path: '/api/send-to-clients',
-              body: { ...payload, channels: ['whatsapp'], broadcast: 'phone' },
+              body: buildSendPayload({
+                channels: ['whatsapp'],
+                broadcast: 'phone',
+                test_only: false,
+              }),
             }),
           });
           const waJson = await parseApiJson(waRes);
@@ -344,6 +402,36 @@ export default function EnvoyerClientsPageInner() {
               </button>
             </div>
             <WhatsAppBulkHint visible={channels.includes('whatsapp')} />
+            {channels.includes('whatsapp') ? (
+              <div className="send-wa-hint muted" style={{ marginTop: '0.75rem' }}>
+                <p style={{ margin: '0 0 8px' }}>
+                  <strong>{OFFRE_ETE_WHATSAPP_VARIANT_COUNT} messages WhatsApp différents</strong> — un
+                  texte tiré au hasard par client (promo 89€, t-shirt offert, lien boutique).
+                </p>
+                <button
+                  type="button"
+                  className="btn ghost sm"
+                  onClick={() => setWaPreview(getOffreEteWhatsAppPreviewMessage())}
+                >
+                  Voir un exemple
+                </button>
+                {waPreview ? (
+                  <pre
+                    className="muted"
+                    style={{
+                      marginTop: 10,
+                      whiteSpace: 'pre-wrap',
+                      fontSize: '0.85rem',
+                      background: 'var(--surface-2, #f8fafc)',
+                      padding: 12,
+                      borderRadius: 8,
+                    }}
+                  >
+                    {waPreview}
+                  </pre>
+                ) : null}
+              </div>
+            ) : null}
             {channels.includes('email') && emailConfig?.provider === 'mailjet' ? (
               <div style={{ marginTop: '1rem' }}>
                 <label>
@@ -392,7 +480,10 @@ export default function EnvoyerClientsPageInner() {
                 className={`channel-pill ${mode === 'campaign' ? 'on' : ''}`}
                 onClick={useCampaignAudience}
               >
-                Campagne — tous ({campaignTargetIds.length})
+                Campagne
+                {channels.includes('email') && !channels.includes('whatsapp')
+                  ? ` — vague ${emailWave}`
+                  : ` — tous (${campaignTargetIds.length})`}
               </button>
               <button
                 type="button"
@@ -402,15 +493,46 @@ export default function EnvoyerClientsPageInner() {
                 Sélection manuelle
               </button>
             </div>
+            {mode === 'campaign' && channels.includes('email') && !channels.includes('whatsapp') ? (
+              <div style={{ marginTop: '0.75rem' }}>
+                <p className="muted" style={{ marginBottom: 8 }}>
+                  Vagues de {waveLimit.toLocaleString('fr-FR')} emails — compte Mailjet suggéré par vague.
+                </p>
+                <div className="channel-pills" style={{ flexWrap: 'wrap' }}>
+                  {Array.from({ length: Math.max(1, emailWaveCount) }, (_, i) => i + 1).map((w) => {
+                    const count = getCampaignWaveIds(emailIdsOrdered, w, waveLimit).length;
+                    return (
+                      <button
+                        key={w}
+                        type="button"
+                        className={`channel-pill ${emailWave === w ? 'on' : ''}`}
+                        onClick={() => setEmailWave(w)}
+                      >
+                        Vague {w} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
             {mode === 'campaign' ? (
               <p className="muted">
-                Tous les clients avec{' '}
-                {channels.includes('whatsapp') && !channels.includes('email')
-                  ? 'un numéro de téléphone'
-                  : channels.includes('email') && !channels.includes('whatsapp')
-                    ? 'une adresse email'
-                    : 'email ou téléphone'}{' '}
-                recevront le message (email en priorité pour une couverture maximale).
+                {channels.includes('email') && !channels.includes('whatsapp') ? (
+                  <>
+                    Vague {emailWave} : {emailWaveIds.length} client(s) avec email (sur{' '}
+                    {withEmail.length} au total).
+                  </>
+                ) : (
+                  <>
+                    Tous les clients avec{' '}
+                    {channels.includes('whatsapp') && !channels.includes('email')
+                      ? 'un numéro de téléphone'
+                      : channels.includes('email') && !channels.includes('whatsapp')
+                        ? 'une adresse email'
+                        : 'email ou téléphone'}{' '}
+                    recevront le message.
+                  </>
+                )}
               </p>
             ) : null}
           </section>
@@ -465,6 +587,8 @@ export default function EnvoyerClientsPageInner() {
 
           <section className="card send-card">
             <h2 className="section-title">Message</h2>
+            {channels.includes('email') ? (
+              <>
             <div className="message-template-picker">
               <div className="message-template-header">
                 <strong>Modèle Offre Été 2026</strong>
@@ -499,6 +623,13 @@ export default function EnvoyerClientsPageInner() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Votre message promotion ou information…"
             />
+              </>
+            ) : (
+              <p className="muted">
+                Le texte WhatsApp est généré automatiquement ({OFFRE_ETE_WHATSAPP_VARIANT_COUNT}{' '}
+                variantes). Utilisez « Voir un exemple » dans la section Canaux.
+              </p>
+            )}
           </section>
 
           <div className="send-actions">
@@ -506,7 +637,7 @@ export default function EnvoyerClientsPageInner() {
               className="btn secondary"
               onClick={() => send({ testOnly: true })}
               loading={sending}
-              disabled={!message.trim()}
+              disabled={channels.includes('email') && !message.trim()}
             >
               Test atangana (seul)
             </ActionButton>
@@ -515,11 +646,19 @@ export default function EnvoyerClientsPageInner() {
               onClick={() => send({ testOnly: false })}
               loading={sending}
               disabled={
-                !message.trim() ||
-                (mode === 'selection' ? !selectedIds.size : campaignTargetIds.length === 0)
+                (channels.includes('email') && !message.trim()) ||
+                (mode === 'selection'
+                  ? !selectedIds.size
+                  : channels.length === 1 && channels[0] === 'email'
+                    ? !emailWaveIds.length
+                    : !campaignTargetIds.length)
               }
             >
-              {mode === 'campaign' ? `Lancer la campagne (${campaignTargetIds.length})` : 'Envoyer'}
+              {mode === 'campaign' && channels.length === 1 && channels[0] === 'email'
+                ? `Lancer vague ${emailWave} (${emailWaveIds.length})`
+                : mode === 'campaign'
+                  ? `Lancer la campagne (${campaignTargetIds.length})`
+                  : 'Envoyer'}
             </ActionButton>
           </div>
 

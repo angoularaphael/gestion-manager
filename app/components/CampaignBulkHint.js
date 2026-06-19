@@ -9,9 +9,8 @@ export default function CampaignBulkHint({ visible, emailCount = 0, phoneCount =
       </p>
       <ul>
         <li>
-          <strong>Email</strong> : canal fiable pour toucher{' '}
-          {emailCount > 0 ? `${emailCount} contact(s) avec email` : 'toute la liste'} (recommandé en
-          premier).
+          <strong>Email</strong> : par vagues de ~8 000 (vague 1, 2, 3…) — un compte Mailjet par
+          vague recommandé.
         </li>
         <li>
           <strong>WhatsApp</strong> : limité (~12 numéros/heure sur le bot) — impossible d&apos;envoyer
