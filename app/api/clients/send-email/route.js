@@ -76,7 +76,7 @@ export async function POST(request) {
       subject,
       html,
       preheader: campaignTpl.preheader,
-      isMarketing: !testOnly,
+      isMarketing: true,
       mailjetAccount,
       mailjetRotateAccounts: Boolean(mailjetRotateAccounts),
       mailjetStartIndex: Number.isFinite(mailjetStartIndex) ? mailjetStartIndex : 0,
