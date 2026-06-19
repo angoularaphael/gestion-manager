@@ -96,6 +96,7 @@ export async function POST(request) {
       warnings,
     });
   } catch (e) {
-    return json({ error: e.message }, { status: 500 });
+    console.error('[clients/send-email]', e);
+    return json({ error: e.message || 'Erreur envoi email' }, { status: 500 });
   }
 }
