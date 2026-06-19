@@ -377,11 +377,6 @@
     if (stage && stage.parentNode && !introFinished) {
       return Math.ceil(window.innerHeight || document.documentElement.clientHeight || 800);
     }
-    const tunnelOpen = document.getElementById('tshirtTunnel')?.classList.contains('active');
-    if (tunnelOpen) {
-      const mainH = mainSite ? mainSite.offsetHeight : 0;
-      return Math.ceil(Math.max(window.innerHeight || 800, mainH));
-    }
     if (mainSite) {
       return Math.ceil(mainSite.getBoundingClientRect().height);
     }

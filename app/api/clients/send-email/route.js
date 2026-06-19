@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { deliverEmail } from '../../../../lib/emailDelivery';
-import { buildEmailHtml } from '../../../../lib/emailTemplate';
-import { describeBrevoKeyIssue, getBrevoConfig } from '../../../../lib/brevoSend';
+import { describeEmailProviderIssue, getEmailConfig } from '../../../../lib/emailConfig';
 import { clientDisplayName, resolveClientsForSend } from '../../../../lib/clients';
+import { getOffreEteClientCampaignTemplate } from '../../../../lib/offreEteCampaign';
+import { fetchUnsubscribedEmailSet } from '../../../../lib/emailUnsubscribes';
+import { sendBulkEmails } from '../../../../lib/sendEmailBatch';
 import { getSession } from '../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,17 @@ export async function POST(request) {
     return json({ error: 'Corps de requête invalide' }, 400);
   }
 
-  const { client_ids: clientIds, message, subject, html, test_only: testOnly, broadcast } = body;
+  const {
+    client_ids: clientIds,
+    message,
+    subject,
+    html,
+    test_only: testOnly,
+    broadcast,
+    mailjet_account: mailjetAccount,
+    mailjet_rotate_accounts: mailjetRotateAccounts,
+    mailjet_start_index: mailjetStartIndex,
+  } = body;
 
   if (!message) return json({ error: 'message required' }, 400);
 
@@ -42,61 +53,48 @@ export async function POST(request) {
       return json({ error: 'Aucun client trouvé pour cet envoi' }, 400);
     }
 
-    const results = {
+    const emailConfig = getEmailConfig();
+    const providerIssue = describeEmailProviderIssue();
+
+    if (emailConfig.onVercel && providerIssue) {
+      return json({ error: providerIssue }, 400);
+    }
+
+    const unsubscribed = await fetchUnsubscribedEmailSet();
+    const eligible = clients.filter(
+      (c) => c.email && !unsubscribed.has(String(c.email).trim().toLowerCase())
+    );
+    const skippedUnsubscribed = clients.length - eligible.length;
+    const campaignTpl = getOffreEteClientCampaignTemplate();
+
+    const batch = await sendBulkEmails({
+      recipients: eligible,
+      getEmail: (c) => c.email,
+      getRecipientName: clientDisplayName,
+      getClientId: (c) => c.id,
+      message,
+      subject,
+      html,
+      preheader: campaignTpl.preheader,
+      isMarketing: !testOnly,
+      mailjetAccount,
+      mailjetRotateAccounts: Boolean(mailjetRotateAccounts),
+      mailjetStartIndex: Number.isFinite(mailjetStartIndex) ? mailjetStartIndex : 0,
+      allowBotFallback: false,
+    });
+
+    const warnings = [...(batch.warnings || [])];
+    if (skippedUnsubscribed > 0) {
+      warnings.push(`${skippedUnsubscribed} client(s) ignoré(s) (désabonnés).`);
+    }
+    batch.email.skipped += skippedUnsubscribed;
+
+    return json({
+      success: true,
       clients: clients.length,
-      email: { sent: 0, failed: 0, skipped: 0 },
-      errors: [],
-      destinations: [],
-      warnings: [],
-    };
-
-    const mailSubject = subject || 'Message Boxing Center';
-    const brevo = getBrevoConfig();
-    const keyIssue = describeBrevoKeyIssue();
-
-    if (brevo.onVercel && keyIssue) {
-      return json({ error: keyIssue }, 400);
-    }
-
-    for (const client of clients) {
-      if (!client.email) {
-        results.email.skipped++;
-        continue;
-      }
-      try {
-        const recipientName = clientDisplayName(client);
-        const emailHtml =
-          html ||
-          buildEmailHtml({
-            subject: mailSubject,
-            body: message,
-            recipientName,
-          });
-        await deliverEmail({
-          to: client.email,
-          subject: mailSubject,
-          html: emailHtml,
-          text: message,
-          recipientName,
-          allowBotFallback: false,
-        });
-        results.email.sent++;
-        results.destinations.push({
-          channel: 'email',
-          to: client.email,
-          client: recipientName,
-        });
-      } catch (err) {
-        results.email.failed++;
-        results.errors.push({
-          client: clientDisplayName(client),
-          channel: 'email',
-          error: err.message,
-        });
-      }
-    }
-
-    return json({ success: true, ...results });
+      ...batch,
+      warnings,
+    });
   } catch (e) {
     return json({ error: e.message }, { status: 500 });
   }
