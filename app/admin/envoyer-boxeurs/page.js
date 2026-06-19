@@ -311,7 +311,7 @@ export default function EnvoyerBoxeursPage() {
             ? `l'entraîneur « ${selectedBoxeur.nom} »`
             : `${recipientCount} entraîneur(s) réel(s)`;
         const ok = window.confirm(
-          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
+          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test giffareno237 » envoie à giffareno237@gmail.com.`
         );
         if (!ok) return;
       }
@@ -649,7 +649,7 @@ export default function EnvoyerBoxeursPage() {
               disabled={!message.trim()}
               title="Envoie uniquement au compte test Atangana — jamais aux vrais entraîneurs"
             >
-              {sending ? 'Envoi…' : 'Test atangana (seul)'}
+              {sending ? 'Envoi…' : 'Test giffareno237'}
             </ActionButton>
             <ActionButton
               className="btn primary"

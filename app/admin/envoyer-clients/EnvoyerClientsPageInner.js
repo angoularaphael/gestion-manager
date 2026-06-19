@@ -252,7 +252,7 @@ export default function EnvoyerClientsPageInner() {
             : '';
         warn += `\n\nEnvoi par lots de ${EMAIL_CHUNK_SIZE} emails.${waveHint}`;
       }
-      warn += '\n\n« Test atangana » = compte de test uniquement.';
+      warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
       const ok = window.confirm(warn);
       if (!ok) return;
     }
@@ -639,7 +639,7 @@ export default function EnvoyerClientsPageInner() {
               loading={sending}
               disabled={channels.includes('email') && !message.trim()}
             >
-              Test atangana (seul)
+              Test giffareno237
             </ActionButton>
             <ActionButton
               className="btn"
