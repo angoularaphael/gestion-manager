@@ -60,7 +60,7 @@ export async function POST(request) {
       return json({ error: providerIssue }, 400);
     }
 
-    const unsubscribed = await fetchUnsubscribedEmailSet();
+    const unsubscribed = testOnly ? new Set() : await fetchUnsubscribedEmailSet();
     const eligible = clients.filter(
       (c) => c.email && !unsubscribed.has(String(c.email).trim().toLowerCase())
     );
