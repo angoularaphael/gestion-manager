@@ -15,6 +15,9 @@
     },
     "app/api/boxeurs/send-email/route.js": {
       "maxDuration": 60
+    },
+    "app/api/clients/send-email/route.js": {
+      "maxDuration": 60
     }
   }
 }
