@@ -36,6 +36,8 @@ export default function EnvoyerClientsPageInner() {
   const [mode, setMode] = useState('campaign');
   const [sendProgress, setSendProgress] = useState(null);
   const [result, setResult] = useState(null);
+  const [emailConfig, setEmailConfig] = useState(null);
+  const [mailjetSender, setMailjetSender] = useState('1');
   const { run: runSend, pending: sending } = useSingleAction();
 
   const loadClients = useCallback(async () => {
@@ -55,6 +57,18 @@ export default function EnvoyerClientsPageInner() {
   useEffect(() => {
     loadClients();
   }, [loadClients]);
+
+  useEffect(() => {
+    fetch('/api/admin/email-config', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.provider === 'mailjet' && data.mailjet?.purposes?.campaign) {
+          setMailjetSender(String(data.mailjet.purposes.campaign));
+        }
+        setEmailConfig(data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (preselectId && clients.length) {
@@ -109,17 +123,29 @@ export default function EnvoyerClientsPageInner() {
   async function sendCampaignEmailChunks({ message, subject, ids }) {
     const chunks = chunkIds(ids, EMAIL_CHUNK_SIZE);
     const data = emptySendResult('clients');
+    const mailjetRotate = mailjetSender === 'rotate';
+    const mailjetAccount = mailjetRotate ? undefined : mailjetSender;
+    let mailjetOffset = 0;
+
     for (let i = 0; i < chunks.length; i++) {
       setSendProgress({ current: i + 1, total: chunks.length, label: 'emails' });
       const res = await fetch('/api/clients/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client_ids: chunks[i], message, subject }),
+        body: JSON.stringify({
+          client_ids: chunks[i],
+          message,
+          subject,
+          mailjet_account: mailjetAccount,
+          mailjet_rotate_accounts: mailjetRotate,
+          mailjet_start_index: mailjetRotate ? mailjetOffset : undefined,
+        }),
       });
       const batch = await parseApiJson(res);
       if (!res.ok) throw new Error(batch.error || 'Erreur envoi email');
       mergeSendResults(data, batch);
       data.clients = Math.max(data.clients || 0, ids.length);
+      mailjetOffset += chunks[i].length;
     }
     return data;
   }
@@ -157,7 +183,16 @@ export default function EnvoyerClientsPageInner() {
           '\n\n⚠ WhatsApp : seuls ~12 numéros/heure partiront. Les autres devront être relancés plus tard ou par email.';
       }
       if (isCampaign && channels.length === 1 && channels[0] === 'email') {
-        warn += `\n\nEnvoi par lots de ${EMAIL_CHUNK_SIZE} emails.`;
+        const waveHint =
+          emailConfig?.provider === 'mailjet'
+            ? `\n\nExpéditeur Mailjet : ${
+                mailjetSender === 'rotate'
+                  ? 'répartition sur les 3 comptes'
+                  : emailConfig.mailjet?.accounts?.find((a) => String(a.slot) === mailjetSender)
+                      ?.senderEmail || `compte ${mailjetSender}`
+              }.`
+            : '';
+        warn += `\n\nEnvoi par lots de ${EMAIL_CHUNK_SIZE} emails.${waveHint}`;
       }
       warn += '\n\n« Test atangana » = compte de test uniquement.';
       const ok = window.confirm(warn);
@@ -309,6 +344,38 @@ export default function EnvoyerClientsPageInner() {
               </button>
             </div>
             <WhatsAppBulkHint visible={channels.includes('whatsapp')} />
+            {channels.includes('email') && emailConfig?.provider === 'mailjet' ? (
+              <div style={{ marginTop: '1rem' }}>
+                <label>
+                  <strong>Expéditeur Mailjet</strong>
+                  <select
+                    className="search-input"
+                    value={mailjetSender}
+                    onChange={(e) => setMailjetSender(e.target.value)}
+                    style={{ marginTop: 6 }}
+                  >
+                    {(emailConfig.mailjet?.accounts || [])
+                      .filter((a) => a.configured)
+                      .map((a) => (
+                        <option key={a.slot} value={String(a.slot)}>
+                          Compte {a.slot} — {a.senderEmail} ({a.label})
+                        </option>
+                      ))}
+                    <option value="rotate">Répartir sur les 3 comptes (rotation)</option>
+                  </select>
+                </label>
+                <p className="muted" style={{ marginTop: 8, fontSize: '0.9rem' }}>
+                  Jusqu&apos;à {emailConfig.mailjet?.waveLimit || 8000} emails par vague et par
+                  compte. Utilise une adresse <strong>@boxingcenter.fr</strong> vérifiée (SPF +
+                  DKIM) pour éviter les spams.
+                </p>
+                {!emailConfig.ready ? (
+                  <p className="muted" style={{ color: 'var(--danger, #c00)' }}>
+                    {emailConfig.issue}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
             <CampaignBulkHint
               visible={mode === 'campaign' || channels.includes('whatsapp')}
               emailCount={withEmail.length}

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { deliverEmail } from '../../../../lib/emailDelivery';
-import { buildEmailHtml } from '../../../../lib/emailTemplate';
-import { describeBrevoKeyIssue, getBrevoConfig } from '../../../../lib/brevoSend';
+import { describeEmailProviderIssue, getEmailConfig } from '../../../../lib/emailConfig';
 import { resolveManagersForSend } from '../../../../lib/managers';
+import { sendBulkEmails } from '../../../../lib/sendEmailBatch';
 import { getSession } from '../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +33,8 @@ export async function POST(request) {
     html,
     test_only: testOnly,
     broadcast,
+    mailjet_account: mailjetAccount,
+    mailjet_rotate_accounts: mailjetRotateAccounts,
   } = body;
 
   if (!message) return json({ error: 'message required' }, 400);
@@ -49,60 +50,31 @@ export async function POST(request) {
       return json({ error: 'Aucun manager trouvé pour cet envoi' }, 400);
     }
 
-    const results = {
-      email: { sent: 0, failed: 0, skipped: 0 },
-      errors: [],
-      destinations: [],
-      warnings: [],
-    };
+    const emailConfig = getEmailConfig();
+    const providerIssue = describeEmailProviderIssue();
 
-    const mailSubject = subject || 'Message Boxing Center';
-    const brevo = getBrevoConfig();
-    const keyIssue = describeBrevoKeyIssue();
-
-    if (brevo.onVercel && keyIssue) {
-      return json({ error: keyIssue }, 400);
+    if (emailConfig.onVercel && providerIssue) {
+      return json({ error: providerIssue }, 400);
     }
 
-    for (const mgr of managers) {
-      if (!mgr.email) {
-        results.email.skipped++;
-        continue;
-      }
-      try {
-        const emailHtml =
-          html ||
-          buildEmailHtml({
-            subject: mailSubject,
-            body: message,
-            recipientName: mgr.nom,
-          });
-        const delivery = await deliverEmail({
-          to: mgr.email,
-          subject: mailSubject,
-          text: message,
-          html: emailHtml,
-          recipientName: mgr.nom,
-          allowBotFallback: false,
-        });
-        results.email.sent++;
-        results.destinations.push({
-          channel: 'email',
-          to: mgr.email,
-          manager: mgr.nom,
-          via: delivery?.via || 'brevo-api',
-        });
-      } catch (err) {
-        results.email.failed++;
-        results.errors.push({ manager: mgr.nom, channel: 'email', error: err.message });
-      }
-    }
+    const batch = await sendBulkEmails({
+      recipients: managers,
+      getEmail: (m) => m.email,
+      getRecipientName: (m) => m.nom,
+      message,
+      subject,
+      html,
+      mailjetAccount,
+      mailjetRotateAccounts: Boolean(mailjetRotateAccounts),
+      allowBotFallback: false,
+    });
 
     return json({
       success: true,
       managers: managers.length,
       whatsapp: { sent: 0, failed: 0, skipped: 0 },
-      ...results,
+      warnings: [],
+      ...batch,
     });
   } catch (err) {
     return json({ error: err.message }, 500);
