@@ -279,7 +279,7 @@ export default function EnvoyerPage() {
             ? `le manager « ${selectedManager.nom} »`
             : `${recipientCount} manager(s) réel(s)`;
         const ok = window.confirm(
-          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test atangana » envoie au compte de test.`
+          `Confirmer l'envoi à ${label} ?\n\nSeul le bouton « Test giffareno237 » envoie à giffareno237@gmail.com.`
         );
         if (!ok) return;
       }
@@ -582,7 +582,7 @@ export default function EnvoyerPage() {
               disabled={!message.trim()}
               title="Envoie uniquement au manager test Atangana — jamais aux vrais managers"
             >
-              {sending ? 'Envoi…' : 'Test atangana (seul)'}
+              {sending ? 'Envoi…' : 'Test giffareno237'}
             </ActionButton>
             <ActionButton
               className="btn primary"

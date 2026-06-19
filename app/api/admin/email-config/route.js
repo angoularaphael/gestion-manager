@@ -29,7 +29,7 @@ export async function GET() {
       'DKIM : 3 enregistrements CNAME fournis par Mailjet → DNS boxingcenter.fr',
       'DMARC : v=DMARC1; p=none; rua=mailto:boxingcenter31@gmail.com (surveiller puis durcir)',
       'Réchauffer : 50–200 emails le 1er jour, puis augmenter progressivement',
-      'Tester avec « Test atangana » et vérifier boîte principale + spam',
+      'Tester avec « Test giffareno237 » et vérifier boîte principale + spam',
       'Exécuter supabase/email_unsubscribes.sql (lien Se désabonner obligatoire)',
     ],
     senderUsesOwnDomain: (config.senderEmail || '').includes('@boxingcenter.fr'),
