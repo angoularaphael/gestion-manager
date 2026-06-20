@@ -260,10 +260,26 @@ export default function EnvoyerClientsPageInner() {
 
       if (emailOnlyCampaign) {
         const data = await sendCampaignEmailChunks({ message, subject, ids: emailWaveIds });
+        const sent = data.email?.sent || 0;
+        const failed = data.email?.failed || 0;
+        const skipped = data.email?.skipped || 0;
         setResult({
-          success: true,
-          partial: (data.email?.failed || 0) > 0,
+          success: sent > 0,
+          failed: sent === 0,
+          partial: failed > 0 || skipped > 0,
           data,
+          warnings: [
+            ...(data.warnings || []),
+            ...(sent === 0
+              ? [
+                  failed > 0
+                    ? `${failed} email(s) en échec — vérifiez le compte Mailjet ${emailWave} sur Vercel.`
+                    : skipped > 0
+                      ? `${skipped} client(s) ignoré(s) (sans email ou désabonnés).`
+                      : 'Aucun email envoyé — vérifiez la config Mailjet.',
+                ]
+              : []),
+          ],
           previewHtml: buildEmailHtml({ subject, body: message, recipientName: 'Client' }),
         });
         return;
@@ -483,15 +499,16 @@ export default function EnvoyerClientsPageInner() {
                     Vague {emailWave} : {emailWaveIds.length} client(s) avec email (sur{' '}
                     {withEmail.length} au total).
                   </>
+                ) : channels.includes('whatsapp') && !channels.includes('email') ? (
+                  <>
+                    <strong>{withPhone.length}</strong> client(s) avec un numéro de téléphone en base
+                    (sur {clients.length} total). Seuls ceux-ci recevront le WhatsApp — pas les clients
+                    email seul.
+                  </>
                 ) : (
                   <>
-                    Tous les clients avec{' '}
-                    {channels.includes('whatsapp') && !channels.includes('email')
-                      ? 'un numéro de téléphone'
-                      : channels.includes('email') && !channels.includes('whatsapp')
-                        ? 'une adresse email'
-                        : 'email ou téléphone'}{' '}
-                    recevront le message.
+                    Email vague {emailWave} : {emailWaveIds.length} · WhatsApp : {withPhone.length}{' '}
+                    numéro(s) en base
                   </>
                 )}
               </p>
@@ -652,8 +669,13 @@ export default function EnvoyerClientsPageInner() {
                   <div className="result-grid">
                     {channels.includes('email') && (
                       <div className="result-stat">
-                        <span className="ok">{result.data.email?.sent ?? 0}</span>
+                        <span className={(result.data.email?.sent ?? 0) > 0 ? 'ok' : 'err'}>
+                          {result.data.email?.sent ?? 0}
+                        </span>
                         <small>emails</small>
+                        {(result.data.email?.failed ?? 0) > 0 ? (
+                          <small className="muted"> · {result.data.email.failed} échec(s)</small>
+                        ) : null}
                       </div>
                     )}
                     {channels.includes('whatsapp') && (
