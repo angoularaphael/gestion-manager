@@ -278,16 +278,28 @@ html.in-iframe .progress-bar { display: none !important; }
   opacity: 0; animation: fadeUp .45s var(--transition) .45s forwards;
 }
 .p-old {
-  font-family: 'Oswald', sans-serif; font-size: 26px;
-  font-weight: 400; color: var(--bc-grey);
-  text-decoration: line-through;
+  font-family: 'Oswald', sans-serif; font-size: 38px;
+  font-weight: 600; color: rgba(255, 255, 255, 0.95);
+  position: relative; display: inline-block; text-decoration: none;
+}
+.p-old .c { display: inline-block; }
+.p-old .slash {
+  position: absolute; top: 55%; left: -5%;
+  width: 0; height: 4px; background-color: var(--bc-red);
+  transform: translateY(-50%) rotate(-3deg);
+  transform-origin: left center;
 }
 .p-new {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(72px, 9vw, 110px);
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(72px, 9vw, 110px);
   color: var(--bc-white); line-height: 1;
-  text-shadow: 0 0 40px rgba(0,0,0,0.8);
+  display: inline-block;
 }
+.p-flash {
+  position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,215,0,0) 70%);
+  transform: translate(-50%, -50%) scale(0); opacity: 0; pointer-events: none; z-index: 0;
+}
+.p-new-wrap { position: relative; display: inline-block; z-index: 1; }
 .p-badge {
   display: flex; flex-direction: column;
   gap: 4px;
@@ -512,11 +524,11 @@ html.in-iframe .progress-bar { display: none !important; }
 }
 .disc-card:hover .disc-sub { opacity: 1; transform: translateY(0); }
 /* Visuels disciplines */
-.dc1 { background: center / cover no-repeat url('assets/disciplines/boxe_anglaise.png'); }
-.dc2 { background: center / cover no-repeat url('assets/disciplines/taii.png'); }
-.dc3 { background: center / cover no-repeat url('assets/disciplines/mma.png'); }
-.dc4 { background: center / cover no-repeat url('assets/disciplines/crosscrainnaing.png'); }
-.dc5 { background: center / cover no-repeat url('assets/disciplines/acces_libre.png'); }
+.dc1 { background: center / cover no-repeat url('assets/boxe_anglaise.png'); }
+.dc2 { background: center / cover no-repeat url('assets/taii.png'); }
+.dc3 { background: center / cover no-repeat url('assets/mma_cage.png'); }
+.dc4 { background: center / cover no-repeat url('assets/crosstrainning.png'); }
+.dc5 { background: center / cover no-repeat url('assets/acces_libre.png'); }
 
 /* OFFRE */
 #offre {
@@ -557,13 +569,15 @@ html.in-iframe .progress-bar { display: none !important; }
 .offre-ghost {
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(40px, 5.5vw, 70px);
-  -webkit-text-stroke: 1px rgba(255,255,255,0.1);
-  color: transparent; letter-spacing: 0.02em;
+  -webkit-text-stroke: 2px #ffcc00;
+  color: transparent;
+  text-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+  letter-spacing: 0.02em;
 }
 .offre-meta {
-  font-family: 'Oswald', sans-serif; font-size: 12px;
-  font-weight: 300; letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--bc-grey); margin: 16px 0 40px;
+  font-family: 'Oswald', sans-serif; font-size: 14px;
+  font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--bc-red); margin: 16px 0 40px;
 }
 
 /* COUNTDOWN */
@@ -833,7 +847,7 @@ html.in-iframe .progress-bar { display: none !important; }
   .hero-eyebrow::before { width: 24px; }
   .hero-h1 { font-size: clamp(48px, 14vw, 72px); margin-bottom: 12px; }
   .hero-price { margin-bottom: 24px; gap: 10px; }
-  .p-old { font-size: 20px; }
+  .p-old { font-size: 28px; }
   .p-new { font-size: clamp(56px, 16vw, 80px); }
   .p-badge strong { font-size: 16px; }
   .hero-deadline { max-width: 100%; padding: 14px 16px; margin-bottom: 20px; }
@@ -1055,28 +1069,28 @@ html.in-iframe .progress-bar { display: none !important; }
   <div class="hero-content">
     <div class="hero-eyebrow">Offre Été 2026 — Toulouse &amp; Agglomération</div>
 
-    <a class="tshirt-hero-banner reveal js-go-boutique" id="tshirtHeroBanner" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien">
-      <img src="assets/shirt.png" alt="T-shirt Boxing Center offert avec l'abonnement 3 mois 89 euros" />
-      <div class="tshirt-hero-banner-text">
-        <div class="tshirt-hero-banner-title">89€ tout compris</div>
-        <div class="tshirt-hero-banner-desc">Tu paies <strong>89€ une fois</strong> : 3 mois illimités + t-shirt offert. <em>Rien à payer en plus</em> pour le t-shirt.</div>
-      </div>
-      <span class="tshirt-hero-banner-cta">J'en profite</span>
-    </a>
+
 
     <h1 class="hero-h1">
       <span class="ln"><span class="lni">3 MOIS</span></span>
-      <span class="ln"><span class="lni">ILLIMITÉS</span></span>
-      <span class="ln"><span class="lni">SANS LIMITES</span></span>
+      <span class="ln"><span class="lni">COURS</span></span>
+      <span class="ln"><span class="lni">+ ACCÈS LIBRE</span></span>
     </h1>
 
-    <div class="hero-price">
-      <span class="p-old">150€</span>
-      <span class="p-new">89€</span>
-      <div class="p-badge">
-        <span>Accès aux</span>
-        <strong>5 SALLES</strong>
-        <span>Toulouse &amp; Agglomération</span>
+    <div class="hero-price" id="heroPriceContainer" style="position: relative;">
+      <span class="p-old" id="pOldFinal" style="opacity: 0; text-decoration: line-through; text-decoration-color: var(--bc-red); text-decoration-thickness: 4px; margin-right: 15px;">150€</span>
+      <div class="p-new-wrap">
+        <div class="p-flash" id="pFlash"></div>
+        <div id="pBigOldText" class="p-new" style="position: absolute; top: 0; left: 0; white-space: nowrap;">
+          <span class="c" style="display:inline-block">1</span><span class="c" style="display:inline-block">5</span><span class="c" style="display:inline-block">0</span><span class="c" style="display:inline-block">€</span>
+          <span class="slash" id="pBigSlash" style="position: absolute; top: 55%; left: -5%; width: 0; height: 8px; background-color: var(--bc-red); transform: translateY(-50%) rotate(-3deg); transform-origin: left center;"></span>
+        </div>
+        <span class="p-new" id="pBigNewText" style="opacity: 0; position: relative;">89€</span>
+      </div>
+      <div class="p-badge" id="pBadgeText" style="opacity: 0;">
+        <span>ÉCONOMISEZ</span>
+        <strong>61 €</strong>
+        <span>Offre Été 2026</span>
       </div>
     </div>
 
@@ -1096,7 +1110,7 @@ html.in-iframe .progress-bar { display: none !important; }
     </p>
 
     <div class="hero-actions">
-      <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien">
+      <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html">
         J'en profite
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </a>
@@ -1212,7 +1226,7 @@ html.in-iframe .progress-bar { display: none !important; }
       <div class="offre-big">89<sup>€</sup></div>
       <div class="offre-ghost">au lieu de 150€</div>
       <p class="offre-meta">Inscription avant le 30 juin 2026</p>
-      <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien">
+      <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html">
         J'en profite
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
       </a>
@@ -1249,7 +1263,7 @@ html.in-iframe .progress-bar { display: none !important; }
         </div>
       </div>
 
-      <p class="per-month">Soit <strong>29,67€ / mois</strong> — soit 41% d'économie sur l'abonnement standard</p>
+
     </div>
   </div>
 </section>
@@ -1356,10 +1370,10 @@ html.in-iframe .progress-bar { display: none !important; }
     </div>
     <div class="tshirt-card-body">
       <h2 class="tshirt-card-title">89€ <em>TOUT COMPRIS</em></h2>
-      <p class="tshirt-card-desc">Tu paies <strong>89€ une seule fois</strong>. Tu reçois 3 mois illimités dans nos 5 salles + <strong style="color:#ffcc00">1 t-shirt offert inclus</strong>. Le t-shirt ne se paie pas en plus.</p>
+      <p class="tshirt-card-desc">En plus de l'offre, <strong>Boxing Center t'offre ton T-shirt officiel</strong> d'une valeur de <strong style="color:#ffcc00">19,99 €</strong>. L'équipement parfait pour rejoindre la team, inclus directement dans ton pass d'été !</p>
       <p class="tshirt-card-urgency">⚠️ Offre limitée — t-shirt offert aux prochains inscrits</p>
       <div class="tshirt-card-actions">
-        <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien">J'en profite</a>
+        <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html">J'en profite</a>
       </div>
     </div>
   </div>
@@ -1406,7 +1420,7 @@ html.in-iframe .progress-bar { display: none !important; }
   <p class="cta-p reveal">89€ tout compris : 3 mois illimités + t-shirt offert inclus. Une commande, un paiement — rien à payer en plus pour le t-shirt.</p>
 
   <div class="cta-btns reveal">
-    <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" style="padding:20px 56px;font-size:15px">
+    <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html" style="padding:20px 56px;font-size:15px">
       J'EN PROFITE
       <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 7H13M7 1L13 7L7 13"/></svg>
     </a>
@@ -1419,7 +1433,7 @@ html.in-iframe .progress-bar { display: none !important; }
 
 </div><!-- /#main-site -->
 
-<a class="promo-widget js-go-boutique" id="promoWidget" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" aria-label="Offre 89 euros avec t-shirt offert — boutique">
+<a class="promo-widget js-go-boutique" id="promoWidget" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html" aria-label="Offre 89 euros avec t-shirt offert — boutique">
   <div class="promo-widget-img-container">
     <div class="promo-widget-halo"></div>
     <div class="promo-badge">89€</div>
@@ -1434,11 +1448,13 @@ html.in-iframe .progress-bar { display: none !important; }
 
 <script>
 window.OFFRE_ETE_TRACK_API = 'https://gestion-manager.vercel.app/api/offre-ete/track';
-window.OFFRE_ETE_BOUTIQUE_URL = 'https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien';
+window.OFFRE_ETE_BOUTIQUE_URL = 'https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html';
 </script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="assets/intro.js" data-assets="assets"></script>
+<script src="assets/priceAnimation.js"></script>
 
 <script>
 /* LOADER retiré — intro gants gérée par assets/intro.js */
