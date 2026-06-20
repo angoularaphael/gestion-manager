@@ -12,7 +12,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
 
   try {
-    return NextResponse.json(await botFetch('/api/status'));
+    return NextResponse.json(await botFetch('/api/status', { timeoutMs: 6000 }));
   } catch (e) {
     const message = e.message || 'Bot inaccessible';
     return NextResponse.json({
@@ -49,7 +49,9 @@ export async function POST(request) {
   }
 
   try {
-    return NextResponse.json(await botFetch(botPath, { method: 'POST', body: body || {} }));
+    return NextResponse.json(
+      await botFetch(botPath, { method: 'POST', body: body || {}, timeoutMs: action === 'logout' ? 10000 : 8000 })
+    );
   } catch (e) {
     return NextResponse.json({ error: e.message || 'Bot inaccessible' }, { status: 502 });
   }
