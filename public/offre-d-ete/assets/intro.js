@@ -651,13 +651,7 @@
   }
 
   function boot() {
-    if (isEmbedMode()) {
-      document.documentElement.classList.add('in-iframe');
-      resize();
-      finishIntro();
-      return;
-    }
-    if (window.parent !== window) {
+    if (isEmbedMode() || window.parent !== window) {
       document.documentElement.classList.add('in-iframe');
     }
     resize();

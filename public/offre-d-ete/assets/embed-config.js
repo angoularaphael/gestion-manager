@@ -5,7 +5,7 @@
 (function (g) {
   var GM = 'https://gestion-manager.vercel.app';
 
-  var PAGE_VERSION = '20260620-v5';
+  var PAGE_VERSION = '20260620-v6';
 
   g.OFFRE_ETE_EMBED = {
     pageVersion: PAGE_VERSION,
