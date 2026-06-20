@@ -1,5 +1,9 @@
+<!--
+  WordPress — page Offre d'été (slug offre-d-ete)
+  Coller UNIQUEMENT ce bloc (éditeur HTML / code personnalisé).
+  Important : src sur l'iframe + script INLINE (WordPress bloque souvent les <script src="...">).
+-->
 <style>
-  /* Masquer menu / header WordPress sur cette page */
   header.site-header,
   #masthead,
   .site-header,
@@ -9,7 +13,13 @@
   .main-header,
   #site-navigation,
   .header-wrapper,
-  .top-bar {
+  .top-bar,
+  footer.site-footer,
+  #colophon,
+  .site-footer,
+  .elementor-location-footer,
+  .footer-widgets,
+  #footer {
     display: none !important;
   }
   body.admin-bar { margin-top: 0 !important; }
@@ -29,16 +39,22 @@
     display: block;
     width: 100%;
     border: 0;
-    height: 900px;
+    height: min(100svh, 1200px);
+    min-height: 640px;
     overflow: hidden;
     background: #000;
+    transition: height 0.25s ease-out;
   }
   body,
   .site-content,
   .entry-content,
   .content-area,
-  #content {
+  #content,
+  .page-content,
+  article.page {
     background: #000 !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
   }
 </style>
 
@@ -47,10 +63,11 @@
     <iframe
       id="offre-ete-frame"
       class="offre-ete-wp__frame"
-      src="https://gestion-manager.vercel.app/offre-d-ete/index.html"
-      title="Offre Été 2026 — 3 mois illimités Boxing Center"
-      loading="lazy"
+      src="https://gestion-manager.vercel.app/offre-d-ete/index.html?embed=1&amp;v=20260620-v4"
+      title="Offre Été 2026 — 3 mois illimités Boxing Center Toulouse"
+      loading="eager"
       scrolling="no"
+      allow="fullscreen"
     ></iframe>
   </div>
 </div>
@@ -59,21 +76,52 @@
 (function () {
   var frame = document.getElementById('offre-ete-frame');
   if (!frame) return;
+
+  var CHILD = 'https://gestion-manager.vercel.app';
+  var PAGE_VERSION = '20260620-v4';
+  var PAGE = CHILD + '/offre-d-ete/index.html?embed=1&v=' + PAGE_VERSION;
+  var MIN_H = 640;
+  var MAX_H = 24000;
+  var FALLBACK_H = 1200;
+  var DELTA = 4;
+  var MSG_RESIZE = 'offre-ete-resize';
+  var MSG_SCROLL = 'offre-ete-scroll-top';
+
+  if (!frame.getAttribute('src')) frame.src = PAGE;
+
+  var allowed = {};
+  [
+    CHILD,
+    'https://boxingcenter.fr',
+    'https://www.boxingcenter.fr',
+    'http://boxingcenter.fr',
+    'http://www.boxingcenter.fr'
+  ].forEach(function (o) { allowed[o] = true; });
+
   var lastH = 0;
-  var ALLOWED = 'https://gestion-manager.vercel.app';
+
+  function setHeight(h) {
+    var height = Math.max(MIN_H, Math.min(MAX_H, Number(h) || 0));
+    if (Math.abs(height - lastH) < DELTA) return;
+    lastH = height;
+    frame.style.height = height + 'px';
+  }
 
   window.addEventListener('message', function (e) {
-    if (e.origin !== ALLOWED) return;
-    if (e.data && e.data.type === 'offre-ete-scroll-top') {
+    if (!allowed[e.origin]) return;
+    if (!e.data || !e.data.type) return;
+    if (e.data.type === MSG_SCROLL) {
       frame.scrollIntoView({ block: 'start', behavior: 'instant' });
       window.scrollTo(0, 0);
       return;
     }
-    if (!e.data || e.data.type !== 'offre-ete-resize') return;
-    var h = Math.max(600, Math.min(15000, Number(e.data.height) || 0));
-    if (Math.abs(h - lastH) < 4) return;
-    lastH = h;
-    frame.style.height = h + 'px';
+    if (e.data.type === MSG_RESIZE) setHeight(e.data.height);
+  });
+
+  frame.addEventListener('load', function () {
+    window.setTimeout(function () {
+      if (lastH < MIN_H + 60) setHeight(FALLBACK_H);
+    }, 2000);
   });
 })();
 </script>

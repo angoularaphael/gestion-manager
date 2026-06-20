@@ -46,6 +46,7 @@ export default function EnvoyerClientsPageInner() {
   const [mailjetSender, setMailjetSender] = useState('1');
   const [emailWave, setEmailWave] = useState(1);
   const [waPreview, setWaPreview] = useState('');
+  const [waLiveSent, setWaLiveSent] = useState(null);
   const { run: runSend, pending: sending } = useSingleAction();
 
   const loadClients = useCallback(async () => {
@@ -85,6 +86,30 @@ export default function EnvoyerClientsPageInner() {
       setSelectedIds(new Set([preselectId]));
     }
   }, [preselectId, clients]);
+
+  useEffect(() => {
+    const queued = result?.data?.whatsapp?.queued;
+    if (!queued) {
+      setWaLiveSent(null);
+      return undefined;
+    }
+    let cancelled = false;
+    async function pollWaSent() {
+      try {
+        const res = await fetch('/api/offre-ete/stats', { cache: 'no-store' });
+        const data = await res.json();
+        if (!cancelled && res.ok) setWaLiveSent(data.whatsappSent ?? 0);
+      } catch {
+        /* ignore */
+      }
+    }
+    pollWaSent();
+    const timer = setInterval(pollWaSent, 30000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [result?.data?.whatsapp?.queued]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return clients;
@@ -707,6 +732,15 @@ export default function EnvoyerClientsPageInner() {
                     <p className="muted" style={{ marginTop: 10 }}>
                       Le bot Bothosting envoie en arrière-plan (~12 messages/heure max). Laissez le
                       bot allumé — comptez plusieurs jours pour toute la liste.
+                      {waLiveSent != null ? (
+                        <>
+                          {' '}
+                          <strong>{waLiveSent}</strong> message(s) déjà confirmé(s) en base
+                          {waLiveSent > 0
+                            ? ' — sur le WhatsApp du bot, une nouvelle discussion apparaît environ toutes les minutes.'
+                            : ' — le premier envoi peut prendre 1 à 2 minutes.'}
+                        </>
+                      ) : null}
                     </p>
                   ) : null}
                   {(result.warnings?.length || result.data?.warnings?.length) ? (
