@@ -48,7 +48,12 @@ Variantes secondaires Yoast :
 
 ## 4. Iframe pleine largeur
 
-Remplace ton code par **tout** le contenu du fichier `wordpress-iframe.html` (iframe seule, sans texte au-dessus).
+Remplace ton code par **tout** le contenu du fichier `wordpress-iframe.html` (iframe seule, sans texte au-dessus — l'affichage de la page ne change pas).
+
+**Référencement sans changer l'affichage :**
+- Remplis les champs **Yoast** ci-dessus sur la page WordPress (titre, meta, image OG)
+- Le SEO technique (meta, schema, FAQ) est dans `index.html` chargé dans l'iframe
+- Soumets le sitemap dans Google Search Console (voir section 8)
 
 ---
 
