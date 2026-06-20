@@ -10,7 +10,9 @@ import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { getOffreEteClientCampaignTemplate } from '../../../lib/offreEteCampaign';
 import {
   getOffreEteWhatsAppPreviewMessage,
+  OFFRE_ETE_WHATSAPP_VARIANT_COUNT,
 } from '../../../lib/offreEteWhatsAppCampaign';
+import { OFFRE_ETE_EMAIL_VARIANT_COUNT } from '../../../lib/offreEteEmailCampaign';
 import { getCampaignWaveCount, getCampaignWaveIds } from '../../../lib/campaignWaves';
 import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import { useSingleAction } from '../../../lib/useSingleAction';
@@ -181,6 +183,7 @@ export default function EnvoyerClientsPageInner() {
           client_ids: chunks[i],
           message,
           subject,
+          offre_ete_campaign: true,
           mailjet_account: mailjetAccount,
           mailjet_rotate_accounts: mailjetRotate,
           mailjet_start_index: mailjetRotate ? mailjetOffset : undefined,
@@ -404,6 +407,10 @@ export default function EnvoyerClientsPageInner() {
             </div>
             {channels.includes('whatsapp') ? (
               <div className="send-wa-hint muted" style={{ marginTop: '0.75rem' }}>
+                <p style={{ margin: '0 0 8px' }}>
+                  {OFFRE_ETE_WHATSAPP_VARIANT_COUNT} formulations + prénom de chaque client (anti-spam
+                  WhatsApp). Envoi ~12/h max sur le bot.
+                </p>
                 <button
                   type="button"
                   className="btn ghost sm"
@@ -606,6 +613,10 @@ export default function EnvoyerClientsPageInner() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Votre message promotion ou information…"
             />
+            <p className="muted" style={{ marginTop: 8 }}>
+              À l&apos;envoi : {OFFRE_ETE_EMAIL_VARIANT_COUNT} variantes + prénom par destinataire
+              (même contenu, formulation différente — anti-spam).
+            </p>
               </>
             ) : (
               <p className="muted">Le texte WhatsApp est généré automatiquement.</p>

@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
-import { repairPortetClientPhonesInDb, countValidFrenchPhones } from '../../../lib/repairClientPhones';
+import {
+  repairPortetClientPhonesInDb,
+  repairPortetClientEmailsInDb,
+  countValidFrenchPhones,
+} from '../../../lib/repairClientPhones';
 import { getSession } from '../../../lib/session';
 
 export async function POST() {
@@ -7,9 +11,12 @@ export async function POST() {
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
 
   try {
-    const result = await repairPortetClientPhonesInDb();
+    const [phones, emails] = await Promise.all([
+      repairPortetClientPhonesInDb(),
+      repairPortetClientEmailsInDb(),
+    ]);
     const withPhone = await countValidFrenchPhones();
-    return NextResponse.json({ success: true, ...result, withPhone });
+    return NextResponse.json({ success: true, phones, emails, withPhone });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
