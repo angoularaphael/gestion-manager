@@ -70,12 +70,14 @@ export default function OffreEteAdminPage() {
       : null;
 
   function eventLabel(ev) {
+    if (ev.event_type === 'whatsapp_read') return 'WhatsApp lu';
     if (ev.event_type === 'view') return 'Vue page';
     if (String(ev.source || '').startsWith('boutique')) return "Clic J'en profite";
     return 'Clic En savoir plus';
   }
 
   function eventBadgeClass(ev) {
+    if (ev.event_type === 'whatsapp_read') return 'green';
     if (ev.event_type === 'view') return 'blue';
     if (String(ev.source || '').startsWith('boutique')) return 'gold';
     return 'default';
@@ -86,7 +88,9 @@ export default function OffreEteAdminPage() {
       <header className="page-header">
         <div>
           <h1>Offre Été 2026</h1>
-          <p className="page-subtitle">Suivi des clics « J&apos;en profite », vues page offre et WordPress</p>
+          <p className="page-subtitle">
+            Suivi clics boutique, vues page offre, et ouvertures WhatsApp (accusés de lecture)
+          </p>
         </div>
         <ActionButton className="btn secondary" onClick={refresh} loading={loading} disabled={loading}>
           Actualiser
@@ -120,7 +124,37 @@ export default function OffreEteAdminPage() {
           <span className="muted">Taux vue → J&apos;en profite</span>
           <strong>{loading ? '…' : conversion != null ? `${conversion}%` : '—'}</strong>
         </div>
+        <div className="card stat stat--green">
+          <span className="muted">WhatsApp envoyés (offre été)</span>
+          <strong>{loading ? '…' : stats?.whatsappSent ?? 0}</strong>
+        </div>
+        <div className="card stat stat--green">
+          <span className="muted">WhatsApp lus / ouverts</span>
+          <strong>{loading ? '…' : stats?.whatsappRead ?? 0}</strong>
+        </div>
+        <div className="card stat">
+          <span className="muted">Taux ouverture WhatsApp</span>
+          <strong>
+            {loading
+              ? '…'
+              : stats?.whatsappOpenRate != null
+                ? `${stats.whatsappOpenRate}%`
+                : '—'}
+          </strong>
+        </div>
       </div>
+
+      {stats?.whatsappStatsUnavailable ? (
+        <p className="muted" style={{ marginBottom: '1rem' }}>
+          Stats WhatsApp indisponibles — appliquez la migration Supabase{' '}
+          <code>012_offre_ete_whatsapp_reads.sql</code> puis redémarrez le bot.
+        </p>
+      ) : (
+        <p className="muted" style={{ marginBottom: '1rem' }}>
+          Ouvertures WhatsApp = accusés de lecture (2 coches bleues). Dépend des réglages
+          confidentialité du destinataire — chiffre indicatif, pas 100&nbsp;% des lectures réelles.
+        </p>
+      )}
 
       <section className="card offre-ete-links-card">
         <h2 className="card-title">Liens utiles</h2>
@@ -184,7 +218,7 @@ export default function OffreEteAdminPage() {
                         {eventLabel(ev)}
                       </span>
                     </td>
-                    <td>{ev.source || '—'}</td>
+                    <td>{ev.event_type === 'whatsapp_read' ? `+${ev.source || '?'}` : ev.source || '—'}</td>
                     <td className="offre-ete-referrer">{ev.referrer || '—'}</td>
                   </tr>
                 ))}

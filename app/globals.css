@@ -2968,6 +2968,7 @@ html.manager-sheet-open body {
 .send-offre-clicks-stat { max-width: 420px; }
 
 .stat--gold strong { color: #b45309; }
+.stat--green strong { color: #15803d; }
 .stat--blue strong { color: var(--accent); }
 
 .offre-ete-links-card,
@@ -3015,6 +3016,7 @@ html.manager-sheet-open body {
 
 .badge--gold { background: #fef3c7; color: #b45309; }
 .badge--blue { background: #dbeafe; color: #1e40af; }
+.badge--green { background: #dcfce7; color: #15803d; }
 
 /* Chatbot Portet — admin */
 .chatbot-admin-page .page-header {

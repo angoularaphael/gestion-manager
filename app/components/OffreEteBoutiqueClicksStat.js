@@ -7,6 +7,7 @@ import Link from 'next/link';
 export default function OffreEteBoutiqueClicksStat({ compact = false, className = '' }) {
   const [boutiqueClicks, setBoutiqueClicks] = useState(null);
   const [views, setViews] = useState(null);
+  const [whatsappRead, setWhatsappRead] = useState(null);
   const [error, setError] = useState('');
 
   const refresh = useCallback(async () => {
@@ -16,6 +17,7 @@ export default function OffreEteBoutiqueClicksStat({ compact = false, className 
       if (!res.ok) throw new Error(data.error || 'Erreur');
       setBoutiqueClicks(data.boutiqueClicks ?? 0);
       setViews(data.views ?? 0);
+      setWhatsappRead(data.whatsappRead ?? 0);
       setError('');
     } catch (e) {
       setError(e.message);
@@ -36,6 +38,9 @@ export default function OffreEteBoutiqueClicksStat({ compact = false, className 
           <>
             <strong>{boutiqueClicks ?? '…'}</strong>
             <span className="muted"> clic{boutiqueClicks === 1 ? '' : 's'} « J&apos;en profite »</span>
+            {whatsappRead != null ? (
+              <span className="muted"> · {whatsappRead} WA lu{whatsappRead === 1 ? '' : 's'}</span>
+            ) : null}
             <Link href="/admin/offre-ete" className="offre-ete-clicks-link">
               Détails
             </Link>
@@ -52,6 +57,7 @@ export default function OffreEteBoutiqueClicksStat({ compact = false, className 
       {!error && views != null ? (
         <span className="muted" style={{ fontSize: '0.85rem', marginTop: '0.35rem' }}>
           {views} vue{views === 1 ? '' : 's'} page offre
+          {whatsappRead != null ? ` · ${whatsappRead} WhatsApp lu${whatsappRead === 1 ? '' : 's'}` : ''}
         </span>
       ) : null}
       {error ? <span className="muted">{error}</span> : null}
