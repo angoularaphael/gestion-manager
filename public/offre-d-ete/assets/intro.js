@@ -376,23 +376,46 @@
   let safetyTimer = null;
   let lastReportedHeight = 0;
 
+  function embedCfg() {
+    return window.OFFRE_ETE_EMBED || {
+      minHeight: 640,
+      maxHeight: 24000,
+      resizeDelta: 4,
+      msg: { resize: 'offre-ete-resize', scrollTop: 'offre-ete-scroll-top', ready: 'offre-ete-ready' },
+    };
+  }
+
   function getContentHeight() {
     if (stage && stage.parentNode && !introFinished) {
       return Math.ceil(window.innerHeight || document.documentElement.clientHeight || 800);
     }
+    const docH = Math.ceil(
+      Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+        document.documentElement.offsetHeight
+      )
+    );
     if (mainSite) {
-      return Math.ceil(mainSite.getBoundingClientRect().height);
+      const mainH = Math.ceil(mainSite.getBoundingClientRect().height);
+      if (window.parent !== window) {
+        return Math.max(mainH, docH);
+      }
+      return docH;
     }
-    return Math.ceil(document.body.offsetHeight);
+    return docH;
   }
 
   function notifyParentHeight() {
     if (window.parent === window) return;
+    const cfg = embedCfg();
     const h = getContentHeight();
-    if (Math.abs(h - lastReportedHeight) < 4) return;
+    if (Math.abs(h - lastReportedHeight) < cfg.resizeDelta) return;
     lastReportedHeight = h;
-    window.parent.postMessage({ type: 'offre-ete-resize', height: h }, '*');
+    window.parent.postMessage({ type: cfg.msg.resize, height: h }, '*');
   }
+
+  window.__offreEteNotifyParentHeight = notifyParentHeight;
 
   function trackView() {
     const api = window.OFFRE_ETE_TRACK_API;
@@ -431,7 +454,9 @@
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    try { window.parent.postMessage({ type: 'offre-ete-scroll-top' }, '*'); } catch (_) {}
+    try {
+      window.parent.postMessage({ type: embedCfg().msg.scrollTop }, '*');
+    } catch (_) {}
     const banner = document.getElementById('tshirtHeroBanner');
     if (banner) {
       banner.classList.add('vis', 'tshirt-hero-banner--show', 'tshirt-hero-banner--pulse');
@@ -450,12 +475,20 @@
     notifyParentHeight();
     window.setTimeout(notifyParentHeight, 500);
     window.setTimeout(notifyParentHeight, 1500);
+    try {
+      window.parent.postMessage({ type: embedCfg().msg.ready }, '*');
+    } catch (_) {}
     window.setTimeout(() => {
       stage.remove();
       lastReportedHeight = 0;
       notifyParentHeight();
       window.dispatchEvent(new CustomEvent('offre-ete-intro-done'));
       window.setTimeout(showHeroAnnouncement, 150);
+      if (window.parent !== window && mainSite && typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => notifyParentHeight());
+        ro.observe(mainSite);
+        window.setTimeout(() => ro.observe(document.body), 500);
+      }
     }, 500);
   }
 
@@ -608,7 +641,22 @@
       .to({}, { duration: 0.7, onComplete: revealLogo });
   }
 
+  function isEmbedMode() {
+    if (window.parent !== window) return true;
+    try {
+      return new URLSearchParams(window.location.search).has('embed');
+    } catch (_) {
+      return false;
+    }
+  }
+
   function boot() {
+    if (isEmbedMode()) {
+      document.documentElement.classList.add('in-iframe');
+      resize();
+      finishIntro();
+      return;
+    }
     if (window.parent !== window) {
       document.documentElement.classList.add('in-iframe');
     }

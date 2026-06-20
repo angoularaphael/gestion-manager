@@ -109,7 +109,13 @@
         opacity: 1,
         x: 0,
         duration: 0.6,
-        ease: 'power2.out'
+        ease: 'power2.out',
+        onComplete: function () {
+          if (typeof window.__offreEteNotifyParentHeight === 'function') {
+            window.__offreEteNotifyParentHeight();
+            window.setTimeout(window.__offreEteNotifyParentHeight, 400);
+          }
+        }
       }, 'final');
     }
 

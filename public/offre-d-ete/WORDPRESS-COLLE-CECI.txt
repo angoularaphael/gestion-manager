@@ -18,17 +18,21 @@ Tu dois voir la promo (gants puis 89€). Si 404 → fichiers mal placés.
 
 ÉTAPE 3 — Dans WordPress (page Offre d'été)
 --------------------------------------------
-Supprime tout ce que tu as collé. Mets UNIQUEMENT ce code :
+Colle UNIQUEMENT le contenu de wordpress-iframe.html
 
-<iframe
-  src="https://boxingcenter.fr/wp-content/uploads/offre-d-ete/index.html"
-  title="Offre Été 2026"
-  style="width:100%;border:0;min-height:100vh;display:block"
-></iframe>
+→ Charge index.html depuis Vercel (même version que public/offre-d-ete/)
+→ Scripts partagés : assets/embed-config.js + assets/embed-parent.js
+→ Hauteur auto (hero, FAQ, t-shirt, CTA) via postMessage
 
 Enregistrer → tester : https://boxingcenter.fr/offre-d-ete
 
 POURQUOI LA PAGE NOIRE ?
 -------------------------
-index.html commence par une intro noire (animation gants).
-WordPress bloque les scripts → l'intro ne finit jamais → écran noir.
+1. WordPress bloque les <script src="..."> externes → l'iframe restait vide.
+   → wordpress-iframe.html met maintenant le src DIRECT sur l'iframe + script inline.
+
+2. L'intro noire (animation gants) peut bloquer l'affichage.
+   → L'URL ?embed=1 saute l'intro sur WordPress (contenu visible tout de suite).
+
+3. Si toujours noir : vider le cache WordPress / navigateur, puis tester :
+   https://gestion-manager.vercel.app/offre-d-ete/index.html?embed=1
