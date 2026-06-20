@@ -223,6 +223,11 @@ export default function EnvoyerClientsPageInner() {
         ? `Vague ${emailWave}/${emailWaveCount || 1} — envoyer à ${emailWaveIds.length} client(s) ?`
         : `Envoyer à ${targetCount} client(s) ?`;
       warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
+      if (channels.includes('whatsapp') && !testOnly) {
+        warn +=
+          '\n\nWhatsApp : le bot envoie ~12 messages/heure (anti-spam). ' +
+          'L\'envoi continue en arrière-plan sur Bothosting — gardez le bot allumé.';
+      }
       const ok = window.confirm(warn);
       if (!ok) return;
     }
@@ -318,12 +323,21 @@ export default function EnvoyerClientsPageInner() {
         parseApiJson,
       });
 
+      const waQueued = data.whatsapp?.queued || 0;
+      const waSent = data.whatsapp?.sent || 0;
+      const nothingSent =
+        !waSent &&
+        !waQueued &&
+        !(data.email?.sent || 0) &&
+        (failed || partial || (data.errors?.length || 0) > 0);
+
       setResult({
-        success: true,
+        success: !nothingSent,
         partial,
         duplicate,
-        failed,
+        failed: failed || nothingSent,
         data,
+        warnings: data.warnings || [],
         previewHtml: channels.includes('email')
           ? buildEmailHtml({ subject, body: message, recipientName: 'Client' })
           : null,
@@ -613,7 +627,11 @@ export default function EnvoyerClientsPageInner() {
           ) : null}
 
           {result ? (
-            <div className={`result-panel ${result.error ? 'error' : 'success'}`}>
+            <div
+              className={`result-panel ${
+                result.error || result.failed ? 'error' : result.partial ? 'warn' : 'success'
+              }`}
+            >
               {result.error ? (
                 <p>
                   <strong>Erreur :</strong> {result.error}
@@ -621,7 +639,15 @@ export default function EnvoyerClientsPageInner() {
               ) : (
                 <>
                   <p>
-                    <strong>Envoi terminé</strong> — {result.data.clients} client(s)
+                    <strong>
+                      {result.data?.whatsapp?.queued
+                        ? 'Envoi WhatsApp démarré'
+                        : result.failed
+                          ? 'Échec envoi'
+                          : 'Envoi terminé'}
+                    </strong>
+                    {' — '}
+                    {result.data?.clients ?? 0} client(s)
                   </p>
                   <div className="result-grid">
                     {channels.includes('email') && (
@@ -632,11 +658,38 @@ export default function EnvoyerClientsPageInner() {
                     )}
                     {channels.includes('whatsapp') && (
                       <div className="result-stat">
-                        <span className="ok">{result.data.whatsapp?.sent ?? 0}</span>
-                        <small>WhatsApp</small>
+                        <span className={result.data.whatsapp?.queued ? 'pending' : 'ok'}>
+                          {result.data.whatsapp?.queued || result.data.whatsapp?.sent || 0}
+                        </span>
+                        <small>{result.data.whatsapp?.queued ? 'WhatsApp en file' : 'WhatsApp'}</small>
                       </div>
                     )}
                   </div>
+                  {result.data?.whatsapp?.queued ? (
+                    <p className="muted" style={{ marginTop: 10 }}>
+                      Le bot Bothosting envoie en arrière-plan (~12 messages/heure max). Laissez le
+                      bot allumé — comptez plusieurs jours pour toute la liste.
+                    </p>
+                  ) : null}
+                  {(result.warnings?.length || result.data?.warnings?.length) ? (
+                    <ul className="result-warnings" style={{ marginTop: 10, paddingLeft: 18 }}>
+                      {[...new Set([...(result.warnings || []), ...(result.data?.warnings || [])])].map(
+                        (w, i) => (
+                          <li key={i}>{w}</li>
+                        )
+                      )}
+                    </ul>
+                  ) : null}
+                  {result.data?.errors?.length ? (
+                    <ul className="result-warnings" style={{ marginTop: 8, paddingLeft: 18 }}>
+                      {result.data.errors.slice(0, 5).map((e, i) => (
+                        <li key={i}>
+                          {e.channel ? `${e.channel}: ` : ''}
+                          {e.error || e.client || JSON.stringify(e)}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </>
               )}
             </div>
