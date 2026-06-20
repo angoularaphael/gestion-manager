@@ -348,6 +348,7 @@ html.in-iframe .progress-bar { display: none !important; }
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
   opacity: 0; animation: fadeUp .45s var(--transition) .55s forwards;
 }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 .btn-primary {
   display: inline-flex; align-items: center; gap: 12px;
   background: var(--bc-red); color: var(--bc-white);
@@ -1071,11 +1072,12 @@ html.in-iframe .progress-bar { display: none !important; }
 
 
 
-    <h1 class="hero-h1">
+    <h1 class="sr-only">Offre Été Boxing Center Toulouse : Abonnement 3 mois Boxe & MMA à 89€. T-shirt offert.</h1>
+    <div class="hero-h1">
       <span class="ln"><span class="lni">3 MOIS</span></span>
       <span class="ln"><span class="lni">COURS</span></span>
       <span class="ln"><span class="lni">+ ACCÈS LIBRE</span></span>
-    </h1>
+    </div>
 
     <div class="hero-price" id="heroPriceContainer" style="position: relative;">
       <span class="p-old" id="pOldFinal" style="opacity: 0; text-decoration: line-through; text-decoration-color: var(--bc-red); text-decoration-thickness: 4px; margin-right: 15px;">150€</span>
