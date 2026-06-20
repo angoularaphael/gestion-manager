@@ -4,15 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ActionButton from '../../components/ActionButton';
 import EnvoyerBackLink from '../../components/EnvoyerBackLink';
-import CampaignBulkHint from '../../components/CampaignBulkHint';
-import WhatsAppBulkHint from '../../components/WhatsAppBulkHint';
 import { parseApiJson } from '../../../lib/apiJson';
 import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
 import { getOffreEteClientCampaignTemplate } from '../../../lib/offreEteCampaign';
 import {
   getOffreEteWhatsAppPreviewMessage,
-  OFFRE_ETE_WHATSAPP_VARIANT_COUNT,
 } from '../../../lib/offreEteWhatsAppCampaign';
 import { getCampaignWaveCount, getCampaignWaveIds } from '../../../lib/campaignWaves';
 import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
@@ -222,37 +219,9 @@ export default function EnvoyerClientsPageInner() {
     }
 
     if (!testOnly) {
-      const channelLabel = channels.includes('email') && channels.includes('whatsapp')
-        ? 'email puis WhatsApp'
-        : channels.includes('whatsapp')
-          ? 'WhatsApp'
-          : 'email';
       let warn = emailOnlyCampaign
-        ? `Vague ${emailWave}/${emailWaveCount || 1} — envoyer à ${emailWaveIds.length} client(s) email ?`
-        : `Campagne : envoyer à ${targetCount} client(s) (${channelLabel}) ?`;
-      if (emailOnlyCampaign && emailWaveIds.length) {
-        const from = (emailWave - 1) * waveLimit + 1;
-        const to = from + emailWaveIds.length - 1;
-        warn += `\n\nClients email n°${from} à n°${to} (max ${waveLimit} par vague).`;
-      }
-      if (isCampaign && channels.includes('whatsapp')) {
-        warn += `\n\nWhatsApp : ${OFFRE_ETE_WHATSAPP_VARIANT_COUNT} messages différents (tirage aléatoire) — max ~12/h.`;
-        if (withPhone.length > 12) {
-          warn += ' Relancez plus tard pour le reste ou utilisez l\'email.';
-        }
-      }
-      if (emailOnlyCampaign) {
-        const waveHint =
-          emailConfig?.provider === 'mailjet'
-            ? `\n\nExpéditeur Mailjet : ${
-                mailjetSender === 'rotate'
-                  ? 'répartition sur les 3 comptes'
-                  : emailConfig.mailjet?.accounts?.find((a) => String(a.slot) === mailjetSender)
-                      ?.senderEmail || `compte ${mailjetSender}`
-              }.`
-            : '';
-        warn += `\n\nEnvoi par lots de ${EMAIL_CHUNK_SIZE} emails.${waveHint}`;
-      }
+        ? `Vague ${emailWave}/${emailWaveCount || 1} — envoyer à ${emailWaveIds.length} client(s) ?`
+        : `Envoyer à ${targetCount} client(s) ?`;
       warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
       const ok = window.confirm(warn);
       if (!ok) return;
@@ -331,11 +300,6 @@ export default function EnvoyerClientsPageInner() {
         }
         const data = { ...emailData };
         mergeSendResults(data, waData);
-        data.warnings = [
-          ...(data.warnings || []),
-          ...(waData.warnings || []),
-          'Campagne email complète. WhatsApp soumis aux limites horaires du bot.',
-        ];
         setResult({
           success: true,
           partial: true,
@@ -403,13 +367,8 @@ export default function EnvoyerClientsPageInner() {
                 WhatsApp
               </button>
             </div>
-            <WhatsAppBulkHint visible={channels.includes('whatsapp')} />
             {channels.includes('whatsapp') ? (
               <div className="send-wa-hint muted" style={{ marginTop: '0.75rem' }}>
-                <p style={{ margin: '0 0 8px' }}>
-                  <strong>{OFFRE_ETE_WHATSAPP_VARIANT_COUNT} messages WhatsApp différents</strong> — un
-                  texte tiré au hasard par client (promo 89€, t-shirt offert, lien boutique).
-                </p>
                 <button
                   type="button"
                   className="btn ghost sm"
@@ -437,7 +396,7 @@ export default function EnvoyerClientsPageInner() {
             {channels.includes('email') && emailConfig?.provider === 'mailjet' ? (
               <div style={{ marginTop: '1rem' }}>
                 <label>
-                  <strong>Expéditeur Mailjet</strong>
+                  <strong>Expéditeur</strong>
                   <select
                     className="search-input"
                     value={mailjetSender}
@@ -454,11 +413,6 @@ export default function EnvoyerClientsPageInner() {
                     <option value="rotate">Répartir sur les 3 comptes (rotation)</option>
                   </select>
                 </label>
-                <p className="muted" style={{ marginTop: 8, fontSize: '0.9rem' }}>
-                  Jusqu&apos;à {emailConfig.mailjet?.waveLimit || 8000} emails par vague et par
-                  compte. Utilise une adresse <strong>@boxingcenter.fr</strong> vérifiée (SPF +
-                  DKIM) pour éviter les spams.
-                </p>
                 {!emailConfig.ready ? (
                   <p className="muted" style={{ color: 'var(--danger, #c00)' }}>
                     {emailConfig.issue}
@@ -466,12 +420,6 @@ export default function EnvoyerClientsPageInner() {
                 ) : null}
               </div>
             ) : null}
-            <CampaignBulkHint
-              visible={mode === 'campaign' || channels.includes('whatsapp')}
-              emailCount={withEmail.length}
-              phoneCount={withPhone.length}
-              campaignMode={mode === 'campaign'}
-            />
           </section>
 
           <section className="card send-card">
@@ -497,9 +445,6 @@ export default function EnvoyerClientsPageInner() {
             </div>
             {mode === 'campaign' && channels.includes('email') && !channels.includes('whatsapp') ? (
               <div style={{ marginTop: '0.75rem' }}>
-                <p className="muted" style={{ marginBottom: 8 }}>
-                  Vagues de {waveLimit.toLocaleString('fr-FR')} emails — compte Mailjet suggéré par vague.
-                </p>
                 <div className="channel-pills" style={{ flexWrap: 'wrap' }}>
                   {Array.from({ length: Math.max(1, emailWaveCount) }, (_, i) => i + 1).map((w) => {
                     const count = getCampaignWaveIds(emailIdsOrdered, w, waveLimit).length;
@@ -627,10 +572,7 @@ export default function EnvoyerClientsPageInner() {
             />
               </>
             ) : (
-              <p className="muted">
-                Le texte WhatsApp est généré automatiquement ({OFFRE_ETE_WHATSAPP_VARIANT_COUNT}{' '}
-                variantes). Utilisez « Voir un exemple » dans la section Canaux.
-              </p>
+              <p className="muted">Le texte WhatsApp est généré automatiquement.</p>
             )}
           </section>
 

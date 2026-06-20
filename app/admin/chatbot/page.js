@@ -116,19 +116,14 @@ export default function ChatbotAdminPage() {
       {stats?.allowReset ? (
         <section className="card chatbot-reset-card">
           <h2 className="card-title">Réinitialiser</h2>
-          <p className="muted">
-            Remet les compteurs et la liste des leads à zéro. Désactivable via{' '}
-            <code>CHATBOT_ALLOW_RESET=false</code> sur Vercel.
-          </p>
+          <p className="muted">Remet les compteurs et la liste des leads à zéro.</p>
           <ActionButton className="btn danger" onClick={handleReset} loading={resetting}>
             Réinitialiser les statistiques
           </ActionButton>
           {resetMsg ? <p className="chatbot-reset-msg">{resetMsg}</p> : null}
         </section>
       ) : (
-        <p className="muted chatbot-reset-locked">
-          Réinitialisation désactivée (CHATBOT_ALLOW_RESET=false).
-        </p>
+        <p className="muted chatbot-reset-locked">Réinitialisation désactivée.</p>
       )}
 
       <section className="card">

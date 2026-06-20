@@ -13,7 +13,6 @@ import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import SendCountryModePanel from '../../components/SendCountryModePanel';
 import CountryMultiPicker from '../../components/CountryMultiPicker';
 import MessageTemplatePicker from '../../components/MessageTemplatePicker';
-import WhatsAppBulkHint from '../../components/WhatsAppBulkHint';
 import { detectActiveRegion } from '../../../lib/languageRegions';
 import { useCountryFromUrl } from '../../components/useCountryFromUrl';
 
@@ -438,7 +437,6 @@ export default function EnvoyerBoxeursPage() {
                 WhatsApp
               </button>
             </div>
-            <WhatsAppBulkHint visible={channels.includes('whatsapp')} />
           </section>
 
           <section className="card send-card">
