@@ -14,7 +14,7 @@ function clientIp(request) {
   );
 }
 
-/** POST { "event": "view", "source": "landing" } — appelé par la page offre. */
+/** POST { "event": "view"|"boutique_click", "source": "..." } — page offre (boxingcenter.fr). */
 export async function POST(request) {
   let body = {};
   try {
@@ -24,15 +24,28 @@ export async function POST(request) {
   }
 
   const cors = offreEteCorsHeaders(request);
-  const eventType = body.event === 'view' ? 'view' : null;
+  let eventType = null;
+  let source = body.source || null;
+
+  if (body.event === 'view') {
+    eventType = 'view';
+    source = source || 'landing';
+  } else if (body.event === 'boutique_click') {
+    eventType = 'click';
+    source = source || 'boutique';
+  }
+
   if (!eventType) {
-    return NextResponse.json({ error: 'event invalide (view attendu)' }, { status: 400, headers: cors });
+    return NextResponse.json(
+      { error: 'event invalide (view ou boutique_click attendu)' },
+      { status: 400, headers: cors }
+    );
   }
 
   try {
     await trackOffreEteEvent({
       eventType,
-      source: body.source || 'landing',
+      source,
       referrer: request.headers.get('referer'),
       userAgent: request.headers.get('user-agent'),
       ip: clientIp(request),

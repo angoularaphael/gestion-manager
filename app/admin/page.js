@@ -1,5 +1,6 @@
 import DashboardStats from '../components/DashboardStats';
 import BotStatus from '../components/BotStatus';
+import OffreEteBoutiqueClicksStat from '../components/OffreEteBoutiqueClicksStat';
 
 export default function DashboardPage() {
   return (
@@ -12,6 +13,9 @@ export default function DashboardPage() {
       </header>
 
       <DashboardStats />
+      <div className="grid stats-grid" style={{ marginBottom: '1.25rem' }}>
+        <OffreEteBoutiqueClicksStat />
+      </div>
       <BotStatus />
     </div>
   );

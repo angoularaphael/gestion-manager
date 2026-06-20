@@ -903,8 +903,8 @@ html.in-iframe .progress-bar { display: none !important; }
     <a class="tshirt-hero-banner reveal js-go-boutique" id="tshirtHeroBanner" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien">
       <img src="assets/shirt.png" alt="" />
       <div class="tshirt-hero-banner-text">
-        <div class="tshirt-hero-banner-title">🎁 89€ + t-shirt offert</div>
-        <div class="tshirt-hero-banner-desc">3 mois illimités à 89€. T-shirt officiel <span class="tshirt-price-note"><s>29,99€</s> <em>offert</em></span> — commandez directement en boutique.</div>
+        <div class="tshirt-hero-banner-title">89€ tout compris</div>
+        <div class="tshirt-hero-banner-desc">Tu paies <strong>89€ une fois</strong> : 3 mois illimités + t-shirt offert. <em>Rien à payer en plus</em> pour le t-shirt.</div>
       </div>
       <span class="tshirt-hero-banner-cta">J'en profite</span>
     </a>
@@ -936,8 +936,8 @@ html.in-iframe .progress-bar { display: none !important; }
     </div>
 
     <p class="hero-desc">
-      Un été pour tout transformer. Accès illimité aux 5 salles, tous les cours inclus,
-      coaches diplômés — pour tous les niveaux. Du ring au cross-training, à votre rythme.
+      <strong>89€ tout compris</strong> : 3 mois d'abonnement illimité (5 salles, tous les cours)
+      + t-shirt offert inclus. Tu paies une seule fois, rien en plus pour le t-shirt.
     </p>
 
     <div class="hero-actions">
@@ -1196,12 +1196,12 @@ html.in-iframe .progress-bar { display: none !important; }
   <div class="s-label reveal" style="justify-content:center">Offre complète</div>
   <div class="tshirt-card reveal">
     <div class="tshirt-card-img">
-      <span class="tshirt-card-badge">89€+</span>
+      <span class="tshirt-card-badge">89€</span>
       <img src="assets/shirt.png" alt="T-shirt officiel Boxing Center" />
     </div>
     <div class="tshirt-card-body">
-      <h2 class="tshirt-card-title">89€ <em>+ T-SHIRT OFFERT</em></h2>
-      <p class="tshirt-card-desc">Profitez de l'offre été à 89€ pour 3 mois illimités. Le t-shirt officiel Boxing Center, d'une valeur de <s style="color:rgba(255,255,255,0.4)">29,99€</s>, est <strong style="color:#ffcc00">offert</strong> avec votre commande en boutique.</p>
+      <h2 class="tshirt-card-title">89€ <em>TOUT COMPRIS</em></h2>
+      <p class="tshirt-card-desc">Tu paies <strong>89€ une seule fois</strong>. Tu reçois 3 mois illimités dans nos 5 salles + <strong style="color:#ffcc00">1 t-shirt offert inclus</strong>. Le t-shirt ne se paie pas en plus.</p>
       <p class="tshirt-card-urgency">⚠️ Offre limitée — t-shirt offert aux prochains inscrits</p>
       <div class="tshirt-card-actions">
         <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien">J'en profite</a>
@@ -1220,7 +1220,7 @@ html.in-iframe .progress-bar { display: none !important; }
     L'ÉTÉ POUR
     <em>TOUT CHANGER</em>
   </h2>
-  <p class="cta-p reveal">3 mois d'entraînement illimité à 89€ + t-shirt offert (29,99€ d'habitude). Accès aux 5 salles, tous les cours, coaching personnalisé.</p>
+  <p class="cta-p reveal">89€ tout compris : 3 mois illimités + t-shirt offert inclus. Une commande, un paiement — rien à payer en plus pour le t-shirt.</p>
 
   <div class="cta-btns reveal">
     <a class="btn-primary js-go-boutique" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" style="padding:20px 56px;font-size:15px">
@@ -1237,12 +1237,12 @@ html.in-iframe .progress-bar { display: none !important; }
 <a class="promo-widget js-go-boutique" id="promoWidget" href="https://boutique.boxingcenter.fr/accueil/156-2424-offre-ete-2026-3-mois-illimites-a-89-.html#/31-salle_principale_d_entrainement-toulouse_st_cyprien" aria-label="Offre 89 euros avec t-shirt offert — boutique">
   <div class="promo-widget-img-container">
     <div class="promo-widget-halo"></div>
-    <div class="promo-badge">89€+</div>
+    <div class="promo-badge">89€</div>
     <img src="assets/shirt.png" alt="T-shirt Officiel Boxing Center" />
   </div>
   <div class="promo-widget-content">
-    <div class="promo-widget-title">🎁 89€ + t-shirt offert</div>
-    <div class="promo-widget-text">T-shirt à <s style="opacity:0.5">29,99€</s> — <strong style="color:#ffcc00">offert</strong> en boutique</div>
+    <div class="promo-widget-title">89€ tout compris</div>
+    <div class="promo-widget-text">3 mois illimités + t-shirt offert inclus</div>
     <div class="promo-widget-btn">J'EN PROFITE</div>
   </div>
 </a>
@@ -1309,11 +1309,31 @@ document.addEventListener('mousemove', e => {
   const y = (e.clientY / window.innerHeight - .5) * 18;
   hg.style.transform = `translate(${x}px, ${y}px)`;
 });
-/* Liens boutique — tous les « J'en profite » */
+/* Liens boutique — tous les « J'en profite » + tracking clics */
 (function () {
   const BOUTIQUE = window.OFFRE_ETE_BOUTIQUE_URL;
-  document.querySelectorAll('.js-go-boutique').forEach((el) => {
+  const TRACK = window.OFFRE_ETE_TRACK_API;
+
+  function trackBoutiqueClick(source) {
+    if (!TRACK) return;
+    fetch(TRACK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'boutique_click', source: source || 'boutique' }),
+      keepalive: true,
+    }).catch(function () {});
+  }
+
+  document.querySelectorAll('.js-go-boutique').forEach(function (el) {
     if (!el.getAttribute('href')) el.setAttribute('href', BOUTIQUE);
+    el.addEventListener('click', function () {
+      var source = 'boutique';
+      if (el.id) source = 'boutique:' + el.id;
+      else if (el.closest('section') && el.closest('section').id) {
+        source = 'boutique:' + el.closest('section').id;
+      }
+      trackBoutiqueClick(source);
+    });
   });
 })();
 </script>
