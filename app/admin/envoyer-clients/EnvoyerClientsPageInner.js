@@ -17,6 +17,7 @@ import {
 import { getCampaignWaveCount, getCampaignWaveIds } from '../../../lib/campaignWaves';
 import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import { useSingleAction } from '../../../lib/useSingleAction';
+import OffreEteBoutiqueClicksStat from '../../components/OffreEteBoutiqueClicksStat';
 
 const EMAIL_CHUNK_SIZE = 30;
 const OFFRE_ETE_CAMPAIGN = getOffreEteClientCampaignTemplate();
@@ -378,6 +379,7 @@ export default function EnvoyerClientsPageInner() {
             {withEmail.length} avec email · {withPhone.length} avec téléphone · {clients.length}{' '}
             total
           </p>
+          <OffreEteBoutiqueClicksStat compact className="send-offre-clicks-stat" />
         </div>
       </header>
 

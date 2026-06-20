@@ -65,14 +65,28 @@ export default function OffreEteAdminPage() {
   }
 
   const conversion =
-    stats && stats.clicks > 0 ? Math.round((stats.views / stats.clicks) * 100) : null;
+    stats && stats.views > 0
+      ? Math.round(((stats.boutiqueClicks ?? 0) / stats.views) * 100)
+      : null;
+
+  function eventLabel(ev) {
+    if (ev.event_type === 'view') return 'Vue page';
+    if (String(ev.source || '').startsWith('boutique')) return "Clic J'en profite";
+    return 'Clic En savoir plus';
+  }
+
+  function eventBadgeClass(ev) {
+    if (ev.event_type === 'view') return 'blue';
+    if (String(ev.source || '').startsWith('boutique')) return 'gold';
+    return 'default';
+  }
 
   return (
     <div className="offre-ete-admin-page">
       <header className="page-header">
         <div>
           <h1>Offre Été 2026</h1>
-          <p className="page-subtitle">Suivi des clics (boxingcenter.fr) et vues (landing page)</p>
+          <p className="page-subtitle">Suivi des clics « J&apos;en profite », vues page offre et WordPress</p>
         </div>
         <ActionButton className="btn secondary" onClick={refresh} loading={loading} disabled={loading}>
           Actualiser
@@ -91,15 +105,19 @@ export default function OffreEteAdminPage() {
 
       <div className="grid stats-grid offre-ete-stats-grid">
         <div className="card stat stat--gold">
-          <span className="muted">Clics « En savoir plus »</span>
-          <strong>{loading ? '…' : stats?.clicks ?? 0}</strong>
+          <span className="muted">Clics « J&apos;en profite » → boutique</span>
+          <strong>{loading ? '…' : stats?.boutiqueClicks ?? 0}</strong>
         </div>
         <div className="card stat stat--blue">
-          <span className="muted">Vues landing page</span>
+          <span className="muted">Vues page offre</span>
           <strong>{loading ? '…' : stats?.views ?? 0}</strong>
         </div>
         <div className="card stat">
-          <span className="muted">Taux clic → vue</span>
+          <span className="muted">Clics « En savoir plus » (WordPress)</span>
+          <strong>{loading ? '…' : stats?.wordpressClicks ?? 0}</strong>
+        </div>
+        <div className="card stat">
+          <span className="muted">Taux vue → J&apos;en profite</span>
           <strong>{loading ? '…' : conversion != null ? `${conversion}%` : '—'}</strong>
         </div>
       </div>
@@ -169,8 +187,8 @@ export default function OffreEteAdminPage() {
                   <tr key={ev.id}>
                     <td>{formatDate(ev.created_at)}</td>
                     <td>
-                      <span className={`badge badge--${ev.event_type === 'click' ? 'gold' : 'blue'}`}>
-                        {ev.event_type === 'click' ? 'Clic' : 'Vue'}
+                      <span className={`badge badge--${eventBadgeClass(ev)}`}>
+                        {eventLabel(ev)}
                       </span>
                     </td>
                     <td>{ev.source || '—'}</td>
