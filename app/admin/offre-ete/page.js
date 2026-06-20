@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
-import { OFFRE_ETE_CLICK_URL, OFFRE_ETE_LANDING_URL } from '../../../lib/offreEteConfig';
+import { OFFRE_ETE_LANDING_URL } from '../../../lib/offreEteConfig';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -98,7 +98,7 @@ export default function OffreEteAdminPage() {
           <strong>Statistiques indisponibles</strong>
           <p>{error}</p>
           <p className="muted" style={{ marginTop: '0.5rem' }}>
-            Vérifiez que la migration Supabase <code>007_offre_ete_events.sql</code> a été appliquée.
+            Vérifiez que la table de suivi offre été est bien configurée dans Supabase.
           </p>
         </div>
       ) : null}
@@ -113,7 +113,7 @@ export default function OffreEteAdminPage() {
           <strong>{loading ? '…' : stats?.views ?? 0}</strong>
         </div>
         <div className="card stat">
-          <span className="muted">Clics « En savoir plus » (WordPress)</span>
+          <span className="muted">Clics « En savoir plus »</span>
           <strong>{loading ? '…' : stats?.wordpressClicks ?? 0}</strong>
         </div>
         <div className="card stat">
@@ -140,12 +140,6 @@ export default function OffreEteAdminPage() {
               </a>
             </dd>
           </div>
-          <div>
-            <dt>URL de tracking (WordPress)</dt>
-            <dd>
-              <code className="offre-ete-code">{OFFRE_ETE_CLICK_URL}</code>
-            </dd>
-          </div>
         </dl>
       </section>
 
@@ -153,8 +147,7 @@ export default function OffreEteAdminPage() {
         <section className="card offre-ete-reset-card">
           <h2 className="card-title">Réinitialiser</h2>
           <p className="muted">
-            Remet les compteurs à zéro. Désactivable via la variable{' '}
-            <code>OFFRE_ETE_ALLOW_RESET=false</code> sur Vercel.
+            Remet les compteurs à zéro.
           </p>
           <ActionButton className="btn danger" onClick={handleReset} loading={resetting}>
             Réinitialiser les statistiques
@@ -162,7 +155,7 @@ export default function OffreEteAdminPage() {
           {resetMsg ? <p className="offre-ete-reset-msg">{resetMsg}</p> : null}
         </section>
       ) : (
-        <p className="muted offre-ete-reset-locked">Réinitialisation désactivée (OFFRE_ETE_ALLOW_RESET=false).</p>
+        <p className="muted offre-ete-reset-locked">Réinitialisation désactivée.</p>
       )}
 
       <section className="card">

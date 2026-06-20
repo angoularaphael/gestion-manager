@@ -32,11 +32,6 @@ export default function BotStatus() {
   const wa = summary?.whatsapp;
   const email = summary?.email;
   const botError = wa?.error;
-  const showBotHint =
-    botError &&
-    (botError.includes('Vercel') ||
-      botError.includes('Bothosting') ||
-      botError.includes('non configurée'));
 
   return (
     <>
@@ -45,12 +40,6 @@ export default function BotStatus() {
           <div>
             <strong>Messagerie temporairement indisponible</strong>
             <p>La liste des managers reste accessible. Réessayez l&apos;envoi plus tard.</p>
-            {showBotHint && (
-              <p className="alert-banner-detail">
-                Vérifiez sur Vercel : <code>NEXT_PUBLIC_WHATSAPP_BOT_URL</code>, <code>SITE_API_SECRET</code> et que
-                le bot Bothosting est démarré.
-              </p>
-            )}
           </div>
         </div>
       )}

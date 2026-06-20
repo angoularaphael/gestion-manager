@@ -40,7 +40,7 @@ export default function WhatsAppPage() {
     } catch {
       setStatus({
         connected: false,
-        error: 'Bot inaccessible depuis Vercel — vérifiez que Bothosting tourne.',
+        error: 'Bot inaccessible. Réessayez dans quelques instants.',
       });
     } finally {
       refreshInFlight.current = false;
