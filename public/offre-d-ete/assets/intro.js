@@ -5,6 +5,9 @@
 (function () {
   const ASSET_BASE = document.currentScript?.dataset?.assets || 'assets';
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CRAWLER = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|applebot/i.test(
+    navigator.userAgent || ''
+  );
 
   const ASSETS = {
     gloveRightPng: `${ASSET_BASE}/glove-right.png`,
@@ -537,7 +540,7 @@
       } catch (_) {}
     }
 
-    if (REDUCED) {
+    if (REDUCED || CRAWLER) {
       finishIntro();
       return;
     }

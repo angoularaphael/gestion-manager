@@ -10,21 +10,21 @@ Yoast ne lit **pas** le contenu de l'iframe. Remplis uniquement les **champs Yoa
 ```
 Offre Été 2026 — 3 mois illimités 89€ | Boxing Center Toulouse
 ```
+*(identique au H1 de la page — important pour le référencement local)*
 
 ### Meta description
 ```
-Offre été Boxing Center : 3 mois illimités à 89€ au lieu de 150€. Boxe, MMA, muay thaï, cross training. 5 salles Toulouse et agglomération. Inscrivez-vous !
+Offre été Boxing Center Toulouse : 3 mois illimités à 89€ au lieu de 150€. Boxe, MMA, muay thai, cross training. 5 salles — Saint-Cyprien, Minimes, Ramonville, Portet. T-shirt offert inclus.
 ```
-(≈ 155 caractères)
+(≈ 165 caractères)
 
 ### Mot-clé principal (focus keyphrase)
 ```
-offre été boxing center
+offre été boxing center toulouse
 ```
-ou
-```
-3 mois illimités 89€
-```
+Variantes secondaires Yoast :
+- `abonnement boxe toulouse 89€`
+- `3 mois illimités boxing center`
 
 ---
 
@@ -65,8 +65,15 @@ Dans la colonne droite **Page** → **Modèle** :
 - [ ] Mot-clé dans le titre SEO
 - [ ] Mot-clé dans la meta description
 - [ ] Mot-clé dans le slug (`offre-d-ete` contient "offre")
-- [ ] Image mise en avant définie
+- [ ] Image mise en avant définie (`email-offre.jpg` ou vignette promo)
 - [ ] Lien interne depuis l'accueil vers `/offre-d-ete`
+- [ ] Page indexée (pas de noindex)
+- [ ] Sitemap WordPress inclut `/offre-d-ete` (priorité haute si possible)
+
+## 8. Sitemap dédié (déjà dans le dépôt)
+
+Fichier : `public/offre-d-ete/sitemap.xml` — à copier sur l'hébergement si la page est servie en statique, ou soumettre dans Google Search Console :
+`https://boxingcenter.fr/offre-d-ete/sitemap.xml`
 
 ---
 
