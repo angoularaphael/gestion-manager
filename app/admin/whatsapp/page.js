@@ -1,25 +1,31 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ActionButton from '../../components/ActionButton';
 import { BOT_COMMANDS } from '../../../lib/botCommands';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
 export default function WhatsAppPage() {
   const [status, setStatus] = useState({});
-  const [method, setMethod] = useState('pairing_code');
+  const [method, setMethod] = useState('qr');
   const [phone, setPhone] = useState('33762641473');
   const { run: runStart, pending: starting } = useSingleAction();
   const { run: runLogout, pending: loggingOut } = useSingleAction();
+  const refreshInFlight = useRef(false);
 
   const refresh = useCallback(async () => {
+    if (refreshInFlight.current) return;
+    refreshInFlight.current = true;
     try {
-      const res = await fetch('/api/admin/whatsapp', { cache: 'no-store' });
+      const res = await fetch('/api/admin/whatsapp', {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(12000),
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setStatus({
           connected: false,
-          error: data.error || 'Bot inaccessible.',
+          error: data.error || `Bot inaccessible (HTTP ${res.status}).`,
         });
         return;
       }
@@ -29,15 +35,23 @@ export default function WhatsAppPage() {
         qr: data.qr || null,
         pairingCode: data.pairingCode || null,
         qrError: data.qrError || null,
+        error: data.error || null,
       });
     } catch {
-      setStatus({ connected: false, error: 'Bot inaccessible.' });
+      setStatus({
+        connected: false,
+        error: 'Bot inaccessible depuis Vercel — vérifiez que Bothosting tourne.',
+      });
+    } finally {
+      refreshInFlight.current = false;
     }
   }, []);
 
   useEffect(() => {
     refresh();
-    const t = setInterval(refresh, 4000);
+    const t = setInterval(() => {
+      if (document.visibilityState === 'visible') refresh();
+    }, 8000);
     return () => clearInterval(t);
   }, [refresh]);
 
@@ -52,7 +66,7 @@ export default function WhatsAppPage() {
             method,
             phone: method === 'pairing_code' ? phone.replace(/\D/g, '') : undefined,
           }),
-          signal: AbortSignal.timeout(15000),
+          signal: AbortSignal.timeout(12000),
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
@@ -62,7 +76,7 @@ export default function WhatsAppPage() {
         setStatus((s) => ({
           ...s,
           qrError: String(e.message || e).includes('abort')
-            ? 'Délai dépassé — réessayez dans quelques instants.'
+            ? 'Délai dépassé — le bot démarre peut-être en arrière-plan, attendez le QR.'
             : 'Bot inaccessible.',
         }));
       } finally {
@@ -74,7 +88,14 @@ export default function WhatsAppPage() {
   async function logout() {
     if (loggingOut) return;
     await runLogout(async () => {
-      await fetch('/api/admin/whatsapp?action=logout', { method: 'POST' });
+      try {
+        await fetch('/api/admin/whatsapp?action=logout', {
+          method: 'POST',
+          signal: AbortSignal.timeout(15000),
+        });
+      } catch {
+        /* ignore */
+      }
       refresh();
     });
   }
