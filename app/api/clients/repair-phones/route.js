@@ -3,8 +3,8 @@ import {
   repairPortetClientPhonesInDb,
   repairPortetClientEmailsInDb,
   countValidFrenchPhones,
-} from '../../../lib/repairClientPhones';
-import { getSession } from '../../../lib/session';
+} from '../../../../lib/repairClientPhones';
+import { getSession } from '../../../../lib/session';
 
 export async function POST() {
   const session = await getSession();
