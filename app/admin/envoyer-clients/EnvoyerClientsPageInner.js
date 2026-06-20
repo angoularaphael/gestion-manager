@@ -30,6 +30,7 @@ export default function EnvoyerClientsPageInner() {
   const preselectId = searchParams.get('client');
 
   const [clients, setClients] = useState([]);
+  const [clientStats, setClientStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -52,6 +53,7 @@ export default function EnvoyerClientsPageInner() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
       setClients(data.clients || []);
+      setClientStats(data.stats || null);
     } catch (e) {
       setResult({ error: e.message });
     } finally {
@@ -107,6 +109,9 @@ export default function EnvoyerClientsPageInner() {
 
   const withEmail = useMemo(() => clients.filter((c) => c.email), [clients]);
   const withPhone = useMemo(() => clients.filter((c) => c.telephone), [clients]);
+  const phoneCount = clientStats?.withPhone ?? withPhone.length;
+  const emailCount = clientStats?.withEmail ?? withEmail.length;
+  const totalCount = clientStats?.total ?? clients.length;
 
   const waveLimit = emailConfig?.mailjet?.waveLimit || 8000;
   const emailIdsOrdered = useMemo(() => withEmail.map((c) => c.id), [withEmail]);
@@ -315,7 +320,7 @@ export default function EnvoyerClientsPageInner() {
           const waJson = await parseApiJson(waRes);
           if (!waRes.ok) throw new Error(waJson.error || 'Erreur WhatsApp');
           mergeSendResults(waData, waJson);
-          waData.clients = withPhone.length;
+          waData.clients = phoneCount;
         } catch (err) {
           waData.errors.push({ channel: 'whatsapp', error: err.message });
         }
@@ -370,7 +375,7 @@ export default function EnvoyerClientsPageInner() {
         <div>
           <h1>Envoyer aux clients</h1>
           <p className="page-subtitle">
-            {withEmail.length} avec email · {withPhone.length} avec téléphone · {clients.length}{' '}
+            {emailCount} avec email · {phoneCount} avec téléphone · {totalCount}{' '}
             total
           </p>
           <OffreEteBoutiqueClicksStat compact className="send-offre-clicks-stat" />
@@ -501,13 +506,13 @@ export default function EnvoyerClientsPageInner() {
                   </>
                 ) : channels.includes('whatsapp') && !channels.includes('email') ? (
                   <>
-                    <strong>{withPhone.length}</strong> client(s) avec un numéro de téléphone en base
-                    (sur {clients.length} total). Seuls ceux-ci recevront le WhatsApp — pas les clients
+                    <strong>{phoneCount}</strong> client(s) avec un numéro de téléphone en base
+                    (sur {totalCount} total). Seuls ceux-ci recevront le WhatsApp — pas les clients
                     email seul.
                   </>
                 ) : (
                   <>
-                    Email vague {emailWave} : {emailWaveIds.length} · WhatsApp : {withPhone.length}{' '}
+                    Email vague {emailWave} : {emailWaveIds.length} · WhatsApp : {phoneCount}{' '}
                     numéro(s) en base
                   </>
                 )}
