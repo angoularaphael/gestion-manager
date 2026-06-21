@@ -3042,3 +3042,61 @@ html.manager-sheet-open body {
   font-size: 0.85rem;
 }
 
+.campaign-bots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.campaign-conv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.campaign-conv-item {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.campaign-conv-item--out {
+  border-left: 3px solid #2563eb;
+}
+
+.campaign-conv-item--in {
+  border-left: 3px solid #16a34a;
+}
+
+.campaign-conv-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.campaign-conv-body {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.badge-compta-ok {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+}
+
+.badge-compta-warn {
+  background: rgba(234, 179, 8, 0.15);
+  color: #ca8a04;
+}
+
