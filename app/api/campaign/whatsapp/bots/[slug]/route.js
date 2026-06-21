@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getSession } from '../../../../lib/session';
-import { apiError } from '../../../../lib/apiJson';
-import { getCampaignBot } from '../../../../lib/campaignBots';
-import { botFetch } from '../../../../lib/bot';
+import { getSession } from '../../../../../../lib/session';
+import { apiError } from '../../../../../../lib/apiJson';
+import { getCampaignBot } from '../../../../../../lib/campaignBots';
+import { botFetch } from '../../../../../../lib/bot';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
