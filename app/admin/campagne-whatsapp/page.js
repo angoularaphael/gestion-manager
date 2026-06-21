@@ -15,26 +15,33 @@ function BotCard({ bot, onChange }) {
   const { run: runLogout, pending: loggingOut } = useSingleAction();
 
   const load = useCallback(async () => {
-    setStatus((s) => ({ ...s, loading: true }));
+    setStatus((s) => ({ ...s, loading: !s.connected }));
     try {
-      const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}`, { cache: 'no-store' });
+      const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}`, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(28000),
+      });
       const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error);
       setStatus({ loading: false, ...data });
       if (data.connected) setQrMode(false);
       else if (data.connecting) setQrMode(true);
     } catch (err) {
-      setStatus({
+      const msg = String(err.message || err);
+      setStatus((s) => ({
+        ...s,
         loading: false,
-        connected: false,
-        error: err.message || 'Erreur',
-      });
+        connected: s.connected || false,
+        error: msg.includes('abort') || msg.includes('timeout')
+          ? 'Délai dépassé — le bot répond lentement, réessayez.'
+          : msg || 'Erreur',
+      }));
     }
   }, [bot.slug]);
 
   useEffect(() => {
     load();
-    const id = setInterval(load, 8000);
+    const id = setInterval(load, 15000);
     return () => clearInterval(id);
   }, [load]);
 
@@ -161,7 +168,7 @@ export default function CampagneWhatsAppPage() {
 
   useEffect(() => {
     refresh();
-    const id = setInterval(refresh, 20000);
+    const id = setInterval(refresh, 45000);
     return () => clearInterval(id);
   }, [refresh]);
 

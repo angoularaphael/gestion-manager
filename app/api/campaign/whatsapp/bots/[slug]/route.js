@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSession } from '../../../../../../lib/session';
 import { apiError } from '../../../../../../lib/apiJson';
 import { getCampaignBot } from '../../../../../../lib/campaignBots';
-import { botFetch } from '../../../../../../lib/bot';
+import { botFetch, probeBotAt } from '../../../../../../lib/bot';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -22,7 +22,7 @@ export async function GET(request, { params }) {
         error: `Variable ${bot.envKey} manquante sur Vercel`,
       });
     }
-    const status = await botFetch('/api/status', { baseUrl: bot.url, timeoutMs: 8000 });
+    const status = await probeBotAt(bot.url);
     return NextResponse.json({ slug: bot.slug, label: bot.label, configured: true, ...status });
   } catch (err) {
     return apiError(err);
