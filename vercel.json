@@ -27,6 +27,9 @@
     "app/api/clients/send-email/route.js": {
       "maxDuration": 60
     },
+    "app/api/campaign/whatsapp/route.js": {
+      "maxDuration": 60
+    },
     "app/api/admin/whatsapp/route.js": {
       "maxDuration": 30
     },

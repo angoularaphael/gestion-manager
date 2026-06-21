@@ -258,8 +258,8 @@ export default function EnvoyerClientsPageInner() {
       warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
       if (channels.includes('whatsapp') && !testOnly) {
         warn +=
-          '\n\nWhatsApp : le bot envoie ~12 messages/heure (anti-spam). ' +
-          'L\'envoi continue en arrière-plan sur Bothosting — gardez le bot allumé.';
+          '\n\nWhatsApp : 3 bots en parallèle (~13 messages/heure chacun). ' +
+          'Voir /admin/campagne-whatsapp pour les discussions.';
       }
       const ok = window.confirm(warn);
       if (!ok) return;
@@ -730,8 +730,8 @@ export default function EnvoyerClientsPageInner() {
                   </div>
                   {result.data?.whatsapp?.queued ? (
                     <p className="muted" style={{ marginTop: 10 }}>
-                      Le bot Bothosting envoie en arrière-plan (~12 messages/heure max). Laissez le
-                      bot allumé — comptez plusieurs jours pour toute la liste.
+                      Les 3 bots envoient en arrière-plan (13 messages/heure/bot). Suivez les
+                      discussions sur <a href="/admin/campagne-whatsapp">Campagne WA 3 bots</a>.
                       {waLiveSent != null ? (
                         <>
                           {' '}
