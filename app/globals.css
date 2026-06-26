@@ -2197,6 +2197,85 @@ html.manager-sheet-open body {
   justify-content: center;
 }
 
+.audience-type-grid {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+}
+
+.audience-type-opt {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.audience-type-opt input {
+  width: auto;
+  margin-top: 0.2rem;
+}
+
+.audience-type-opt strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.audience-type-opt span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.audience-type-opt.active {
+  border-color: #2563eb;
+  background: #f8fbff;
+}
+
+.audience-type-opt.audience-type-gold.active {
+  border-color: var(--mobile-gold);
+  background: #fffdf5;
+}
+
+.audience-type-opt.audience-type-green.active {
+  border-color: #16a34a;
+  background: #f6fdf8;
+}
+
+.unified-audience-stats {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.unified-audience-stats li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.unified-audience-stats span {
+  color: var(--muted);
+  text-align: right;
+}
+
+.unified-send-summary {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+}
+
+.send-card-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+}
+
 .country-send-panel {
   text-align: left;
 }

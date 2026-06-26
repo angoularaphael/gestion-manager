@@ -248,7 +248,7 @@ export default function ClientsPage() {
           </p>
         </div>
         <div className="header-actions">
-          <Link href="/admin/envoyer-clients" className="btn">
+          <Link href="/admin/envoyer?audiences=clients" className="btn">
             Envoyer un message
           </Link>
           <button type="button" className="btn secondary" onClick={exportCsv}>

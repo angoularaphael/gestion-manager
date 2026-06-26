@@ -160,7 +160,7 @@ export default function EnvoyerGroupeChabanePage() {
 
   return (
     <div className="send-page">
-      <EnvoyerBackLink href="/admin/groupe-chabane" label="Retour Groupe Chabane" />
+      <EnvoyerBackLink href="/admin/envoyer?audiences=groupe_chabane" label="← Envoyer" />
       <header className="page-header">
         <div>
           <h1>Envoyer — Groupe Chabane</h1>

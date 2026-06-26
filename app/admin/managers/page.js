@@ -143,7 +143,8 @@ export default function ManagersPage() {
 
       <CountrySendLink
         countries={selectedCountries}
-        sendPath="/admin/envoyer-managers"
+        sendPath="/admin/envoyer"
+        audiences="managers"
       />
 
       <section className="filter-panel card">

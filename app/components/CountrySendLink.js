@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { buildCountriesQuery, formatCountriesLabel } from '../../lib/countryFilter';
 
-export default function CountrySendLink({ countries = [], sendPath, label }) {
+export default function CountrySendLink({ countries = [], sendPath = '/admin/envoyer', audiences, label }) {
   if (!countries?.length) return null;
 
   const query = buildCountriesQuery(countries);
-  const href = `${sendPath}?mode=country&${query}`;
+  const audiencePart = audiences ? `audiences=${encodeURIComponent(audiences)}&` : '';
+  const href = `${sendPath}?${audiencePart}mode=country&${query}`;
   const text =
     label || `Envoyer email / WhatsApp — ${formatCountriesLabel(countries)}`;
 

@@ -156,7 +156,8 @@ export default function BoxeursPage() {
 
       <CountrySendLink
         countries={selectedCountries}
-        sendPath="/admin/envoyer-boxeurs"
+        sendPath="/admin/envoyer"
+        audiences="boxeurs"
       />
 
       <section className="filter-panel card">
