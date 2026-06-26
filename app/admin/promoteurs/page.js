@@ -151,7 +151,8 @@ export default function PromoteursPage() {
 
       <CountrySendLink
         countries={selectedCountries}
-        sendPath="/admin/envoyer-promoteurs"
+        sendPath="/admin/envoyer"
+        audiences="promoteurs"
       />
 
       <section className="filter-panel card">

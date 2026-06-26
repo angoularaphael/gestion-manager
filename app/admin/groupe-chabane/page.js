@@ -68,7 +68,7 @@ export default function GroupeChabanePage() {
           </p>
         </div>
         <div className="page-header-actions">
-          <Link href="/admin/envoyer-groupe-chabane" className="btn btn-sm">
+          <Link href="/admin/envoyer?audiences=groupe_chabane" className="btn btn-sm">
             Envoyer WhatsApp
           </Link>
           <ActionButton className="btn ghost btn-sm" onClick={loadContacts} loading={loading}>
