@@ -13,8 +13,8 @@ export const maxDuration = 60;
 export async function GET(request, { params }) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+  const bot = getCampaignBot(params.slug);
   try {
-    const bot = getCampaignBot(params.slug);
     if (!bot) return NextResponse.json({ error: 'Bot inconnu' }, { status: 404 });
     if (!bot.configured) {
       return NextResponse.json({
@@ -28,7 +28,15 @@ export async function GET(request, { params }) {
     const status = await fetchCampaignBotStatus(bot.url);
     return NextResponse.json({ slug: bot.slug, label: bot.label, ...status });
   } catch (err) {
-    return apiError(err);
+    return NextResponse.json({
+      slug: params.slug,
+      label: bot?.label || params.slug,
+      configured: Boolean(bot?.configured),
+      connected: false,
+      connecting: false,
+      qr: null,
+      error: err?.message || 'Bot inaccessible',
+    });
   }
 }
 
