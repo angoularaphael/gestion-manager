@@ -10,6 +10,8 @@ import {
 import { fetchUnsubscribedEmailSet } from '../../../../lib/emailUnsubscribes';
 import { sendBulkEmails } from '../../../../lib/sendEmailBatch';
 import { getSession } from '../../../../lib/session';
+import { CAMPAIGN_EMAIL_TAG } from '../../../../lib/campaignEmail';
+import { logCampaignOutbound } from '../../../../lib/campaignOutbound';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -110,6 +112,28 @@ export async function POST(request) {
       );
     }
     batch.email.skipped += skippedUnsubscribed;
+
+    if (useOffreEteVariants && !testOnly && batch.destinations?.length) {
+      for (const dest of batch.destinations) {
+        if (dest.channel !== 'email' || !dest.to) continue;
+        const client = eligible.find(
+          (c) => String(c.email).trim().toLowerCase() === String(dest.to).trim().toLowerCase()
+        );
+        try {
+          await logCampaignOutbound({
+            campaign: CAMPAIGN_EMAIL_TAG,
+            channel: 'email',
+            recipient: dest.to,
+            subject: subject || campaignTpl.subject,
+            body: message?.slice(0, 500) || campaignTpl.message.slice(0, 500),
+            status: 'sent',
+            clientId: client?.id,
+          });
+        } catch (logErr) {
+          console.warn('[clients/send-email] log outbound:', logErr.message);
+        }
+      }
+    }
 
     return json({
       success: true,

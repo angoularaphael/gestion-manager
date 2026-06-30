@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offre Bio 29€/mois — Boxing Center Toulouse</title>
+  <meta name="description" content="Abonnement Boxing Center à 29€/mois au lieu de 44€ — donnez le contact d'un ami intéressé." />
+  <link rel="stylesheet" href="/tunnel-assets/tunnel.css" />
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <section class="hero wrap" id="top">
+    <span class="badge">Offre à deux</span>
+    <h1>29€/mois au lieu de 44€</h1>
+    <p class="lead">Sans engagement longue durée. Indique le nom et le portable d'un pote intéressé par la boxe — tu débloques le tarif à 29€ tout de suite.</p>
+    <p class="price"><s>44€</s> → 29€<span style="font-size:1rem;color:#a3a3a3">/mois</span></p>
+    <p style="margin-top:20px"><a class="btn" href="#inscription">J'en profite à 29€</a></p>
+  </section>
+
+  <section class="wrap">
+    <h2 style="text-align:center;margin-bottom:24px">Pourquoi ça marche</h2>
+    <div class="grid-2">
+      <div class="card"><h3>Tu t'inscris seul</h3><p>Pas besoin que ton pote soit devant l'écran. Tu remplis son contact, tu paies 29€.</p></div>
+      <div class="card"><h3>Il est prévenu</h3><p>Ton pote reçoit un WhatsApp : il peut aussi bénéficier de l'offre s'il est intéressé.</p></div>
+      <div class="card"><h3>5 salles</h3><p>Saint-Cyprien, Minimes, Ramonville, Portet, États-Unis — tous les cours inclus.</p></div>
+      <div class="card"><h3>Sans engagement</h3><p>29€/mois, tu arrêtes quand tu veux. La boxe, c'est pas un mariage.</p></div>
+    </div>
+    <p style="text-align:center;margin-top:28px"><a class="btn" href="#inscription">Débloquer 29€</a></p>
+  </section>
+
+  <section class="wrap" id="inscription">
+    <h2 style="text-align:center">Débloque ton tarif</h2>
+    <p class="lead" style="text-align:center">Tes infos + celles de ton pote intéressé (il n'a pas besoin de s'inscrire maintenant).</p>
+    <form class="form-box" id="form29" onsubmit="event.preventDefault(); tunnelSubmit(this, '/api/offre-29/referral', { source: 'landing_29' });">
+      <h3 style="margin-bottom:8px">Toi</h3>
+      <label>Prénom *</label>
+      <input name="prenom" required autocomplete="given-name" />
+      <label>Nom</label>
+      <input name="nom" autocomplete="family-name" />
+      <label>Téléphone *</label>
+      <input name="telephone" type="tel" required autocomplete="tel" />
+      <h3 style="margin:20px 0 8px">Ton pote intéressé</h3>
+      <label>Prénom du pote *</label>
+      <input name="pote_prenom" required />
+      <label>Nom du pote</label>
+      <input name="pote_nom" />
+      <label>Téléphone du pote *</label>
+      <input name="pote_telephone" type="tel" required />
+      <p class="urgency">Offre limitée — places disponibles selon les salles.</p>
+      <button type="submit" class="btn" style="width:100%;margin-top:20px">Valider et passer à 29€</button>
+      <p class="form-msg"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>Boxing Center — <a href="https://boxingcenter.fr/">boxingcenter.fr</a></p>
+  </footer>
+  <script src="/tunnel-assets/tunnel.js"></script>
+</body>
+</html>
