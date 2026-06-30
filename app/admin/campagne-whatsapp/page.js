@@ -11,6 +11,7 @@ import { useSingleAction } from '../../../lib/useSingleAction';
 function BotCard({ bot, onChange }) {
   const [status, setStatus] = useState({ loading: true });
   const [qrMode, setQrMode] = useState(false);
+  const [tick, setTick] = useState(0);
   const { run: runStart, pending: starting } = useSingleAction();
   const { run: runLogout, pending: loggingOut } = useSingleAction();
 
@@ -19,20 +20,20 @@ function BotCard({ bot, onChange }) {
     try {
       const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}`, {
         cache: 'no-store',
-        signal: AbortSignal.timeout(28000),
+        signal: AbortSignal.timeout(35000),
       });
       const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error);
       setStatus({ loading: false, ...data });
       if (data.connected) setQrMode(false);
-      else if (data.connecting) setQrMode(true);
+      else if (data.connecting || data.qr) setQrMode(true);
     } catch (err) {
       const msg = String(err.message || err);
       setStatus((s) => ({
         ...s,
         loading: false,
         connected: s.connected || false,
-        error: msg.includes('abort') || msg.includes('timeout')
+        error: msg.match(/abort|timed out|timeout/i)
           ? 'Délai dépassé — le bot répond lentement, réessayez.'
           : msg || 'Erreur',
       }));
@@ -41,19 +42,55 @@ function BotCard({ bot, onChange }) {
 
   useEffect(() => {
     load();
-    const id = setInterval(load, 15000);
+  }, [load, tick]);
+
+  useEffect(() => {
+    if (status.connected) return undefined;
+    if (!qrMode && !status.connecting) return undefined;
+    const id = setInterval(() => setTick((t) => t + 1), 4000);
     return () => clearInterval(id);
-  }, [load]);
+  }, [status.connected, qrMode, status.connecting]);
 
   async function start() {
     await runStart(async () => {
       setQrMode(true);
-      await fetch(`/api/campaign/whatsapp/bots/${bot.slug}?action=start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ method: 'qr' }),
-      });
-      load();
+      try {
+        const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}?action=start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ method: 'qr', forceQr: true }),
+          signal: AbortSignal.timeout(35000),
+        });
+        const data = await parseApiJson(res);
+        if (!res.ok) {
+          setQrMode(false);
+          setStatus((s) => ({
+            ...s,
+            loading: false,
+            error: data.error || 'Échec du démarrage',
+            connecting: false,
+            qr: null,
+          }));
+          return;
+        }
+        setStatus((s) => ({
+          ...s,
+          loading: false,
+          connecting: true,
+          error: null,
+        }));
+      } catch (err) {
+        setQrMode(false);
+        setStatus((s) => ({
+          ...s,
+          loading: false,
+          connecting: false,
+          qr: null,
+          error: err.message || 'Bot inaccessible.',
+        }));
+        return;
+      }
+      setTick((t) => t + 1);
       onChange?.();
     });
   }
@@ -83,11 +120,15 @@ function BotCard({ bot, onChange }) {
         <p className="error muted">URL manquante — <code>{bot.envKey}</code> ou <code>{bot.comptaEnvKey}</code> sur Vercel (voir compta-boxing)</p>
       ) : null}
       {status.error ? <p className="error">{status.error}</p> : null}
+      {status.qrError ? <p className="error">{status.qrError}</p> : null}
       {status.qr && qrMode && !status.connected ? (
         <div className="qr-wrap">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={status.qr} alt={`QR ${bot.label}`} />
         </div>
+      ) : null}
+      {!status.connected && qrMode && !status.qr && !status.error ? (
+        <p className="muted">QR en cours de génération…</p>
       ) : null}
       {status.connected ? (
         <p className="muted">Ce numéro envoie jusqu&apos;à 12 messages / 30 min (~2m30 entre chaque).</p>
