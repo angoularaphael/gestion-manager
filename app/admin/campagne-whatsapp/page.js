@@ -20,7 +20,7 @@ function BotCard({ bot, onChange }) {
     try {
       const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}`, {
         cache: 'no-store',
-        signal: AbortSignal.timeout(35000),
+        signal: AbortSignal.timeout(45000),
       });
       const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error);
@@ -59,7 +59,7 @@ function BotCard({ bot, onChange }) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ method: 'qr', forceQr: true }),
-          signal: AbortSignal.timeout(35000),
+          signal: AbortSignal.timeout(45000),
         });
         const data = await parseApiJson(res);
         if (!res.ok) {
@@ -189,6 +189,7 @@ function ConversationList({ items }) {
 export default function CampagneWhatsAppPage() {
   const [stats, setStats] = useState(null);
   const [conversations, setConversations] = useState({ outbound: [], inbound: [] });
+  const [convWarning, setConvWarning] = useState('');
   const [dispatchResult, setDispatchResult] = useState(null);
   const { run: runDispatch, pending: dispatching } = useSingleAction();
 
@@ -201,7 +202,10 @@ export default function CampagneWhatsAppPage() {
       const statsData = await parseApiJson(statsRes);
       const convData = await parseApiJson(convRes);
       if (statsRes.ok) setStats(statsData);
-      if (convRes.ok) setConversations(convData);
+      if (convRes.ok) {
+        setConversations(convData);
+        setConvWarning(convData.schemaWarning || '');
+      }
     } catch {
       /* ignore */
     }
@@ -326,6 +330,7 @@ export default function CampagneWhatsAppPage() {
       <section className="card" style={{ marginTop: '1.25rem' }}>
         <h2 className="section-title">Discussions campagne</h2>
         <p className="muted">Messages envoyés et réponses reçues (tous bots confondus).</p>
+        {convWarning ? <p className="error muted">{convWarning}</p> : null}
         <ConversationList items={threads} />
       </section>
     </div>
