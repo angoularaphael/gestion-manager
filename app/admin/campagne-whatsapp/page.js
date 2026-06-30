@@ -334,8 +334,11 @@ export default function CampagneWhatsAppPage() {
             <strong>{stats.sentCount}</strong>
           </div>
           <div className="card stat-card">
-            <span className="stat-label">Restants</span>
-            <strong>{stats.pendingCount}</strong>
+            <span className="stat-label">Restants (avec tél.)</span>
+            <strong>{stats.pendingCount?.toLocaleString('fr-FR')}</strong>
+            {stats.clientsWithPhone != null ? (
+              <span className="muted">sur {stats.clientsWithPhone.toLocaleString('fr-FR')} numéros</span>
+            ) : null}
           </div>
           <div className="card stat-card">
             <span className="stat-label">Capacité / heure</span>
@@ -365,7 +368,8 @@ export default function CampagneWhatsAppPage() {
         {dispatchResult?.error ? <p className="error">{dispatchResult.error}</p> : null}
         {dispatchResult?.dispatchedTotal != null && !dispatchResult.error ? (
           <p className="muted">
-            {dispatchResult.dispatchedTotal} client(s) assigné(s) — {dispatchResult.pendingRemaining} restant(s)
+            {dispatchResult.dispatchedTotal} client(s) assigné(s) cette vague —{' '}
+            {(dispatchResult.pendingRemaining ?? 0).toLocaleString('fr-FR')} restant(s) avec téléphone
           </p>
         ) : null}
         {dispatchResult?.recipients?.length ? (
