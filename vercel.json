@@ -48,11 +48,5 @@
     "app/api/bot/summary/route.js": {
       "maxDuration": 30
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/campaign-hourly",
-      "schedule": "*/30 * * * *"
-    }
-  ]
+  }
 }
