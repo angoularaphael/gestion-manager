@@ -90,7 +90,7 @@ function BotCard({ bot, onChange }) {
         </div>
       ) : null}
       {status.connected ? (
-        <p className="muted">Ce numéro envoie jusqu&apos;à 13 messages/heure (13 textes différents).</p>
+        <p className="muted">Ce numéro envoie jusqu&apos;à 12 messages/heure (~5 min entre chaque).</p>
       ) : null}
       <div className="wa-actions">
         {!status.connected ? (
@@ -183,7 +183,7 @@ export default function CampagneWhatsAppPage() {
   async function launchWave(testOnly = false) {
     const msg = testOnly
       ? 'Envoyer un message test WhatsApp via le 1er bot connecté ?'
-      : `Lancer une vague sur les 3 bots ?\n\nChaque bot connecté envoie jusqu'à ${stats?.messagesPerBotPerHour || 13} messages (13 textes différents).\nUn numéro ne reçoit jamais 2 fois la campagne.`;
+      : `Lancer une vague sur les 3 bots ?\n\nChaque bot connecté envoie jusqu'à ${stats?.messagesPerBotPerHour || 12} messages (~5 min d'espacement).\nUn numéro ne reçoit jamais 2 fois la campagne.`;
     if (!window.confirm(msg)) return;
 
     await runDispatch(async () => {
@@ -205,8 +205,10 @@ export default function CampagneWhatsAppPage() {
         <div>
           <h1>Campagne WhatsApp — 3 serveurs</h1>
           <p className="page-subtitle">
-            Offre été · 13 messages/heure/bot · déduplication globale ·{' '}
+            Offre été · 12 messages/heure/bot · ~5 min entre envois ·{' '}
             <Link href="/admin/envoyer-clients">envoyer clients</Link>
+            {' · '}
+            <Link href="/admin/campagne-wa-envoyes">déjà envoyés</Link>
           </p>
         </div>
       </header>
@@ -234,6 +236,7 @@ export default function CampagneWhatsAppPage() {
         <p className="muted">
           Les 3 bots travaillent en parallèle. Chaque numéro client n&apos;est assigné qu&apos;à un seul bot.
           Les discussions apparaissent ci-dessous et sur chaque téléphone WhatsApp connecté.
+          Test WhatsApp → numéro <code>237693646080</code> (ou <code>CAMPAIGN_TEST_PHONE</code> sur Vercel).
         </p>
         <div className="wa-actions">
           <ActionButton className="btn primary" onClick={() => launchWave(false)} loading={dispatching}>
@@ -248,6 +251,21 @@ export default function CampagneWhatsAppPage() {
           <p className="muted">
             {dispatchResult.dispatchedTotal} client(s) assigné(s) — {dispatchResult.pendingRemaining} restant(s)
           </p>
+        ) : null}
+        {dispatchResult?.recipients?.length ? (
+          <ul className="campaign-sent-recent">
+            {dispatchResult.recipients.map((r, i) => (
+              <li key={`${r.phone}-${i}`}>
+                <strong>Envoyé à {r.name}</strong>
+                <span className="muted">
+                  {' '}
+                  · {r.bot}
+                  {r.phone ? ` · ${r.phone}` : ''}
+                  {r.status === 'en cours' ? ' · en cours sur Bothosting' : ''}
+                </span>
+              </li>
+            ))}
+          </ul>
         ) : null}
         {dispatchResult?.warnings?.map((w) => (
           <p key={w} className="muted">

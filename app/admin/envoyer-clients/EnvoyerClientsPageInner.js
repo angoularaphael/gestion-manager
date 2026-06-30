@@ -140,7 +140,7 @@ export default function EnvoyerClientsPageInner() {
   const emailCount = clientStats?.withEmail ?? withEmail.length;
   const totalCount = clientStats?.total ?? clients.length;
 
-  const waveLimit = emailConfig?.mailjet?.waveLimit || 8000;
+  const waveLimit = emailConfig?.mailjet?.waveLimit || 200;
   const emailIdsOrdered = useMemo(() => withEmail.map((c) => c.id), [withEmail]);
   const emailWaveCount = useMemo(
     () => getCampaignWaveCount(emailIdsOrdered.length, waveLimit),
@@ -258,8 +258,8 @@ export default function EnvoyerClientsPageInner() {
       warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
       if (channels.includes('whatsapp') && !testOnly) {
         warn +=
-          '\n\nWhatsApp : 3 bots en parallèle (~13 messages/heure chacun). ' +
-          'Voir /admin/campagne-whatsapp pour les discussions.';
+          '\n\nWhatsApp : 3 bots en parallèle (12 messages/heure chacun, ~5 min entre envois). ' +
+          'Voir /admin/campagne-whatsapp pour les discussions et /admin/campagne-wa-envoyes pour l\'historique.';
       }
       const ok = window.confirm(warn);
       if (!ok) return;
@@ -730,8 +730,9 @@ export default function EnvoyerClientsPageInner() {
                   </div>
                   {result.data?.whatsapp?.queued ? (
                     <p className="muted" style={{ marginTop: 10 }}>
-                      Les 3 bots envoient en arrière-plan (13 messages/heure/bot). Suivez les
-                      discussions sur <a href="/admin/campagne-whatsapp">Campagne WA 3 bots</a>.
+                      Les 3 bots envoient en arrière-plan (12 messages/heure/bot). Suivez les
+                      discussions sur <a href="/admin/campagne-whatsapp">Campagne WA 3 bots</a> ou{' '}
+                      <a href="/admin/campagne-wa-envoyes">déjà envoyés</a>.
                       {waLiveSent != null ? (
                         <>
                           {' '}

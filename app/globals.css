@@ -3169,6 +3169,43 @@ html.manager-sheet-open body {
   line-height: 1.45;
 }
 
+.campaign-sent-recent {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.campaign-sent-table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.campaign-sent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.campaign-sent-table th,
+.campaign-sent-table td {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.campaign-sent-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--surface-alt, var(--surface));
+}
+
 .badge-compta-ok {
   background: rgba(22, 163, 74, 0.15);
   color: #16a34a;

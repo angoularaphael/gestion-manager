@@ -4,7 +4,9 @@ import { apiError } from '../../../../lib/apiJson';
 import {
   dispatchCampaignWhatsAppWave,
   fetchCampaignConversations,
+  fetchCampaignSentRecipients,
   getCampaignWhatsAppStats,
+  resetCampaignWhatsAppTracking,
 } from '../../../../lib/campaignWhatsApp';
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +21,17 @@ export async function GET(request) {
       const limit = Number(new URL(request.url).searchParams.get('limit') || 80);
       return NextResponse.json(await fetchCampaignConversations({ limit }));
     }
-    return NextResponse.json(await getCampaignWhatsAppStats());
+    if (view === 'sent') {
+      const { searchParams } = new URL(request.url);
+      return NextResponse.json(
+        await fetchCampaignSentRecipients({
+          page: Number(searchParams.get('page') || 1),
+          limit: Number(searchParams.get('limit') || 50),
+          status: searchParams.get('status') || 'sent',
+        })
+      );
+    }
+    return NextResponse.json(await getCampaignWhatsAppStats({ includeBots: true }));
   } catch (err) {
     return apiError(err);
   }
@@ -37,6 +49,11 @@ export async function POST(request) {
         testOnly: Boolean(body.test_only),
       });
       return NextResponse.json({ success: true, ...result });
+    }
+
+    if (action === 'reset') {
+      await resetCampaignWhatsAppTracking();
+      return NextResponse.json({ ok: true, reset: true });
     }
 
     return NextResponse.json({ error: `Action inconnue: ${action}` }, { status: 400 });

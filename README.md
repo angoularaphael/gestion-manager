@@ -16,7 +16,12 @@ Copier `.env.local.example` → variables d'environnement Vercel :
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | URL du bot Bothosting (`http://IP:3002`) |
+| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | Bot legacy / Minimes (`http://us2.bot-hosting.net:20042`) |
+| `WHATSAPP_BOT_URL_MINIMES` | Bot campagne Minimes |
+| `WHATSAPP_BOT_URL_ST_CYPRIEN` | Bot campagne Saint-Cyprien (`http://prem-eu2.bot-hosting.net:20405`) |
+| `WHATSAPP_BOT_URL_RAMONVILLE` | Bot campagne Ramonville (`http://prem-eu4.bot-hosting.net:21357`) |
+| `CAMPAIGN_WA_PER_BOT_HOUR` | `12` — messages/heure par bot |
+| `CAMPAIGN_TEST_PHONE` | `237693646080` — numéro test WhatsApp |
 | `SITE_API_SECRET` | Secret partagé avec le bot |
 | `SESSION_SECRET` | Signature session (peut = SITE_API_SECRET) |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase |
@@ -33,6 +38,10 @@ Exécuter dans le SQL Editor :
 3. `007_offre_ete_events.sql` (tracking Offre Été 2026 — voir `../infobox/supabase/migrations/`)
 4. `012_offre_ete_whatsapp_reads.sql` (ouvertures WhatsApp campagne offre été)
 5. `008_chatbot.sql` (leads & stats chatbot Portet)
+6. `014_campaign_settings.sql` (cron campagne horaire — pause / réchauffement)
+7. `015_tunnel_leads.sql` (leads tunnels 29€, 259€, séance d'essai)
+
+Voir aussi [docs/CAMPAGNE_CHECKLIST.md](docs/CAMPAGNE_CHECKLIST.md) — planning : `/admin/campagne-planning`.
 
 ## Local
 
