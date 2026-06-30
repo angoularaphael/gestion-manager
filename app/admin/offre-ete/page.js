@@ -48,7 +48,7 @@ export default function OffreEteAdminPage() {
 
   async function handleReset() {
     if (resetting) return;
-    if (!window.confirm('Réinitialiser tous les compteurs (clics + vues) ?')) return;
+    if (!window.confirm('Réinitialiser tous les compteurs (clics, vues et envois WhatsApp) ?')) return;
     setResetting(true);
     setResetMsg('');
     try {
