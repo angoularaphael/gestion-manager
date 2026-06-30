@@ -10,10 +10,11 @@ Dans **Vercel → gestion-manager → Settings → Environment Variables** (Prod
 | `WHATSAPP_BOT_URL_ST_CYPRIEN` | `http://prem-eu2.bot-hosting.net:20405` |
 | `WHATSAPP_BOT_URL_RAMONVILLE` | `http://prem-eu4.bot-hosting.net:21357` |
 | `NEXT_PUBLIC_WHATSAPP_BOT_URL` | `http://us2.bot-hosting.net:20042` (legacy / Minimes) |
-| `CAMPAIGN_WA_PER_BOT_HOUR` | `12` |
+| `CAMPAIGN_WA_PER_BOT_WAVE` | `12` |
+| `CAMPAIGN_WA_WINDOW_MINUTES` | `30` |
 | `CAMPAIGN_TEST_PHONE` | `237693646080` |
 | `SITE_API_SECRET` | **identique** sur les 3 bots Bothosting |
-| `CRON_SECRET` | chaîne aléatoire pour le cron horaire |
+| `CRON_SECRET` | chaîne aléatoire pour le cron (toutes les 30 min) |
 | `EMAIL_PROVIDER` | `mailjet` |
 
 **Important :** ne pas définir `OFFRE_ETE_WHATSAPP_SENT_OVERRIDE` ni `OFFRE_ETE_WHATSAPP_READ_OVERRIDE` — les compteurs viennent de Supabase.
@@ -34,9 +35,10 @@ Variables communes sur chaque serveur :
 
 ```env
 SITE_API_SECRET=<même que Vercel>
-WA_BULK_MAX_PER_HOUR=12
-WA_BULK_DELAY_MS=300000
-WA_BULK_DELAY_JITTER_MS=30000
+WA_BULK_WINDOW_MS=1800000
+WA_BULK_MAX_PER_WINDOW=12
+WA_BULK_DELAY_MS=150000
+WA_BULK_DELAY_JITTER_MS=20000
 ```
 
 Redémarrer chaque serveur après modification du `.env`.
@@ -61,10 +63,10 @@ Si erreur « Bot inaccessible » : Bothosting est arrêté ou l’URL Vercel est
 ## 5. Envoi campagne
 
 - **Manuel :** `/admin/campagne-whatsapp` → **Lancer vague (3 bots)**
-  - Chaque bot connecté envoie jusqu’à **12 messages/heure** (~5 min entre chaque)
+  - Chaque bot connecté envoie jusqu’à **12 messages / 30 min** (~2m30 entre chaque)
   - La page affiche **Envoyé à …** pour chaque contact assigné
 - **Historique :** `/admin/campagne-wa-envoyes`
-- **Auto :** `/admin/campagne-planning` → démarrer la campagne (cron horaire)
+- **Auto :** `/admin/campagne-planning` → démarrer la campagne (cron **toutes les 30 min**)
 
 ## 6. Réinitialiser les compteurs WhatsApp
 
@@ -79,7 +81,7 @@ Pour repartir de zéro (envoyés + lus) :
 - [ ] `CRON_SECRET` défini
 - [ ] SPF + DKIM + DMARC validés sur boxing-center-portet.fr
 - [ ] Migrations Supabase : `014_campaign_settings.sql`, `015_tunnel_leads.sql`
-- [ ] 3 bots Bothosting à jour + `.env` 12/h
+- [ ] 3 bots Bothosting à jour + `.env` 12/30 min
 
 ## WhatsApp — reconnexion (si bannis)
 

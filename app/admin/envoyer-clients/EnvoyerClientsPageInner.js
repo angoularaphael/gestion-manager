@@ -258,7 +258,7 @@ export default function EnvoyerClientsPageInner() {
       warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
       if (channels.includes('whatsapp') && !testOnly) {
         warn +=
-          '\n\nWhatsApp : 3 bots en parallèle (12 messages/heure chacun, ~5 min entre envois). ' +
+          '\n\nWhatsApp : 3 bots en parallèle (12 messages / 30 min chacun, ~2m30 entre envois). ' +
           'Voir /admin/campagne-whatsapp pour les discussions et /admin/campagne-wa-envoyes pour l\'historique.';
       }
       const ok = window.confirm(warn);
@@ -434,7 +434,7 @@ export default function EnvoyerClientsPageInner() {
               <div className="send-wa-hint muted" style={{ marginTop: '0.75rem' }}>
                 <p style={{ margin: '0 0 8px' }}>
                   {OFFRE_ETE_WHATSAPP_VARIANT_COUNT} formulations + prénom de chaque client (anti-spam
-                  WhatsApp). Envoi ~12/h max sur le bot.
+                  WhatsApp). Envoi 12 messages / 30 min max sur le bot.
                 </p>
                 <button
                   type="button"
@@ -730,7 +730,7 @@ export default function EnvoyerClientsPageInner() {
                   </div>
                   {result.data?.whatsapp?.queued ? (
                     <p className="muted" style={{ marginTop: 10 }}>
-                      Les 3 bots envoient en arrière-plan (12 messages/heure/bot). Suivez les
+                      Les 3 bots envoient en arrière-plan (12 messages / 30 min / bot). Suivez les
                       discussions sur <a href="/admin/campagne-whatsapp">Campagne WA 3 bots</a> ou{' '}
                       <a href="/admin/campagne-wa-envoyes">déjà envoyés</a>.
                       {waLiveSent != null ? (
