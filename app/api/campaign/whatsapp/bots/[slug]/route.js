@@ -46,6 +46,21 @@ export async function POST(request, { params }) {
     }
 
     const body = await request.json().catch(() => ({}));
+
+    if (action === 'start') {
+      botFetch(botPath, {
+        method: 'POST',
+        baseUrl: bot.url,
+        body: { method: 'qr', forceQr: true, ...(body || {}) },
+        timeoutMs: 8000,
+      }).catch(() => {});
+      return NextResponse.json({
+        slug: bot.slug,
+        success: true,
+        message: 'Démarrage en cours — attendez le QR.',
+      });
+    }
+
     const data = await botFetch(botPath, {
       method: 'POST',
       baseUrl: bot.url,
