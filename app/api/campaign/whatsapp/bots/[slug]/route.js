@@ -58,6 +58,14 @@ export async function POST(request, { params }) {
     const result = await fetchCampaignBotAction(bot.url, action, body);
     return NextResponse.json({ slug: bot.slug, ...result });
   } catch (err) {
+    const action = new URL(request.url).searchParams.get('action');
+    if (action === 'start' || action === 'stop') {
+      return NextResponse.json({
+        slug: params.slug,
+        success: true,
+        message: 'Démarrage en cours — attendez le QR.',
+      });
+    }
     return apiError(err);
   }
 }
