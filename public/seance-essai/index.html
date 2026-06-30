@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Séance d'essai gratuite — Boxing Center Toulouse</title>
+  <meta name="description" content="Réserve ta séance d'essai gratuite chez Boxing Center — boxe, MMA, 5 salles à Toulouse." />
+  <link rel="stylesheet" href="/tunnel-assets/tunnel.css" />
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <section class="hero wrap">
+    <span class="badge">100% gratuit</span>
+    <h1>Séance d'essai offerte</h1>
+    <p class="lead">Viens tester la salle, l'ambiance et les coachs. Aucun paiement, aucun engagement — juste du sport.</p>
+    <p class="price" style="color:#4ade80">0€</p>
+    <p style="margin-top:20px"><a class="btn" href="#resa">Réserver ma séance</a></p>
+  </section>
+
+  <section class="wrap">
+    <div class="grid-2">
+      <div class="card"><h3>Tu viens en salle</h3><p>On t'accueille, tu découvres les installations et un cours adapté à ton niveau.</p></div>
+      <div class="card"><h3>Flyer offert</h3><p>Repart avec les infos sur les offres du moment — sans pression.</p></div>
+      <div class="card"><h3>5 adresses</h3><p>Choisis la salle la plus proche de chez toi.</p></div>
+      <div class="card"><h3>Tous niveaux</h3><p>Débutant ou confirmé — tout le monde a sa place.</p></div>
+    </div>
+    <p class="urgency" style="text-align:center;margin-top:24px">Places limitées chaque semaine — réserve maintenant.</p>
+    <p style="text-align:center;margin-top:16px"><a class="btn" href="#resa">C'est parti</a></p>
+  </section>
+
+  <section class="wrap" id="resa">
+    <h2 style="text-align:center">Réserve en 30 secondes</h2>
+    <form class="form-box" id="formEssai" onsubmit="event.preventDefault(); tunnelSubmit(this, '/api/tunnel/lead', { tunnel: 'seance_essai', source: 'landing_essai' });">
+      <label>Prénom *</label>
+      <input name="prenom" required autocomplete="given-name" />
+      <label>Nom</label>
+      <input name="nom" autocomplete="family-name" />
+      <label>Téléphone *</label>
+      <input name="telephone" type="tel" required autocomplete="tel" />
+      <label>Email</label>
+      <input name="email" type="email" autocomplete="email" />
+      <label>Salle *</label>
+      <select name="salle" required>
+        <option value="">— Choisir —</option>
+        <option>Saint-Cyprien</option>
+        <option>Minimes</option>
+        <option>Ramonville</option>
+        <option>Portet-sur-Garonne</option>
+        <option>États-Unis</option>
+      </select>
+      <button type="submit" class="btn" style="width:100%;margin-top:20px">Réserver ma séance gratuite</button>
+      <p class="form-msg"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>Boxing Center — <a href="https://boxingcenter.fr/">boxingcenter.fr</a></p>
+  </footer>
+  <script src="/tunnel-assets/tunnel.js"></script>
+</body>
+</html>

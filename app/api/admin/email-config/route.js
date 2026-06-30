@@ -24,14 +24,18 @@ export async function GET() {
 
   const deliverability = {
     checklist: [
+      'EMAIL_PROVIDER=mailjet sur Vercel — ne jamais envoyer les campagnes clients via Brevo (suzinabot banni)',
       'Expéditeur en @boxingcenter.fr (pas Gmail) sur chaque compte Mailjet',
       'SPF : v=spf1 include:spf.mailjet.com ~all (ajouter Google si vous utilisez Gmail pro)',
       'DKIM : 3 enregistrements CNAME fournis par Mailjet → DNS boxingcenter.fr',
       'DMARC : v=DMARC1; p=none; rua=mailto:boxingcenter31@gmail.com (surveiller puis durcir)',
-      'Réchauffer : 50–200 emails le 1er jour, puis augmenter progressivement',
+      'Réchauffer : phase test 50/j, ramp 200/j, puis 200/h via /admin/campagne-planning',
       'Tester avec « Test giffareno237 » et vérifier boîte principale + spam',
       'Exécuter supabase/email_unsubscribes.sql (lien Se désabonner obligatoire)',
+      'CRON_SECRET sur Vercel pour le cron horaire /api/cron/campaign-hourly',
     ],
+    campaignProvider: config.provider === 'mailjet' ? 'mailjet' : 'warning',
+    brevoBlockedForCampaigns: true,
     senderUsesOwnDomain: (config.senderEmail || '').includes('@boxingcenter.fr'),
   };
 

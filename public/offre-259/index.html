@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offre Premium 259€ — Boxing Center</title>
+  <meta name="description" content="Offre premium Boxing Center à 259€ — formule complète pour la rentrée." />
+  <link rel="stylesheet" href="/tunnel-assets/tunnel.css" />
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <section class="hero wrap">
+    <span class="badge">Offre premium</span>
+    <h1>Formule 259€</h1>
+    <p class="lead">L'offre complète pour cartonner cette saison : entraînement, accompagnement, accès illimité aux salles Boxing Center.</p>
+    <p class="price">259€</p>
+    <p style="margin-top:20px"><a class="btn" href="#contact">Je veux en savoir plus</a></p>
+  </section>
+
+  <section class="wrap">
+    <div class="grid-2">
+      <div class="card"><h3>Accès total</h3><p>Tous les cours, toutes les salles de l'agglomération toulousaine.</p></div>
+      <div class="card"><h3>Encadrement pro</h3><p>Coachs diplômés — boxe, MMA, muay thai, cross training.</p></div>
+      <div class="card"><h3>Ambiance de club</h3><p>Rejoins une communauté qui motive et qui performe.</p></div>
+      <div class="card"><h3>Places limitées</h3><p>Cette offre n'est pas ouverte à tout le monde — réserve ta place.</p></div>
+    </div>
+    <p style="text-align:center;margin-top:28px"><a class="btn" href="#contact">Réserver ma place</a></p>
+  </section>
+
+  <section class="wrap" id="contact">
+    <h2 style="text-align:center">On te rappelle</h2>
+    <form class="form-box" id="form259" onsubmit="event.preventDefault(); tunnelSubmit(this, '/api/tunnel/lead', { tunnel: 'offre_259', source: 'landing_259' });">
+      <label>Prénom *</label>
+      <input name="prenom" required />
+      <label>Nom</label>
+      <input name="nom" />
+      <label>Téléphone *</label>
+      <input name="telephone" type="tel" required />
+      <label>Email</label>
+      <input name="email" type="email" />
+      <label>Salle préférée</label>
+      <select name="salle">
+        <option value="">— Choisir —</option>
+        <option>Saint-Cyprien</option>
+        <option>Minimes</option>
+        <option>Ramonville</option>
+        <option>Portet-sur-Garonne</option>
+        <option>États-Unis</option>
+      </select>
+      <button type="submit" class="btn" style="width:100%;margin-top:20px">Envoyer</button>
+      <p class="form-msg"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>Boxing Center — <a href="https://boxingcenter.fr/">boxingcenter.fr</a></p>
+  </footer>
+  <script src="/tunnel-assets/tunnel.js"></script>
+</body>
+</html>
