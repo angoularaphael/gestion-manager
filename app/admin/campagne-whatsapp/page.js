@@ -13,8 +13,7 @@ function BotCard({ bot, onChange }) {
   const [tick, setTick] = useState(0);
   const [qrMode, setQrMode] = useState(false);
   const { run: runStart, pending: starting } = useSingleAction();
-  const { run: runStop, pending: stopping } = useSingleAction();
-  const { run: runLogout, pending: loggingOut } = useSingleAction();
+  const { run: runDisconnect, pending: disconnecting } = useSingleAction();
 
   const load = useCallback(async () => {
     setStatus((s) => ({ ...s, loading: true }));
@@ -100,9 +99,9 @@ function BotCard({ bot, onChange }) {
     });
   }
 
-  async function stop() {
-    if (stopping) return;
-    await runStop(async () => {
+  async function disconnect() {
+    if (disconnecting) return;
+    await runDisconnect(async () => {
       try {
         await fetch(`/api/campaign/whatsapp/bots/${bot.slug}?action=stop`, {
           method: 'POST',
@@ -111,21 +110,6 @@ function BotCard({ bot, onChange }) {
       } catch {
         /* ignore */
       }
-      setQrMode(false);
-      setStatus((s) => ({
-        ...s,
-        connecting: false,
-        hasQr: false,
-        error: null,
-        qrError: null,
-      }));
-      setTick((t) => t + 1);
-    });
-  }
-
-  async function logout() {
-    if (loggingOut) return;
-    await runLogout(async () => {
       try {
         await fetch(`/api/campaign/whatsapp/bots/${bot.slug}?action=logout`, {
           method: 'POST',
@@ -135,6 +119,15 @@ function BotCard({ bot, onChange }) {
         /* ignore */
       }
       setQrMode(false);
+      setStatus((s) => ({
+        ...s,
+        connected: false,
+        connecting: false,
+        hasQr: false,
+        qr: null,
+        error: null,
+        qrError: null,
+      }));
       setTick((t) => t + 1);
     });
   }
@@ -164,7 +157,7 @@ function BotCard({ bot, onChange }) {
         </p>
       ) : null}
       {staleSession ? (
-        <p className="muted">Ancienne session sur Bothosting — cliquez <strong>Fermer session</strong> puis <strong>Générer le QR</strong>.</p>
+        <p className="muted">Session bloquée sur Bothosting — cliquez <strong>Déconnecter</strong> puis <strong>Générer le QR</strong>.</p>
       ) : null}
       {showQr ? (
         <div className="qr-wrap">
@@ -190,26 +183,19 @@ function BotCard({ bot, onChange }) {
         <p className="muted">Ce numéro envoie jusqu&apos;à 12 messages / 30 min (~2m30 entre chaque).</p>
       ) : null}
       <div className="wa-actions">
-        {!status.connected && !qrMode ? (
+        {!status.connected ? (
           <ActionButton type="button" className="btn primary" onClick={() => start()} loading={starting}>
             {starting ? 'Démarrage…' : 'Générer le QR'}
           </ActionButton>
         ) : null}
-        {!status.connected && qrMode && !status.qr ? (
-          <ActionButton type="button" className="btn primary" onClick={() => start({ forceQr: true })} loading={starting}>
-            {starting ? 'Démarrage…' : 'Relancer le QR'}
-          </ActionButton>
-        ) : null}
-        {!status.connected && (qrMode || status.connecting) ? (
-          <ActionButton type="button" className="btn btn-secondary" onClick={stop} loading={stopping}>
-            {stopping ? 'Fermeture…' : 'Fermer session'}
-          </ActionButton>
-        ) : null}
-        {status.connected ? (
-          <ActionButton type="button" className="btn btn-secondary btn-small" onClick={logout} loading={loggingOut}>
-            Déconnecter
-          </ActionButton>
-        ) : null}
+        <ActionButton
+          type="button"
+          className="btn btn-secondary"
+          onClick={disconnect}
+          loading={disconnecting}
+        >
+          {disconnecting ? 'Déconnexion…' : 'Déconnecter'}
+        </ActionButton>
         <button type="button" className="btn btn-secondary btn-small" onClick={load} disabled={status.loading}>
           Actualiser
         </button>
