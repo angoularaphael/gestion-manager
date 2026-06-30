@@ -90,7 +90,7 @@ function BotCard({ bot, onChange }) {
         </div>
       ) : null}
       {status.connected ? (
-        <p className="muted">Ce numéro envoie jusqu&apos;à 12 messages/heure (~5 min entre chaque).</p>
+        <p className="muted">Ce numéro envoie jusqu&apos;à 12 messages / 30 min (~2m30 entre chaque).</p>
       ) : null}
       <div className="wa-actions">
         {!status.connected ? (
@@ -183,7 +183,7 @@ export default function CampagneWhatsAppPage() {
   async function launchWave(testOnly = false) {
     const msg = testOnly
       ? 'Envoyer un message test WhatsApp via le 1er bot connecté ?'
-      : `Lancer une vague sur les 3 bots ?\n\nChaque bot connecté envoie jusqu'à ${stats?.messagesPerBotPerHour || 12} messages (~5 min d'espacement).\nUn numéro ne reçoit jamais 2 fois la campagne.`;
+      : `Lancer une vague sur les 3 bots ?\n\nChaque bot connecté envoie jusqu'à ${stats?.messagesPerBotPerWave || 12} messages / ${stats?.windowMinutes || 30} min (~2m30 d'espacement).\nUn numéro ne reçoit jamais 2 fois la campagne.`;
     if (!window.confirm(msg)) return;
 
     await runDispatch(async () => {
@@ -205,7 +205,7 @@ export default function CampagneWhatsAppPage() {
         <div>
           <h1>Campagne WhatsApp — 3 serveurs</h1>
           <p className="page-subtitle">
-            Offre été · 12 messages/heure/bot · ~5 min entre envois ·{' '}
+            Offre été · 12 messages / 30 min / bot · cron toutes les 30 min ·{' '}
             <Link href="/admin/envoyer-clients">envoyer clients</Link>
             {' · '}
             <Link href="/admin/campagne-wa-envoyes">déjà envoyés</Link>
@@ -226,7 +226,9 @@ export default function CampagneWhatsAppPage() {
           <div className="card stat-card">
             <span className="stat-label">Capacité / heure</span>
             <strong>{stats.maxPerHour}</strong>
-            <span className="muted">({stats.messagesPerBotPerHour} × bots connectés)</span>
+            <span className="muted">
+              ({stats.messagesPerBotPerWave || 12} / {stats.windowMinutes || 30} min × bots connectés)
+            </span>
           </div>
         </div>
       ) : null}

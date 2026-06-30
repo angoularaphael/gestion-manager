@@ -20,7 +20,8 @@ Copier `.env.local.example` → variables d'environnement Vercel :
 | `WHATSAPP_BOT_URL_MINIMES` | Bot campagne Minimes |
 | `WHATSAPP_BOT_URL_ST_CYPRIEN` | Bot campagne Saint-Cyprien (`http://prem-eu2.bot-hosting.net:20405`) |
 | `WHATSAPP_BOT_URL_RAMONVILLE` | Bot campagne Ramonville (`http://prem-eu4.bot-hosting.net:21357`) |
-| `CAMPAIGN_WA_PER_BOT_HOUR` | `12` — messages/heure par bot |
+| `CAMPAIGN_WA_PER_BOT_WAVE` | `12` — messages par vague (30 min) |
+| `CAMPAIGN_WA_WINDOW_MINUTES` | `30` — fenêtre entre vagues |
 | `CAMPAIGN_TEST_PHONE` | `237693646080` — numéro test WhatsApp |
 | `SITE_API_SECRET` | Secret partagé avec le bot |
 | `SESSION_SECRET` | Signature session (peut = SITE_API_SECRET) |
