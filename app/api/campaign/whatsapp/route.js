@@ -31,7 +31,7 @@ export async function GET(request) {
         })
       );
     }
-    return NextResponse.json(await getCampaignWhatsAppStats({ includeBots: true }));
+    return NextResponse.json(await getCampaignWhatsAppStats({ includeBots: false }));
   } catch (err) {
     return apiError(err);
   }
