@@ -80,7 +80,7 @@ function BotCard({ bot, onChange }) {
           <span className="badge badge-compta-warn">À connecter</span>
         )}
       {!status.configured && !status.loading ? (
-        <p className="error muted">URL manquante — variable <code>{bot.envKey}</code> sur Vercel</p>
+        <p className="error muted">URL manquante — <code>{bot.envKey}</code> ou <code>{bot.comptaEnvKey}</code> sur Vercel (voir compta-boxing)</p>
       ) : null}
       {status.error ? <p className="error">{status.error}</p> : null}
       {status.qr && qrMode && !status.connected ? (

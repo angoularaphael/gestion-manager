@@ -19,7 +19,7 @@ export async function GET(request, { params }) {
         label: bot.label,
         configured: false,
         connected: false,
-        error: `Variable ${bot.envKey} manquante sur Vercel`,
+        error: `Variable ${bot.envKey} ou ${bot.comptaEnvKey} manquante sur Vercel (voir compta-boxing)`,
       });
     }
     const status = await probeBotAt(bot.url);

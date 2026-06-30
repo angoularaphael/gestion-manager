@@ -16,8 +16,8 @@ Copier `.env.local.example` → variables d'environnement Vercel :
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | Bot legacy / Minimes (`http://us2.bot-hosting.net:20042`) |
-| `WHATSAPP_BOT_URL_MINIMES` | Bot campagne Minimes |
+| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | Bot legacy / Minimes (`http://us2.bot-hosting.net:21334`) |
+| `WHATSAPP_BOT_URL_MINIMES` | Bot campagne Minimes (compta-boxing : port 21334) |
 | `WHATSAPP_BOT_URL_ST_CYPRIEN` | Bot campagne Saint-Cyprien (`http://prem-eu2.bot-hosting.net:20405`) |
 | `WHATSAPP_BOT_URL_RAMONVILLE` | Bot campagne Ramonville (`http://prem-eu4.bot-hosting.net:21357`) |
 | `CAMPAIGN_WA_PER_BOT_WAVE` | `12` — messages par vague (30 min) |
