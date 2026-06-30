@@ -76,12 +76,44 @@ Pour repartir de zéro (envoyés + lus) :
 - `/admin/campagne-wa-envoyes` → **Réinitialiser envois WA**
 - ou `/admin/offre-ete` → **Réinitialiser** (clics + vues + WA)
 
+## Migration Supabase — cron auto (obligatoire pour `/admin/campagne-planning`)
+
+Dans **Supabase → SQL Editor**, exécuter le fichier `supabase/014_campaign_settings.sql` :
+
+```sql
+CREATE TABLE IF NOT EXISTS campaign_settings (
+  id TEXT PRIMARY KEY DEFAULT 'default',
+  active BOOLEAN NOT NULL DEFAULT FALSE,
+  paused_at TIMESTAMPTZ,
+  warmup_phase TEXT NOT NULL DEFAULT 'test'
+    CHECK (warmup_phase IN ('test', 'ramp', 'full')),
+  emails_sent_this_hour INTEGER NOT NULL DEFAULT 0,
+  hour_window_start TIMESTAMPTZ,
+  last_cron_run_at TIMESTAMPTZ,
+  last_cron_result JSONB,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO campaign_settings (id, active, warmup_phase)
+VALUES ('default', FALSE, 'test')
+ON CONFLICT (id) DO NOTHING;
+
+CREATE INDEX IF NOT EXISTS outbound_messages_campaign_email_recipient_idx
+  ON outbound_messages (campaign, recipient)
+  WHERE channel = 'email' AND status IN ('sent', 'pending');
+```
+
+Puis configurer un cron externe (ex. [cron-job.org](https://cron-job.org)) toutes les **30 min** :
+
+`GET https://gestion-manager.vercel.app/api/cron/campaign-hourly`  
+Header : `Authorization: Bearer <CRON_SECRET>`
+
 ## Avant juillet (infra)
 
 - [ ] `EMAIL_PROVIDER=mailjet` sur Vercel
 - [ ] `CRON_SECRET` défini
 - [ ] SPF + DKIM + DMARC validés sur boxing-center-portet.fr
-- [ ] Migrations Supabase : `014_campaign_settings.sql`, `015_tunnel_leads.sql`
+- [ ] Migrations Supabase : `012`, `013`, `014_campaign_settings.sql`, `015_tunnel_leads.sql`
 - [ ] 3 bots Bothosting à jour + `.env` 12/30 min
 
 ## WhatsApp — reconnexion (si bannis)
