@@ -7,6 +7,7 @@ import {
   fetchCampaignSentRecipients,
   getCampaignWhatsAppStats,
   resetCampaignWhatsAppTracking,
+  clearCampaignDiscussions,
 } from '../../../../lib/campaignWhatsApp';
 
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,11 @@ export async function POST(request) {
     if (action === 'reset') {
       await resetCampaignWhatsAppTracking();
       return NextResponse.json({ ok: true, reset: true });
+    }
+
+    if (action === 'clear_discussions') {
+      await clearCampaignDiscussions();
+      return NextResponse.json({ ok: true, cleared: true });
     }
 
     return NextResponse.json({ error: `Action inconnue: ${action}` }, { status: 400 });
