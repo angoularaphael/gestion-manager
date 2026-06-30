@@ -151,6 +151,13 @@ function BotCard({ bot, onChange }) {
       ) : (
         <span className="badge badge-compta-warn">À connecter</span>
       )}
+      {status.connected && status.connectedWhatsApp ? (
+        <p className="muted" style={{ marginTop: 8 }}>
+          Numéro WhatsApp du bot : <strong>{formatClientPhone(status.connectedWhatsApp)}</strong>
+          <br />
+          <small>Les discussions de la campagne apparaissent sur ce téléphone uniquement.</small>
+        </p>
+      ) : null}
       {!status.configured && !status.loading ? (
         <p className="error muted">
           URL manquante — <code>{bot.envKey}</code> ou <code>{bot.comptaEnvKey}</code> sur Vercel
