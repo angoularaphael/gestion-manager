@@ -5,7 +5,7 @@ import { getCampaignBot } from '../../../../../../lib/campaignBots';
 import { botFetch, probeBotAt } from '../../../../../../lib/bot';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function GET(request, { params }) {
   const session = await getSession();
