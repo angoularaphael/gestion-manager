@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import { getSession } from '../../../../../../lib/session';
 import { apiError } from '../../../../../../lib/apiJson';
 import { getCampaignBot } from '../../../../../../lib/campaignBots';
-import { botFetch, probeBotAt } from '../../../../../../lib/bot';
+import {
+  fetchCampaignBotAction,
+  fetchCampaignBotStatus,
+} from '../../../../../../lib/campaignBotStatus';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -22,8 +25,8 @@ export async function GET(request, { params }) {
         error: `Variable ${bot.envKey} ou ${bot.comptaEnvKey} manquante sur Vercel (voir compta-boxing)`,
       });
     }
-    const status = await probeBotAt(bot.url);
-    return NextResponse.json({ slug: bot.slug, label: bot.label, configured: true, ...status });
+    const status = await fetchCampaignBotStatus(bot.url);
+    return NextResponse.json({ slug: bot.slug, label: bot.label, ...status });
   } catch (err) {
     return apiError(err);
   }
@@ -39,35 +42,13 @@ export async function POST(request, { params }) {
     }
 
     const action = new URL(request.url).searchParams.get('action');
-    const routes = { start: '/api/start', logout: '/api/logout' };
-    const botPath = routes[action];
-    if (!botPath) {
+    if (!['start', 'stop', 'logout'].includes(action)) {
       return NextResponse.json({ error: `Action inconnue: ${action}` }, { status: 400 });
     }
 
     const body = await request.json().catch(() => ({}));
-
-    if (action === 'start') {
-      botFetch(botPath, {
-        method: 'POST',
-        baseUrl: bot.url,
-        body: { method: 'qr', forceQr: true, ...(body || {}) },
-        timeoutMs: 8000,
-      }).catch(() => {});
-      return NextResponse.json({
-        slug: bot.slug,
-        success: true,
-        message: 'Démarrage en cours — attendez le QR.',
-      });
-    }
-
-    const data = await botFetch(botPath, {
-      method: 'POST',
-      baseUrl: bot.url,
-      body: body || {},
-      timeoutMs: action === 'logout' ? 12000 : 10000,
-    });
-    return NextResponse.json({ slug: bot.slug, ...data });
+    const result = await fetchCampaignBotAction(bot.url, action, body);
+    return NextResponse.json({ slug: bot.slug, ...result });
   } catch (err) {
     return apiError(err);
   }
