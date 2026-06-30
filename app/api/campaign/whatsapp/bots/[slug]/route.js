@@ -25,7 +25,8 @@ export async function GET(request, { params }) {
         error: `Variable ${bot.envKey} ou ${bot.comptaEnvKey} manquante sur Vercel (voir compta-boxing)`,
       });
     }
-    const status = await fetchCampaignBotStatus(bot.url);
+    const includeQr = new URL(request.url).searchParams.get('qr') === '1';
+    const status = await fetchCampaignBotStatus(bot.url, { includeQr });
     return NextResponse.json({ slug: bot.slug, label: bot.label, ...status });
   } catch (err) {
     return NextResponse.json({

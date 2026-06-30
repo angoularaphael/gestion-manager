@@ -19,16 +19,17 @@ function BotCard({ bot, onChange }) {
   const load = useCallback(async () => {
     setStatus((s) => ({ ...s, loading: true }));
     try {
-      const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}`, {
+      const qrQuery = qrMode ? '?qr=1' : '';
+      const res = await fetch(`/api/campaign/whatsapp/bots/${bot.slug}${qrQuery}`, {
         cache: 'no-store',
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(qrMode ? 15000 : 12000),
       });
       const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error);
       setStatus({ loading: false, ...data });
       if (data.connected) {
         setQrMode(false);
-      } else if (data.connecting || data.hasQr) {
+      } else if (data.hasQr || data.qr) {
         setQrMode(true);
       }
     } catch (err) {
@@ -39,9 +40,10 @@ function BotCard({ bot, onChange }) {
           : (err.message || 'Erreur'),
         connected: false,
         hasQr: false,
+        qr: null,
       });
     }
-  }, [bot.slug]);
+  }, [bot.slug, qrMode]);
 
   useEffect(() => {
     load();
@@ -137,10 +139,10 @@ function BotCard({ bot, onChange }) {
     });
   }
 
-  const showQr = !status.loading && !status.connected && (status.hasQr || (qrMode && status.connecting));
-  const showWaiting = qrMode && !status.connected && !status.hasQr && !status.connecting;
-  const showConnecting = qrMode && !status.connected && status.connecting && !status.hasQr;
-  const qrSrc = `/api/campaign/whatsapp/bots/${bot.slug}/qr?t=${tick}`;
+  const showQr = !status.loading && !status.connected && Boolean(status.qr);
+  const showWaiting = qrMode && !status.connected && !status.qr;
+  const showConnecting = qrMode && !status.connected && status.connecting && !status.qr;
+  const staleSession = !status.loading && !status.connected && status.connecting && !qrMode;
 
   return (
     <div className="card wa-status-card">
@@ -149,8 +151,10 @@ function BotCard({ bot, onChange }) {
         <span className="badge">Chargement…</span>
       ) : status.connected ? (
         <span className="badge badge-compta-ok">Connecté ✓</span>
+      ) : status.connecting && qrMode ? (
+        <span className="badge">Connexion…</span>
       ) : status.connecting ? (
-        <span className="badge">{qrMode ? 'Connexion…' : 'Reconnexion…'}</span>
+        <span className="badge badge-compta-warn">Session bloquée</span>
       ) : (
         <span className="badge badge-compta-warn">À connecter</span>
       )}
@@ -159,21 +163,14 @@ function BotCard({ bot, onChange }) {
           URL manquante — <code>{bot.envKey}</code> ou <code>{bot.comptaEnvKey}</code> sur Vercel
         </p>
       ) : null}
+      {staleSession ? (
+        <p className="muted">Ancienne session sur Bothosting — cliquez <strong>Fermer session</strong> puis <strong>Générer le QR</strong>.</p>
+      ) : null}
       {showQr ? (
         <div className="qr-wrap">
           <p><strong>Scannez ce QR</strong> avec le téléphone WhatsApp de cette salle.</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            key={tick}
-            src={qrSrc}
-            alt={`QR ${bot.label}`}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-            onLoad={(e) => {
-              e.currentTarget.style.display = '';
-            }}
-          />
+          <img src={status.qr} alt={`QR ${bot.label}`} />
         </div>
       ) : null}
       {!status.loading && !status.connected && !showQr ? (
@@ -198,19 +195,14 @@ function BotCard({ bot, onChange }) {
             {starting ? 'Démarrage…' : 'Générer le QR'}
           </ActionButton>
         ) : null}
-        {!status.connected && qrMode && status.qrError ? (
-          <ActionButton
-            type="button"
-            className="btn btn-secondary btn-small"
-            onClick={() => start({ forceQr: true })}
-            loading={starting}
-          >
-            Nouveau QR
+        {!status.connected && qrMode && !status.qr ? (
+          <ActionButton type="button" className="btn primary" onClick={() => start({ forceQr: true })} loading={starting}>
+            {starting ? 'Démarrage…' : 'Relancer le QR'}
           </ActionButton>
         ) : null}
-        {!status.connected && qrMode ? (
+        {!status.connected && (qrMode || status.connecting) ? (
           <ActionButton type="button" className="btn btn-secondary" onClick={stop} loading={stopping}>
-            {stopping ? 'Fermeture…' : 'Fermer'}
+            {stopping ? 'Fermeture…' : 'Fermer session'}
           </ActionButton>
         ) : null}
         {status.connected ? (
@@ -265,6 +257,7 @@ export default function CampagneWhatsAppPage() {
   const [stats, setStats] = useState(null);
   const [conversations, setConversations] = useState({ outbound: [], inbound: [] });
   const [convWarning, setConvWarning] = useState('');
+  const { run: runClearConv, pending: clearingConv } = useSingleAction();
   const [dispatchResult, setDispatchResult] = useState(null);
   const { run: runDispatch, pending: dispatching } = useSingleAction();
 
@@ -299,6 +292,21 @@ export default function CampagneWhatsAppPage() {
       return tb - ta;
     })
     .slice(0, 60);
+
+  async function clearDiscussions() {
+    if (!window.confirm('Vider toutes les discussions affichées (réponses WhatsApp reçues) ?')) return;
+    await runClearConv(async () => {
+      const res = await fetch('/api/campaign/whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'clear_discussions' }),
+      });
+      const data = await parseApiJson(res);
+      if (!res.ok) throw new Error(data.error);
+      setConversations({ outbound: [], inbound: [] });
+      refresh();
+    }).catch((err) => setConvWarning(err.message));
+  }
 
   async function launchWave(testOnly = false) {
     const msg = testOnly
@@ -403,8 +411,20 @@ export default function CampagneWhatsAppPage() {
       </div>
 
       <section className="card" style={{ marginTop: '1.25rem' }}>
-        <h2 className="section-title">Discussions campagne</h2>
-        <p className="muted">Messages envoyés et réponses reçues (tous bots confondus).</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+          <div>
+            <h2 className="section-title">Discussions campagne</h2>
+            <p className="muted">Uniquement les réponses des clients déjà contactés par la campagne.</p>
+          </div>
+          <ActionButton
+            type="button"
+            className="btn btn-secondary btn-small"
+            onClick={clearDiscussions}
+            loading={clearingConv}
+          >
+            Vider les discussions
+          </ActionButton>
+        </div>
         {convWarning ? <p className="error muted">{convWarning}</p> : null}
         <ConversationList items={threads} />
       </section>
