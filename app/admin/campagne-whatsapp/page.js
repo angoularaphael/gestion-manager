@@ -375,7 +375,7 @@ export default function CampagneWhatsAppPage() {
         {dispatchResult?.error ? <p className="error">{dispatchResult.error}</p> : null}
         {dispatchResult?.dispatchedTotal != null && !dispatchResult.error ? (
           <p className="muted">
-            {dispatchResult.dispatchedTotal} client(s) assigné(s) cette vague —{' '}
+            {dispatchResult.dispatchedTotal} client(s) ciblés cette vague (doublons non comptés) —{' '}
             {(dispatchResult.pendingRemaining ?? 0).toLocaleString('fr-FR')} restant(s) avec téléphone
           </p>
         ) : null}
@@ -383,7 +383,7 @@ export default function CampagneWhatsAppPage() {
           <ul className="campaign-sent-recent">
             {dispatchResult.recipients.map((r, i) => (
               <li key={`${r.phone}-${i}`}>
-                <strong>Envoyé à {r.name}</strong>
+                <strong>{r.status === 'assigné' ? 'Assigné à' : r.status === 'en cours' ? 'En cours —' : 'Envoyé à'} {r.name}</strong>
                 <span className="muted">
                   {' '}
                   · {r.bot}
