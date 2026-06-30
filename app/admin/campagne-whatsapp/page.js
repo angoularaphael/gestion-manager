@@ -28,7 +28,7 @@ function BotCard({ bot, onChange }) {
       setStatus({ loading: false, ...data });
       if (data.connected) {
         setQrMode(false);
-      } else if (data.connecting || data.qr) {
+      } else if (data.connecting || data.hasQr) {
         setQrMode(true);
       }
     } catch (err) {
@@ -38,7 +38,7 @@ function BotCard({ bot, onChange }) {
           ? 'Délai dépassé — réessayez Actualiser.'
           : (err.message || 'Erreur'),
         connected: false,
-        qr: null,
+        hasQr: false,
       });
     }
   }, [bot.slug]);
@@ -79,9 +79,7 @@ function BotCard({ bot, onChange }) {
           setStatus((s) => ({
             ...s,
             loading: false,
-            connecting: true,
             error: null,
-            qr: null,
           }));
         }
       } catch (err) {
@@ -115,7 +113,7 @@ function BotCard({ bot, onChange }) {
       setStatus((s) => ({
         ...s,
         connecting: false,
-        qr: null,
+        hasQr: false,
         error: null,
         qrError: null,
       }));
@@ -139,9 +137,10 @@ function BotCard({ bot, onChange }) {
     });
   }
 
-  const showQr = !status.loading && !status.connected && status.qr;
-  const showWaiting = qrMode && !status.connected && !status.qr;
-  const showConnecting = qrMode && !status.connected && status.connecting && !status.qr;
+  const showQr = !status.loading && !status.connected && (status.hasQr || (qrMode && status.connecting));
+  const showWaiting = qrMode && !status.connected && !status.hasQr && !status.connecting;
+  const showConnecting = qrMode && !status.connected && status.connecting && !status.hasQr;
+  const qrSrc = `/api/campaign/whatsapp/bots/${bot.slug}/qr?t=${tick}`;
 
   return (
     <div className="card wa-status-card">
@@ -164,7 +163,17 @@ function BotCard({ bot, onChange }) {
         <div className="qr-wrap">
           <p><strong>Scannez ce QR</strong> avec le téléphone WhatsApp de cette salle.</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={status.qr} alt={`QR ${bot.label}`} />
+          <img
+            key={tick}
+            src={qrSrc}
+            alt={`QR ${bot.label}`}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+            onLoad={(e) => {
+              e.currentTarget.style.display = '';
+            }}
+          />
         </div>
       ) : null}
       {!status.loading && !status.connected && !showQr ? (

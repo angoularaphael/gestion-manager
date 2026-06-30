@@ -36,6 +36,9 @@
     "app/api/campaign/whatsapp/bots/[slug]/route.js": {
       "maxDuration": 60
     },
+    "app/api/campaign/whatsapp/bots/[slug]/qr/route.js": {
+      "maxDuration": 15
+    },
     "app/api/campaign/planning/route.js": {
       "maxDuration": 120
     },
