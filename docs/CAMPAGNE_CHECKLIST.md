@@ -7,10 +7,10 @@ Mêmes hôtes/ports que **compta-boxing** (`BOT_URL_*` / `bots/deploy/`).
 
 | Variable | Valeur |
 |----------|--------|
-| `WHATSAPP_BOT_URL_MINIMES` | `http://us2.bot-hosting.net:21334` |
+| `WHATSAPP_BOT_URL_MINIMES` | `http://prem-eu4.bot-hosting.net:20125` |
 | `WHATSAPP_BOT_URL_ST_CYPRIEN` | `http://prem-eu2.bot-hosting.net:20405` |
 | `WHATSAPP_BOT_URL_RAMONVILLE` | `http://prem-eu4.bot-hosting.net:21357` |
-| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | `http://us2.bot-hosting.net:21334` (legacy / Minimes) |
+| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | `http://prem-eu4.bot-hosting.net:20125` (legacy / Minimes) |
 | `CAMPAIGN_WA_PER_BOT_WAVE` | `12` |
 | `CAMPAIGN_WA_WINDOW_MINUTES` | `30` |
 | `CAMPAIGN_TEST_PHONE` | `237693646080` |
@@ -28,7 +28,7 @@ Sur **chaque** serveur (`boxing-center-bot`), fichier `.env` :
 
 | Serveur | `BOT_INSTANCE_ID` | Port typique |
 |---------|-------------------|--------------|
-| Minimes | `minimes` | **21334** |
+| Minimes | `minimes` | **20125** (`prem-eu4`) |
 | Saint-Cyprien | `st_cyprien` | 20405 |
 | Ramonville | `ramonville` | 21357 |
 
