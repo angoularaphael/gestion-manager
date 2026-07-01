@@ -26,6 +26,7 @@ const SOURCE_TABS = [
   { id: 'csv', label: 'Import CSV' },
   { id: 'xls', label: 'Membres XLS' },
   { id: 'manual', label: 'Manuel' },
+  { id: 'boxplus', label: 'BOXPLUS' },
 ];
 
 const CONTACT_FILTERS = [
