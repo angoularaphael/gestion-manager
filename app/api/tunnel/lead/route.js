@@ -31,7 +31,8 @@ export async function POST(request) {
     return NextResponse.json({ error: 'JSON invalide' }, { status: 400, headers: cors });
   }
 
-  const tunnel = body.tunnel === 'offre_259' ? 'offre_259' : 'seance_essai';
+  const allowed = new Set(['offre_29', 'offre_259', 'seance_essai', 'referral_pote']);
+  const tunnel = allowed.has(body.tunnel) ? body.tunnel : 'seance_essai';
   const prenom = cleanText(body.prenom);
   const nom = cleanText(body.nom);
   const telephone = normalizePhone(body.telephone);
@@ -70,14 +71,18 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500, headers: cors });
   }
 
+  const messages = {
+    seance_essai: 'Merci ! Nous vous recontactons pour planifier votre séance gratuite.',
+    offre_259: 'Merci ! Nous vous recontactons pour l\'offre 259€.',
+    offre_29: 'Merci ! Nous vous recontactons pour l\'offre 29€.',
+    referral_pote: 'Merci ! Votre parrainage est enregistré.',
+  };
+
   return NextResponse.json(
     {
       ok: true,
       lead_id: data.id,
-      message:
-        tunnel === 'seance_essai'
-          ? 'Merci ! Nous vous recontactons pour planifier votre séance gratuite.'
-          : 'Merci ! Nous vous recontactons pour l\'offre 259€.',
+      message: messages[tunnel] || 'Merci !',
     },
     { headers: cors }
   );
