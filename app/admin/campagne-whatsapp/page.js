@@ -326,7 +326,7 @@ export default function CampagneWhatsAppPage() {
         <div>
           <h1>Campagne WhatsApp — 3 serveurs</h1>
           <p className="page-subtitle">
-            Offre été · 12 messages / 30 min / bot · cron toutes les 30 min ·{' '}
+            Campagne WhatsApp · 12 messages / 30 min / bot · cron toutes les 30 min ·{' '}
             <Link href="/admin/envoyer-clients">envoyer clients</Link>
             {' · '}
             <Link href="/admin/campagne-wa-envoyes">déjà envoyés</Link>

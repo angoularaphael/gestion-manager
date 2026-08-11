@@ -19,8 +19,8 @@ export default function AppShell({ user, children }) {
       <aside className="sidebar desktop-sidebar">
         <div className="sidebar-brand">
           <div className="sidebar-brand-inner">
-            <Image src="/logo.png" alt="Boxing Center" width={140} height={36} className="brand-logo" priority />
-            <small className="brand-role">Administration</small>
+            <Image src="/logo.png" alt="Boxing Center" width={160} height={42} className="brand-logo" priority />
+            <small className="brand-role">Console admin</small>
           </div>
         </div>
 
@@ -60,7 +60,6 @@ export default function AppShell({ user, children }) {
                         </span>
                       ) : null}
                       <span className="nav-link-text">{link.text}</span>
-                      {link.featured ? <span className="nav-link-pulse" aria-hidden="true" /> : null}
                     </Link>
                   );
                 })}

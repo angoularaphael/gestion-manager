@@ -2,16 +2,9 @@ import { NextResponse } from 'next/server';
 import { describeEmailProviderIssue, getEmailConfig } from '../../../../lib/emailConfig';
 import { resolveClientsForSend } from '../../../../lib/clients';
 import { clientGreetingName } from '../../../../lib/clientDisplay';
-import { getOffreEteClientCampaignTemplate } from '../../../../lib/offreEteCampaign';
-import {
-  isOffreEteCampaignSubject,
-  pickRandomOffreEteEmailMessage,
-} from '../../../../lib/offreEteEmailCampaign';
 import { fetchUnsubscribedEmailSet } from '../../../../lib/emailUnsubscribes';
 import { sendBulkEmails } from '../../../../lib/sendEmailBatch';
 import { getSession } from '../../../../lib/session';
-import { CAMPAIGN_EMAIL_TAG } from '../../../../lib/campaignEmail';
-import { logCampaignOutbound } from '../../../../lib/campaignOutbound';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -45,7 +38,6 @@ export async function POST(request) {
     mailjet_account: mailjetAccount,
     mailjet_rotate_accounts: mailjetRotateAccounts,
     mailjet_start_index: mailjetStartIndex,
-    offre_ete_campaign: offreEteCampaign,
   } = body;
 
   if (!message) return json({ error: 'message required' }, 400);
@@ -73,28 +65,15 @@ export async function POST(request) {
       (c) => c.email && !unsubscribed.has(String(c.email).trim().toLowerCase())
     );
     const skippedUnsubscribed = clients.length - eligible.length;
-    const campaignTpl = getOffreEteClientCampaignTemplate();
-    const useOffreEteVariants =
-      Boolean(offreEteCampaign) ||
-      (isOffreEteCampaignSubject(subject) && message === campaignTpl.message);
 
     const batch = await sendBulkEmails({
       recipients: eligible,
       getEmail: (c) => c.email,
       getRecipientName: clientGreetingName,
-      getMessage: useOffreEteVariants
-        ? (c) =>
-            pickRandomOffreEteEmailMessage({
-              prenom: c.prenom,
-              nom: c.nom,
-              salle: c.salle,
-            })
-        : undefined,
       getClientId: (c) => c.id,
       message,
       subject,
       html,
-      preheader: campaignTpl.preheader,
       isMarketing: true,
       mailjetAccount,
       mailjetRotateAccounts: Boolean(mailjetRotateAccounts),
@@ -106,34 +85,7 @@ export async function POST(request) {
     if (skippedUnsubscribed > 0) {
       warnings.push(`${skippedUnsubscribed} client(s) ignoré(s) (désabonnés).`);
     }
-    if (useOffreEteVariants) {
-      warnings.push(
-        'Email : variante aléatoire par destinataire (prénom + formulation différente, anti-spam).'
-      );
-    }
     batch.email.skipped += skippedUnsubscribed;
-
-    if (useOffreEteVariants && !testOnly && batch.destinations?.length) {
-      for (const dest of batch.destinations) {
-        if (dest.channel !== 'email' || !dest.to) continue;
-        const client = eligible.find(
-          (c) => String(c.email).trim().toLowerCase() === String(dest.to).trim().toLowerCase()
-        );
-        try {
-          await logCampaignOutbound({
-            campaign: CAMPAIGN_EMAIL_TAG,
-            channel: 'email',
-            recipient: dest.to,
-            subject: subject || campaignTpl.subject,
-            body: message?.slice(0, 500) || campaignTpl.message.slice(0, 500),
-            status: 'sent',
-            clientId: client?.id,
-          });
-        } catch (logErr) {
-          console.warn('[clients/send-email] log outbound:', logErr.message);
-        }
-      }
-    }
 
     return json({
       success: true,

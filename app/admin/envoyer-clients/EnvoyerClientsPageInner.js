@@ -7,19 +7,11 @@ import EnvoyerBackLink from '../../components/EnvoyerBackLink';
 import { parseApiJson } from '../../../lib/apiJson';
 import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { buildEmailHtml } from '../../../lib/emailTemplate';
-import { getOffreEteClientCampaignTemplate } from '../../../lib/offreEteCampaign';
-import {
-  getOffreEteWhatsAppPreviewMessage,
-  OFFRE_ETE_WHATSAPP_VARIANT_COUNT,
-} from '../../../lib/offreEteWhatsAppCampaign';
-import { OFFRE_ETE_EMAIL_VARIANT_COUNT } from '../../../lib/offreEteEmailCampaign';
 import { getCampaignWaveCount, getCampaignWaveIds } from '../../../lib/campaignWaves';
 import { emptySendResult, mergeSendResults, runDualChannelSend } from '../../../lib/sendPageHelpers';
 import { useSingleAction } from '../../../lib/useSingleAction';
-import OffreEteBoutiqueClicksStat from '../../components/OffreEteBoutiqueClicksStat';
 
 const EMAIL_CHUNK_SIZE = 30;
-const OFFRE_ETE_CAMPAIGN = getOffreEteClientCampaignTemplate();
 
 function chunkIds(ids, size) {
   const out = [];
@@ -37,16 +29,14 @@ export default function EnvoyerClientsPageInner() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [channels, setChannels] = useState(['email']);
-  const [subject, setSubject] = useState(OFFRE_ETE_CAMPAIGN.subject);
-  const [message, setMessage] = useState(OFFRE_ETE_CAMPAIGN.message);
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
   const [mode, setMode] = useState('campaign');
   const [sendProgress, setSendProgress] = useState(null);
   const [result, setResult] = useState(null);
   const [emailConfig, setEmailConfig] = useState(null);
   const [mailjetSender, setMailjetSender] = useState('1');
   const [emailWave, setEmailWave] = useState(1);
-  const [waPreview, setWaPreview] = useState('');
-  const [waLiveSent, setWaLiveSent] = useState(null);
   const { run: runSend, pending: sending } = useSingleAction();
 
   const loadClients = useCallback(async () => {
@@ -86,30 +76,6 @@ export default function EnvoyerClientsPageInner() {
       setSelectedIds(new Set([preselectId]));
     }
   }, [preselectId, clients]);
-
-  useEffect(() => {
-    const queued = result?.data?.whatsapp?.queued;
-    if (!queued) {
-      setWaLiveSent(null);
-      return undefined;
-    }
-    let cancelled = false;
-    async function pollWaSent() {
-      try {
-        const res = await fetch('/api/offre-ete/stats', { cache: 'no-store' });
-        const data = await res.json();
-        if (!cancelled && res.ok) setWaLiveSent(data.whatsappSent ?? 0);
-      } catch {
-        /* ignore */
-      }
-    }
-    pollWaSent();
-    const timer = setInterval(pollWaSent, 30000);
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, [result?.data?.whatsapp?.queued]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return clients;
@@ -184,10 +150,9 @@ export default function EnvoyerClientsPageInner() {
 
   function buildSendPayload(extra = {}) {
     return {
-      message: channels.includes('email') ? message : 'offre-ete-whatsapp',
+      message,
       subject,
       channels,
-      offre_ete_whatsapp: channels.includes('whatsapp'),
       ...extra,
     };
   }
@@ -208,7 +173,6 @@ export default function EnvoyerClientsPageInner() {
           client_ids: chunks[i],
           message,
           subject,
-          offre_ete_campaign: true,
           mailjet_account: mailjetAccount,
           mailjet_rotate_accounts: mailjetRotate,
           mailjet_start_index: mailjetRotate ? mailjetOffset : undefined,
@@ -235,7 +199,7 @@ export default function EnvoyerClientsPageInner() {
 
   async function send({ testOnly = false } = {}) {
     if (sending || !channels.length) return;
-    if (channels.includes('email') && !message.trim()) return;
+    if (!message.trim()) return;
 
     const isCampaign = mode === 'campaign' && !testOnly;
     const emailOnlyCampaign =
@@ -258,7 +222,7 @@ export default function EnvoyerClientsPageInner() {
       warn += '\n\n« Test giffareno237 » = envoi uniquement à giffareno237@gmail.com.';
       if (channels.includes('whatsapp') && !testOnly) {
         warn +=
-          '\n\nWhatsApp : 3 bots en parallèle (12 messages / 30 min chacun, ~2m30 entre envois). ' +
+          '\n\nWhatsApp : envoi via le bot. ' +
           'Voir /admin/campagne-whatsapp pour les discussions et /admin/campagne-wa-envoyes pour l\'historique.';
       }
       const ok = window.confirm(warn);
@@ -396,6 +360,8 @@ export default function EnvoyerClientsPageInner() {
       .finally(() => setSendProgress(null));
   }
 
+  const messageRequired = !message.trim();
+
   return (
     <div className="send-page">
       <EnvoyerBackLink href="/admin/clients" label="Retour aux clients" />
@@ -406,7 +372,6 @@ export default function EnvoyerClientsPageInner() {
             {emailCount} avec email · {phoneCount} avec téléphone · {totalCount}{' '}
             total
           </p>
-          <OffreEteBoutiqueClicksStat compact className="send-offre-clicks-stat" />
         </div>
       </header>
 
@@ -430,36 +395,6 @@ export default function EnvoyerClientsPageInner() {
                 WhatsApp
               </button>
             </div>
-            {channels.includes('whatsapp') ? (
-              <div className="send-wa-hint muted" style={{ marginTop: '0.75rem' }}>
-                <p style={{ margin: '0 0 8px' }}>
-                  {OFFRE_ETE_WHATSAPP_VARIANT_COUNT} formulations + prénom de chaque client (anti-spam
-                  WhatsApp). Envoi 12 messages / 30 min max sur le bot.
-                </p>
-                <button
-                  type="button"
-                  className="btn ghost sm"
-                  onClick={() => setWaPreview(getOffreEteWhatsAppPreviewMessage())}
-                >
-                  Voir un exemple
-                </button>
-                {waPreview ? (
-                  <pre
-                    className="muted"
-                    style={{
-                      marginTop: 10,
-                      whiteSpace: 'pre-wrap',
-                      fontSize: '0.85rem',
-                      background: 'var(--surface-2, #f8fafc)',
-                      padding: 12,
-                      borderRadius: 8,
-                    }}
-                  >
-                    {waPreview}
-                  </pre>
-                ) : null}
-              </div>
-            ) : null}
             {channels.includes('email') && emailConfig?.provider === 'mailjet' ? (
               <div style={{ marginTop: '1rem' }}>
                 <label>
@@ -603,49 +538,23 @@ export default function EnvoyerClientsPageInner() {
           <section className="card send-card">
             <h2 className="section-title">Message</h2>
             {channels.includes('email') ? (
-              <>
-            <div className="message-template-picker">
-              <div className="message-template-header">
-                <strong>Modèle Offre Été 2026</strong>
-                <span className="muted">Prérempli pour la campagne clients</span>
-              </div>
-              <div className="message-template-actions">
-                <button
-                  type="button"
-                  className="btn ghost sm is-suggested"
-                  onClick={() => {
-                    const t = getOffreEteClientCampaignTemplate();
-                    setSubject(t.subject);
-                    setMessage(t.message);
-                  }}
-                >
-                  Réinsérer le modèle
-                </button>
-              </div>
-            </div>
-            <label>
-              Objet email
-              <input
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="search-input"
-              />
-            </label>
+              <label>
+                Objet email
+                <input
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="search-input"
+                  placeholder="Objet…"
+                />
+              </label>
+            ) : null}
             <textarea
               className="message-input"
               rows={8}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Votre message promotion ou information…"
+              placeholder="Votre message…"
             />
-            <p className="muted" style={{ marginTop: 8 }}>
-              À l&apos;envoi : {OFFRE_ETE_EMAIL_VARIANT_COUNT} variantes + prénom par destinataire
-              (même contenu, formulation différente — anti-spam).
-            </p>
-              </>
-            ) : (
-              <p className="muted">Le texte WhatsApp est généré automatiquement.</p>
-            )}
           </section>
 
           <div className="send-actions">
@@ -653,7 +562,7 @@ export default function EnvoyerClientsPageInner() {
               className="btn secondary"
               onClick={() => send({ testOnly: true })}
               loading={sending}
-              disabled={channels.includes('email') && !message.trim()}
+              disabled={messageRequired}
             >
               Test giffareno237
             </ActionButton>
@@ -662,7 +571,7 @@ export default function EnvoyerClientsPageInner() {
               onClick={() => send({ testOnly: false })}
               loading={sending}
               disabled={
-                (channels.includes('email') && !message.trim()) ||
+                messageRequired ||
                 (mode === 'selection'
                   ? !selectedIds.size
                   : channels.length === 1 && channels[0] === 'email'
@@ -730,18 +639,9 @@ export default function EnvoyerClientsPageInner() {
                   </div>
                   {result.data?.whatsapp?.queued ? (
                     <p className="muted" style={{ marginTop: 10 }}>
-                      Les 3 bots envoient en arrière-plan (12 messages / 30 min / bot). Suivez les
-                      discussions sur <a href="/admin/campagne-whatsapp">Campagne WA 3 bots</a> ou{' '}
+                      Envoi WhatsApp en arrière-plan. Suivez les discussions sur{' '}
+                      <a href="/admin/campagne-whatsapp">Campagne WA 3 bots</a> ou{' '}
                       <a href="/admin/campagne-wa-envoyes">déjà envoyés</a>.
-                      {waLiveSent != null ? (
-                        <>
-                          {' '}
-                          <strong>{waLiveSent}</strong> message(s) déjà confirmé(s) en base
-                          {waLiveSent > 0
-                            ? ' — sur le WhatsApp du bot, une nouvelle discussion apparaît environ toutes les minutes.'
-                            : ' — le premier envoi peut prendre 1 à 2 minutes.'}
-                        </>
-                      ) : null}
                     </p>
                   ) : null}
                   {(result.warnings?.length || result.data?.warnings?.length) ? (

@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://boxingcenter.fr/offre-d-ete/sitemap.xml
-Sitemap: https://gestion-manager.vercel.app/offre-d-ete/sitemap.xml

@@ -36,11 +36,10 @@ Copier `.env.local.example` → variables d'environnement Vercel :
 Exécuter dans le SQL Editor :
 1. `001_boxing_center.sql` (managers)
 2. `002_app_users.sql` (comptes console)
-3. `007_offre_ete_events.sql` (tracking Offre Été 2026 — voir `../infobox/supabase/migrations/`)
-4. `012_offre_ete_whatsapp_reads.sql` (ouvertures WhatsApp campagne offre été)
-5. `008_chatbot.sql` (leads & stats chatbot Portet)
-6. `014_campaign_settings.sql` (cron campagne horaire — pause / réchauffement)
-7. `015_tunnel_leads.sql` (leads tunnels 29€, 259€, séance d'essai)
+3. `008_chatbot.sql` (leads & stats chatbot Portet)
+4. `012_offre_ete_whatsapp_reads.sql` (legacy — ouvertures WhatsApp campagne, tag `offre_ete_2026`)
+5. `014_campaign_settings.sql` (cron campagne horaire — pause / réchauffement)
+6. `015_tunnel_leads.sql` (leads tunnels 29€, 259€, séance d'essai)
 
 Voir aussi [docs/CAMPAGNE_CHECKLIST.md](docs/CAMPAGNE_CHECKLIST.md) — planning : `/admin/campagne-planning`.
 

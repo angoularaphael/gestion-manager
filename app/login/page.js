@@ -37,39 +37,67 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <Image src="/logo.png" alt="Boxing Center" width={200} height={50} className="login-logo" priority />
-        <p className="login-subtitle">Gestion managers</p>
-        <form onSubmit={onSubmit} className={loading ? 'login-form--locked' : undefined}>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            required
+      <div className="login-page__glow login-page__glow--a" aria-hidden="true" />
+      <div className="login-page__glow login-page__glow--b" aria-hidden="true" />
+      <div className="login-page__grain" aria-hidden="true" />
+
+      <div className="login-panel">
+        <div className="login-brand">
+          <Image
+            src="/logo.png"
+            alt="Boxing Center"
+            width={220}
+            height={56}
+            className="login-logo"
+            priority
           />
-          <label htmlFor="password">Mot de passe</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            required
-          />
-          {error && <p className="error">{error}</p>}
-          <ActionButton type="submit" className="btn" style={{ width: '100%' }} loading={loading}>
+          <p className="login-eyebrow">Administration</p>
+          <h1 className="login-title">Console Boxing Center</h1>
+          <p className="login-subtitle">Accès réservé aux administrateurs</p>
+        </div>
+
+        <form onSubmit={onSubmit} className={loading ? 'login-form--locked' : 'login-form'}>
+          <div className="form-field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              autoComplete="username"
+              required
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="password">Mot de passe</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+          {error ? <p className="error">{error}</p> : null}
+          <ActionButton type="submit" className="btn login-submit" loading={loading}>
             {loading ? 'Connexion…' : 'Se connecter'}
           </ActionButton>
         </form>
-        <div style={{ marginTop: '1rem' }}>
+
+        <div className="login-footer">
           <InstallPwa variant="login" />
+          <a
+            className="login-site-link"
+            href="https://boxingcenter.fr/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            boxingcenter.fr
+          </a>
         </div>
-        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', textAlign: 'center' }}>
-          <a href="https://boxingcenter.fr/" target="_blank" rel="noreferrer">boxingcenter.fr</a>
-        </p>
       </div>
     </div>
   );

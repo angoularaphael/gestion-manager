@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from 'react';
 
+function Metric({ label, value }) {
+  return (
+    <div className="metric-cell">
+      <span className="metric-label">{label}</span>
+      <strong className="metric-value">{value ?? '—'}</strong>
+    </div>
+  );
+}
+
 function StatsBlock({ title, stats, error, accent = 'default', subtitle = '' }) {
   if (error) {
     return (
@@ -14,47 +23,19 @@ function StatsBlock({ title, stats, error, accent = 'default', subtitle = '' }) 
     );
   }
 
-  if (!stats) {
-    return (
-      <div className="dashboard-stats-block">
-        <h3 className={`dashboard-stats-heading dashboard-stats-heading-${accent}`}>{title}</h3>
-        <div className="grid stats-grid">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="card stat stat-skeleton">
-              <span className="muted">…</span>
-              <strong>—</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="dashboard-stats-block">
-      <h3 className={`dashboard-stats-heading dashboard-stats-heading-${accent}`}>
-        {title}
-        {subtitle ? <span className="dashboard-stats-subtitle">{subtitle}</span> : null}
-      </h3>
-      <div className="grid stats-grid">
-        <div className="card stat">
-          <span className="muted">Total</span>
-          <strong>{stats.total}</strong>
-        </div>
-        <div className="card stat">
-          <span className="muted">Avec tél.</span>
-          <strong>{stats.withPhone}</strong>
-        </div>
-        <div className="card stat">
-          <span className="muted">Avec email</span>
-          <strong>{stats.withEmail}</strong>
-        </div>
-        <div className="card stat">
-          <span className="muted">Les deux</span>
-          <strong>{stats.both}</strong>
-        </div>
+    <section className={`metric-band metric-band--${accent}`}>
+      <header className="metric-band-header">
+        <h3 className="metric-band-title">{title}</h3>
+        {subtitle ? <span className="metric-band-subtitle">{subtitle}</span> : null}
+      </header>
+      <div className="metric-band-row">
+        <Metric label="Total" value={stats?.total} />
+        <Metric label="Avec tél." value={stats?.withPhone} />
+        <Metric label="Avec email" value={stats?.withEmail} />
+        <Metric label="Les deux" value={stats?.both} />
       </div>
-    </div>
+    </section>
   );
 }
 

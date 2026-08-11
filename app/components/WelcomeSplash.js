@@ -23,12 +23,12 @@ export default function WelcomeSplash({ phase }) {
           />
         </div>
 
-        <p className="welcome-splash__eyebrow">Bienvenue dans</p>
+        <p className="welcome-splash__eyebrow">Bienvenue</p>
         <h1 className="welcome-splash__title">
-          Le gestionnaire des managers
+          Console admin
           <span>Boxing Center</span>
         </h1>
-        <p className="welcome-splash__tagline">Console d&apos;administration</p>
+        <p className="welcome-splash__tagline">Gestion des contacts &amp; campagnes</p>
 
         <div className="welcome-splash__loader" role="presentation">
           <span className="welcome-splash__loader-bar" />

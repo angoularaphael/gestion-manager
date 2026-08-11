@@ -1,5 +1,20 @@
+import { DM_Sans, Oswald } from 'next/font/google';
 import AppBoot from './components/AppBoot';
 import './globals.css';
+
+const fontDisplay = Oswald({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-oswald',
+  display: 'swap',
+});
+
+const fontBody = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'Boxing Center — Gestion managers',
@@ -30,12 +45,12 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0f172a',
+  themeColor: '#0a1020',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${fontDisplay.variable} ${fontBody.variable}`}>
       <head>
         <meta charSet="utf-8" />
       </head>

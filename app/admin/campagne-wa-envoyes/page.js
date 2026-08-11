@@ -50,7 +50,7 @@ export default function CampagneWaEnvoyesPage() {
   async function handleReset() {
     if (
       !window.confirm(
-        'Réinitialiser tous les envois WhatsApp campagne offre été ?\n\nLes compteurs envoyés/lus repartiront de zéro.'
+        'Réinitialiser tous les envois WhatsApp campagne ?\n\nLes compteurs envoyés/lus repartiront de zéro.'
       )
     ) {
       return;
@@ -76,7 +76,7 @@ export default function CampagneWaEnvoyesPage() {
         <div>
           <h1>WhatsApp campagne — déjà envoyés</h1>
           <p className="page-subtitle">
-            Historique des contacts ayant reçu l&apos;offre été 2026 ·{' '}
+            Historique des contacts ayant reçu la campagne WhatsApp ·{' '}
             <Link href="/admin/campagne-whatsapp">retour campagne</Link>
           </p>
         </div>

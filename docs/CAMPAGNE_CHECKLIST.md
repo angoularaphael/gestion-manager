@@ -18,7 +18,7 @@ Mêmes hôtes/ports que **compta-boxing** (`BOT_URL_*` / `bots/deploy/`).
 | `CRON_SECRET` | chaîne aléatoire pour le cron (toutes les 30 min) |
 | `EMAIL_PROVIDER` | `mailjet` |
 
-**Important :** ne pas définir `OFFRE_ETE_WHATSAPP_SENT_OVERRIDE` ni `OFFRE_ETE_WHATSAPP_READ_OVERRIDE` — les compteurs viennent de Supabase.
+Les compteurs WhatsApp viennent de Supabase (tag campagne historique `offre_ete_2026`).
 
 Puis **Redeploy** gestion-manager.
 
@@ -74,7 +74,6 @@ Si erreur « Bot inaccessible » : Bothosting est arrêté ou l’URL Vercel est
 Pour repartir de zéro (envoyés + lus) :
 
 - `/admin/campagne-wa-envoyes` → **Réinitialiser envois WA**
-- ou `/admin/offre-ete` → **Réinitialiser** (clics + vues + WA)
 
 ## Migration Supabase — cron auto (obligatoire pour `/admin/campagne-planning`)
 
@@ -113,7 +112,7 @@ Header : `Authorization: Bearer <CRON_SECRET>`
 - [ ] `EMAIL_PROVIDER=mailjet` sur Vercel
 - [ ] `CRON_SECRET` défini
 - [ ] SPF + DKIM + DMARC validés sur boxing-center-portet.fr
-- [ ] Migrations Supabase : `012`, `013`, `014_campaign_settings.sql`, `015_tunnel_leads.sql`
+- [ ] Migrations Supabase : `012_offre_ete_whatsapp_reads.sql`, `013`, `014_campaign_settings.sql`, `015_tunnel_leads.sql`
 - [ ] 3 bots Bothosting à jour + `.env` 12/30 min
 
 ## WhatsApp — reconnexion (si bannis)
@@ -138,4 +137,3 @@ Header : `Authorization: Bearer <CRON_SECRET>`
 | Offre 29€ | `/offre-29/` |
 | Offre 259€ | `/offre-259/` |
 | Séance essai | `/seance-essai/` |
-| Offre été 89€ | `/offre-d-ete/` |

@@ -241,7 +241,7 @@ export default function EnvoyerPage() {
 
             {clientsSelected ? (
               <p className="muted send-card-hint">
-                Campagne clients massive (vagues Mailjet, offre été) :{' '}
+                Campagne clients massive (vagues Mailjet) :{' '}
                 <Link href="/admin/envoyer-clients">page dédiée clients</Link>.
               </p>
             ) : null}

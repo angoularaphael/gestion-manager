@@ -1,6 +1,5 @@
 import DashboardStats from '../components/DashboardStats';
 import BotStatus from '../components/BotStatus';
-import OffreEteBoutiqueClicksStat from '../components/OffreEteBoutiqueClicksStat';
 import Link from 'next/link';
 import { getSession } from '../../lib/session';
 
@@ -11,27 +10,25 @@ export default async function DashboardPage() {
     <div className="dashboard-page">
       <header className="page-header dashboard-page-header">
         <div>
+          <p className="page-eyebrow">Boxing Center</p>
           <h1>Tableau de bord</h1>
-          <p className="page-subtitle mobile-page-subtitle">Vue d&apos;ensemble Boxing Center</p>
+          <p className="page-subtitle mobile-page-subtitle">Vue d&apos;ensemble des contacts et des bots</p>
         </div>
       </header>
 
       {session?.role === 'super_admin' ? (
-        <div className="card" style={{ marginBottom: '1.25rem' }}>
-          <p style={{ margin: 0 }}>
+        <div className="dashboard-admin-strip">
+          <div>
             <strong>Super administrateur</strong>
-            {' — '}
-            <Link href="/admin/utilisateurs">Créer / gérer les accès administrateurs</Link>
-            {' · '}
-            <Link href="/admin/offre-ete">Offre été 2026</Link>
-          </p>
+            <span>Gérer les accès à la console</span>
+          </div>
+          <Link href="/admin/utilisateurs" className="btn ghost btn-sm">
+            Administrateurs
+          </Link>
         </div>
       ) : null}
 
       <DashboardStats />
-      <div className="grid stats-grid" style={{ marginBottom: '1.25rem' }}>
-        <OffreEteBoutiqueClicksStat />
-      </div>
       <BotStatus />
     </div>
   );
