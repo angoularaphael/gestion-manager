@@ -125,7 +125,7 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
               </form>
             ) : (
               <>
-                <dl className="detail-dl">
+                <dl className="manager-sheet-dl">
                   <dt>Prénom</dt>
                   <dd>{client.prenom || '—'}</dd>
                   <dt>Nom</dt>
@@ -136,6 +136,12 @@ export default function ClientDetailSheet({ client, onClose, onUpdated, onDelete
                   <dd>{formatClientPhone(client.telephone) || '—'}</dd>
                   <dt>Salle</dt>
                   <dd>{client.salle || '—'}</dd>
+                  {client.offre ? (
+                    <>
+                      <dt>Offre</dt>
+                      <dd>{client.offre}</dd>
+                    </>
+                  ) : null}
                 </dl>
                 <div className="form-actions">
                   <button type="button" className="btn secondary" onClick={() => setEditing(true)}>
