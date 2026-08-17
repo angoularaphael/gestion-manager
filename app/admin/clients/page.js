@@ -38,6 +38,99 @@ const CONTACT_FILTERS = [
   { id: 'no_phone', label: 'Sans téléphone' },
 ];
 
+const DATE_PRESETS = [
+  { id: 'today', label: "Aujourd'hui" },
+  { id: '7d', label: '7 jours' },
+  { id: '30d', label: '30 jours' },
+  { id: 'month', label: 'Ce mois' },
+];
+
+function toLocalYmd(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function formatYmdFr(ymd) {
+  if (!ymd) return '…';
+  const [y, m, d] = ymd.split('-');
+  if (!y || !m || !d) return ymd;
+  return `${d}/${m}/${y}`;
+}
+
+function datePresetRange(id) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (id === 'today') {
+    const ymd = toLocalYmd(today);
+    return { from: ymd, to: ymd };
+  }
+  if (id === '7d') {
+    const start = new Date(today);
+    start.setDate(start.getDate() - 6);
+    return { from: toLocalYmd(start), to: toLocalYmd(today) };
+  }
+  if (id === '30d') {
+    const start = new Date(today);
+    start.setDate(start.getDate() - 29);
+    return { from: toLocalYmd(start), to: toLocalYmd(today) };
+  }
+  if (id === 'month') {
+    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+    return { from: toLocalYmd(start), to: toLocalYmd(today) };
+  }
+  return { from: '', to: '' };
+}
+
+function activeDatePreset(dateFrom, dateTo) {
+  return DATE_PRESETS.find((p) => {
+    const r = datePresetRange(p.id);
+    return r.from === dateFrom && r.to === dateTo;
+  })?.id || '';
+}
+
+function intervalRangeText(dateFrom, dateTo) {
+  if (dateFrom && dateTo) {
+    if (dateFrom === dateTo) return `le ${formatYmdFr(dateFrom)}`;
+    const from = dateFrom <= dateTo ? dateFrom : dateTo;
+    const to = dateFrom <= dateTo ? dateTo : dateFrom;
+    return `du ${formatYmdFr(from)} au ${formatYmdFr(to)}`;
+  }
+  if (dateFrom) return `depuis le ${formatYmdFr(dateFrom)}`;
+  if (dateTo) return `jusqu'au ${formatYmdFr(dateTo)}`;
+  return '';
+}
+
+function intervalPeopleLabel(dateFrom, dateTo, count) {
+  const word = count <= 1 ? 'personne' : 'personnes';
+  const range = intervalRangeText(dateFrom, dateTo);
+  return range ? `${word} ${range}` : `${word} (toutes dates)`;
+}
+
+function isoToLocalYmd(iso) {
+  const raw = String(iso || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const t = Date.parse(raw);
+  if (!Number.isFinite(t)) return '';
+  return toLocalYmd(new Date(t));
+}
+
+function clientInDateRange(iso, dateFrom, dateTo) {
+  const ymd = isoToLocalYmd(iso);
+  if (!ymd) return false;
+  let from = dateFrom;
+  let to = dateTo;
+  if (from && to && from > to) {
+    const tmp = from;
+    from = to;
+    to = tmp;
+  }
+  if (from && ymd < from) return false;
+  if (to && ymd > to) return false;
+  return true;
+}
+
 function compareText(a, b, { numeric = false, emptyLast = true } = {}) {
   const av = String(a || '').trim();
   const bv = String(b || '').trim();
@@ -61,6 +154,8 @@ function sortClients(rows, sortKey) {
         return compareText(a.telephone, b.telephone, { numeric: true });
       case 'phone_desc':
         return compareText(b.telephone, a.telephone, { numeric: true });
+      case 'oldest':
+        return new Date(a.created_at || 0) - new Date(b.created_at || 0);
       case 'recent':
       default:
         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
@@ -78,6 +173,10 @@ function nextSortForColumn(column, currentSort) {
     if (currentSort === 'phone_asc') return 'phone_desc';
     return 'phone_asc';
   }
+  if (column === 'date') {
+    if (currentSort === 'recent') return 'oldest';
+    return 'recent';
+  }
   return currentSort;
 }
 
@@ -89,6 +188,10 @@ function sortIndicator(sortKey, column) {
   if (column === 'phone') {
     if (sortKey === 'phone_asc') return ' ↑';
     if (sortKey === 'phone_desc') return ' ↓';
+  }
+  if (column === 'date') {
+    if (sortKey === 'recent') return ' ↓';
+    if (sortKey === 'oldest') return ' ↑';
   }
   return '';
 }
@@ -116,6 +219,8 @@ export default function ClientsPage() {
   const [salle, setSalle] = useState('');
   const [contactFilter, setContactFilter] = useState('');
   const [sortKey, setSortKey] = useState('recent');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(null);
   const [importMsg, setImportMsg] = useState('');
@@ -148,7 +253,7 @@ export default function ClientsPage() {
 
   useEffect(() => {
     setPage(0);
-  }, [search, sourceTab, salle, contactFilter, sortKey]);
+  }, [search, sourceTab, salle, contactFilter, sortKey, dateFrom, dateTo]);
 
   const salles = BOXING_CENTER_SALLES;
 
@@ -161,6 +266,9 @@ export default function ClientsPage() {
     if (contactFilter === 'both') rows = rows.filter((c) => c.email && c.telephone);
     if (contactFilter === 'no_email') rows = rows.filter((c) => !c.email);
     if (contactFilter === 'no_phone') rows = rows.filter((c) => !c.telephone);
+    if (dateFrom || dateTo) {
+      rows = rows.filter((c) => clientInDateRange(c.created_at, dateFrom, dateTo));
+    }
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       rows = rows.filter((c) => {
@@ -172,7 +280,15 @@ export default function ClientsPage() {
       });
     }
     return sortClients(rows, sortKey);
-  }, [clients, sourceTab, salle, contactFilter, search, sortKey]);
+  }, [clients, sourceTab, salle, contactFilter, search, sortKey, dateFrom, dateTo]);
+
+  const hasDateRange = Boolean(dateFrom || dateTo);
+  const datePreset = activeDatePreset(dateFrom, dateTo);
+
+  const intervalCount = useMemo(() => {
+    if (!hasDateRange) return 0;
+    return clients.filter((c) => clientInDateRange(c.created_at, dateFrom, dateTo)).length;
+  }, [clients, dateFrom, dateTo, hasDateRange]);
 
   const contactStats = useMemo(() => {
     let withEmail = 0;
@@ -278,6 +394,12 @@ export default function ClientsPage() {
             <span>{filtered.length}</span>
             <small>Affichés</small>
           </div>
+          {hasDateRange ? (
+            <div className="mini-stat mini-stat--interval">
+              <span>{intervalCount}</span>
+              <small>Dans l&apos;intervalle</small>
+            </div>
+          ) : null}
           <div className="mini-stat">
             <span>{dbStats.withEmail}</span>
             <small>Email (base)</small>
@@ -286,7 +408,7 @@ export default function ClientsPage() {
             <span>{dbStats.withPhone}</span>
             <small>Tél. (base)</small>
           </div>
-          {contactFilter || sourceTab || salle || search.trim() ? (
+          {contactFilter || sourceTab || salle || search.trim() || hasDateRange ? (
             <div className="mini-stat">
               <span>{contactStats.withEmail}</span>
               <small>Email filtrés</small>
@@ -323,12 +445,69 @@ export default function ClientsPage() {
         </select>
         <select value={sortKey} onChange={(e) => setSortKey(e.target.value)} className="search-input">
           <option value="recent">Tri : plus récents</option>
+          <option value="oldest">Tri : plus anciens</option>
           <option value="name_asc">Tri : nom A→Z</option>
           <option value="email_asc">Tri : email A→Z</option>
           <option value="email_desc">Tri : email Z→A</option>
           <option value="phone_asc">Tri : téléphone A→Z</option>
           <option value="phone_desc">Tri : téléphone Z→A</option>
         </select>
+      </div>
+
+      <div className="date-range-bar">
+        <div className="date-range-field">
+          <label htmlFor="clients-date-from">Du</label>
+          <input
+            id="clients-date-from"
+            type="date"
+            className="search-input"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+          />
+        </div>
+        <div className="date-range-field">
+          <label htmlFor="clients-date-to">Au</label>
+          <input
+            id="clients-date-to"
+            type="date"
+            className="search-input"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+          />
+        </div>
+        <div className="channel-pills date-range-presets">
+          {DATE_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              className={`channel-pill ${datePreset === preset.id ? 'on' : ''}`}
+              onClick={() => {
+                const range = datePresetRange(preset.id);
+                setDateFrom(range.from);
+                setDateTo(range.to);
+                if (sortKey !== 'oldest') setSortKey('recent');
+              }}
+            >
+              {preset.label}
+            </button>
+          ))}
+          {hasDateRange ? (
+            <button
+              type="button"
+              className="channel-pill"
+              onClick={() => {
+                setDateFrom('');
+                setDateTo('');
+              }}
+            >
+              Toutes dates
+            </button>
+          ) : null}
+        </div>
+        <div className="date-range-count">
+          <strong>{hasDateRange ? intervalCount : clients.length}</strong>
+          <small>{intervalPeopleLabel(dateFrom, dateTo, hasDateRange ? intervalCount : clients.length)}</small>
+        </div>
       </div>
 
       <div className="channel-pills" style={{ marginBottom: '0.75rem' }}>
@@ -361,7 +540,11 @@ export default function ClientsPage() {
         {loading ? (
           <p className="muted">Chargement de tous les clients… (quelques secondes si la base est grande)</p>
         ) : !paged.length ? (
-          <p className="muted">Aucun client. Importez le CSV ou attendez les leads chatbot.</p>
+          <p className="muted">
+            {hasDateRange
+              ? `Aucun client ${intervalRangeText(dateFrom, dateTo) || 'dans cet intervalle'}.`
+              : 'Aucun client. Importez le CSV ou attendez les leads chatbot.'}
+          </p>
         ) : (
           <>
             <div className="table-wrap">
@@ -389,7 +572,15 @@ export default function ClientsPage() {
                     </th>
                     <th>Salle</th>
                     <th>Source</th>
-                    <th>Ajouté</th>
+                    <th>
+                      <button
+                        type="button"
+                        className="table-sort-btn"
+                        onClick={() => setSortKey((k) => nextSortForColumn('date', k))}
+                      >
+                        Ajouté{sortIndicator(sortKey, 'date')}
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
