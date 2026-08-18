@@ -1,5 +1,13 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "$schema": "https://openapi.vercel.sh/schema.json",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "gestion-manager.vercel.app" }],
+      "destination": "https://manager.boxingcenter.fr/$1",
+      "permanent": true
+    }
+  ],
   "functions": {
     "app/api/cron/campaign-hourly/route.js": {
       "maxDuration": 300

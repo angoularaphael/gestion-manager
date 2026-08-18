@@ -16,9 +16,12 @@ export async function POST(request) {
 
     let fields = [];
 
+    let wave = 'all';
+
     if (contentType.includes('multipart/form-data')) {
       const form = await request.formData();
       const file = form.get('file');
+      wave = String(form.get('wave') || 'all');
       if (!file || typeof file.text !== 'function') {
         return NextResponse.json({ error: 'Fichier CSV ou XLS requis' }, { status: 400 });
       }
@@ -26,6 +29,7 @@ export async function POST(request) {
       text = await file.text();
     } else {
       const body = await request.json();
+      wave = String(body.wave || 'all');
       if (Array.isArray(body.fields) && body.fields.length) {
         fields = body.fields;
       } else {
@@ -38,7 +42,7 @@ export async function POST(request) {
       if (!String(text).trim()) {
         return NextResponse.json({ error: 'Contenu vide' }, { status: 400 });
       }
-      fields = parseClientImportFile(text, filename);
+      fields = parseClientImportFile(text, filename, { wave });
     }
 
     if (!fields.length) {
