@@ -14,7 +14,7 @@
   {
     "id": "portet-disciplines",
     "question": "Quelles disciplines sont proposées à Portet ?",
-    "answer": "Boxe anglaise, muay thaï, kick / K1, MMA et grappling, cross training, boxing training, Lady Punch et boxe éducative (dès 7 ans).",
+    "answer": "Boxe anglaise, muay thaï, kick / K1, MMA et grappling, cross training, boxing training, Lady Punch et boxe éducative (7 à 16 ans).",
     "keywords": ["discipline", "activité", "boxe", "muay", "mma", "kick", "grappling", "lady punch", "portet"]
   },
   {
@@ -68,8 +68,8 @@
   {
     "id": "contact-age",
     "question": "À partir de quel âge puis-je m'inscrire ?",
-    "answer": "Dès 8 ans dans la catégorie Boxe Éducative.",
-    "keywords": ["âge", "age", "enfant", "boxe éducative", "minimum", "8 ans"]
+    "answer": "La boxe éducative est de 7 à 16 ans. Baby Boxe accueille les 3-6 ans. Les formules adultes (sans engagement, 12 mois, etc.) sont à partir de 15 ans.",
+    "keywords": ["âge", "age", "enfant", "boxe éducative", "minimum", "7 ans", "16 ans"]
   },
   {
     "id": "contact-cheque-vacances",
