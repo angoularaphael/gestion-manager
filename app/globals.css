@@ -1743,6 +1743,26 @@ th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; colo
   font-size: 1rem;
 }
 
+.dashboard-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-card-head h2 {
+  margin: 0;
+}
+
+.email-pp {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+  flex-shrink: 0;
+}
+
 .text-ok { color: var(--ok); }
 .text-err { color: var(--err); }
 

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { botFetch, getBotConfig } from '../../../../lib/bot';
+import { getEmailConfig } from '../../../../lib/emailConfig';
 import { getSession } from '../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
 
   const config = getBotConfig();
+  const emailCfg = getEmailConfig();
   const summary = {
     config,
     whatsapp: {
@@ -21,12 +23,16 @@ export async function GET() {
       qrError: null,
       error: null,
     },
-    email: { loading: false, configured: false, error: null },
+    email: {
+      loading: false,
+      configured: Boolean(emailCfg.ready),
+      provider: emailCfg.provider,
+      error: emailCfg.issue || null,
+    },
   };
 
   if (!config.configured) {
     summary.whatsapp.error = 'URL du bot non configurée sur Vercel (NEXT_PUBLIC_WHATSAPP_BOT_URL).';
-    summary.email.error = 'Configuration incomplète sur Vercel.';
     return NextResponse.json(summary);
   }
 
@@ -39,17 +45,6 @@ export async function GET() {
     summary.whatsapp.qrError = status.qrError || null;
   } catch (e) {
     summary.whatsapp.error = e.message;
-  }
-
-  if (!config.hasSecret) {
-    summary.email.error = 'SITE_API_SECRET manquant sur Vercel.';
-  } else {
-    try {
-      const email = await botFetch('/api/email-status');
-      summary.email.configured = Boolean(email?.configured);
-    } catch (e) {
-      summary.email.error = e.message;
-    }
   }
 
   return NextResponse.json(summary);

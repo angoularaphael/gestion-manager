@@ -31,15 +31,18 @@ export default function BotStatus() {
 
   const wa = summary?.whatsapp;
   const email = summary?.email;
-  const botError = wa?.error;
+  const emailOk = Boolean(email?.configured);
 
   return (
     <>
-      {botError && (
+      {summary && !emailOk && (
         <div className="alert-banner warn">
           <div>
-            <strong>Messagerie temporairement indisponible</strong>
-            <p>La liste des managers reste accessible. Réessayez l&apos;envoi plus tard.</p>
+            <strong>Email indisponible</strong>
+            <p>
+              Resend n&apos;est pas actif sur Vercel (EMAIL_PROVIDER + RESEND_API_KEY). La liste des
+              managers reste accessible. WhatsApp se gère à part.
+            </p>
           </div>
         </div>
       )}
@@ -71,7 +74,10 @@ export default function BotStatus() {
         </div>
 
         <div className="card dashboard-card">
-          <h2>Email</h2>
+          <div className="dashboard-card-head">
+            <img src="/logo.png" alt="Boxing Center" width={48} height={48} className="email-pp" />
+            <h2>Email</h2>
+          </div>
           <p>
             Statut :{' '}
             {!summary ? (
