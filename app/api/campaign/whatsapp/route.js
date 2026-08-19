@@ -32,6 +32,17 @@ export async function GET(request) {
         })
       );
     }
+    if (view === 'bots') {
+      const { getCampaignBots } = await import('../../../../lib/campaignBots');
+      return NextResponse.json({
+        bots: getCampaignBots().map((b) => ({
+          slug: b.slug,
+          label: b.label,
+          envKey: b.envKey,
+          configured: b.configured,
+        })),
+      });
+    }
     return NextResponse.json(await getCampaignWhatsAppStats({ includeBots: false }));
   } catch (err) {
     return apiError(err);

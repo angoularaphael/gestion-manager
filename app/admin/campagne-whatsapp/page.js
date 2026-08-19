@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import ActionButton from '../../components/ActionButton';
 import { parseApiJson } from '../../../lib/apiJson';
-import { CAMPAIGN_BOTS } from '../../../lib/campaignBots';
 import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
@@ -247,6 +246,7 @@ function ConversationList({ items }) {
 }
 
 export default function CampagneWhatsAppPage() {
+  const [bots, setBots] = useState([{ slug: 'sim1', label: 'Campagne WhatsApp' }]);
   const [stats, setStats] = useState(null);
   const [conversations, setConversations] = useState({ outbound: [], inbound: [] });
   const [convWarning, setConvWarning] = useState('');
@@ -256,13 +256,18 @@ export default function CampagneWhatsAppPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const [statsRes, convRes] = await Promise.all([
+      const [statsRes, convRes, botsRes] = await Promise.all([
         fetch('/api/campaign/whatsapp', { cache: 'no-store' }),
         fetch('/api/campaign/whatsapp?view=conversations&limit=60', { cache: 'no-store' }),
+        fetch('/api/campaign/whatsapp?view=bots', { cache: 'no-store' }),
       ]);
       const statsData = await parseApiJson(statsRes);
       const convData = await parseApiJson(convRes);
+      const botsData = await parseApiJson(botsRes);
       if (statsRes.ok) setStats(statsData);
+      if (botsRes.ok && Array.isArray(botsData.bots) && botsData.bots.length) {
+        setBots(botsData.bots);
+      }
       if (convRes.ok) {
         setConversations(convData);
         setConvWarning(convData.schemaWarning || '');
@@ -304,7 +309,7 @@ export default function CampagneWhatsAppPage() {
   async function launchWave(testOnly = false) {
     const msg = testOnly
       ? 'Envoyer un message test WhatsApp via le 1er bot connecté ?'
-      : `Lancer une vague sur les 3 bots ?\n\nChaque bot connecté envoie jusqu'à ${stats?.messagesPerBotPerWave || 12} messages / ${stats?.windowMinutes || 30} min (~2m30 d'espacement).\nUn numéro ne reçoit jamais 2 fois la campagne.`;
+      ? `Lancer une vague WhatsApp ?\n\nJusqu'à ${stats?.messagesPerBotPerWave || 12} messages / ${stats?.windowMinutes || 30} min.\nUn numéro ne reçoit jamais 2 fois la campagne.`
     if (!window.confirm(msg)) return;
 
     await runDispatch(async () => {
@@ -324,9 +329,9 @@ export default function CampagneWhatsAppPage() {
     <div className="wa-page campaign-wa-page">
       <header className="page-header">
         <div>
-          <h1>Campagne WhatsApp — 3 serveurs</h1>
+          <h1>Campagne WhatsApp</h1>
           <p className="page-subtitle">
-            Campagne WhatsApp · 12 messages / 30 min / bot · cron toutes les 30 min ·{' '}
+            Un serveur Bothosting (compta) · 12 messages / 30 min · cron toutes les 30 min ·{' '}
             <Link href="/admin/envoyer-clients">envoyer clients</Link>
             {' · '}
             <Link href="/admin/campagne-wa-envoyes">déjà envoyés</Link>
@@ -360,13 +365,13 @@ export default function CampagneWhatsAppPage() {
       <section className="card" style={{ marginBottom: '1rem' }}>
         <h2 className="section-title">Lancer une vague</h2>
         <p className="muted">
-          Les 3 bots travaillent en parallèle. Chaque numéro client n&apos;est assigné qu&apos;à un seul bot.
-          Les discussions apparaissent ci-dessous et sur chaque téléphone WhatsApp connecté.
+          Les messages partent via le serveur campagne unique
+          (<code>prem-eu2.bot-hosting.net:20868</code>). Un numéro client n&apos;est jamais contacté deux fois.
           Test WhatsApp → numéro <code>237693646080</code> (ou <code>CAMPAIGN_TEST_PHONE</code> sur Vercel).
         </p>
         <div className="wa-actions">
           <ActionButton className="btn primary" onClick={() => launchWave(false)} loading={dispatching}>
-            Lancer vague (3 bots)
+            Lancer vague
           </ActionButton>
           <ActionButton className="btn btn-secondary" onClick={() => launchWave(true)} loading={dispatching}>
             Test WhatsApp
@@ -402,7 +407,7 @@ export default function CampagneWhatsAppPage() {
       </section>
 
       <div className="campaign-bots-grid">
-        {CAMPAIGN_BOTS.map((bot) => (
+        {bots.map((bot) => (
           <BotCard key={bot.slug} bot={bot} onChange={refresh} />
         ))}
       </div>

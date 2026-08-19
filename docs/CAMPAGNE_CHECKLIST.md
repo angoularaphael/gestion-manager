@@ -10,7 +10,7 @@ Mêmes hôtes/ports que **compta-boxing** (`BOT_URL_*` / `bots/deploy/`).
 | `WHATSAPP_BOT_URL_MINIMES` | `http://prem-eu4.bot-hosting.net:20125` |
 | `WHATSAPP_BOT_URL_ST_CYPRIEN` | `http://prem-eu2.bot-hosting.net:20405` |
 | `WHATSAPP_BOT_URL_RAMONVILLE` | `http://prem-eu4.bot-hosting.net:21357` |
-| `NEXT_PUBLIC_WHATSAPP_BOT_URL` | `http://prem-eu4.bot-hosting.net:20125` (legacy / Minimes) |
+| `WHATSAPP_CAMPAIGN_BOT_URL` | `http://prem-eu2.bot-hosting.net:20868` (serveur unique campagne, compta) |
 | `CAMPAIGN_WA_PER_BOT_WAVE` | `12` |
 | `CAMPAIGN_WA_WINDOW_MINUTES` | `30` |
 | `CAMPAIGN_TEST_PHONE` | `237693646080` |
