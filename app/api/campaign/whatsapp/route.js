@@ -18,9 +18,10 @@ export async function GET(request) {
   if (!session) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   try {
     const view = new URL(request.url).searchParams.get('view');
+    const kind = new URL(request.url).searchParams.get('kind') || 'balma';
     if (view === 'conversations') {
       const limit = Number(new URL(request.url).searchParams.get('limit') || 80);
-      return NextResponse.json(await fetchCampaignConversations({ limit }));
+      return NextResponse.json(await fetchCampaignConversations({ limit, kind }));
     }
     if (view === 'sent') {
       const { searchParams } = new URL(request.url);
@@ -29,6 +30,7 @@ export async function GET(request) {
           page: Number(searchParams.get('page') || 1),
           limit: Number(searchParams.get('limit') || 50),
           status: searchParams.get('status') || 'sent',
+          kind,
         })
       );
     }
@@ -43,7 +45,7 @@ export async function GET(request) {
         })),
       });
     }
-    return NextResponse.json(await getCampaignWhatsAppStats({ includeBots: false }));
+    return NextResponse.json(await getCampaignWhatsAppStats({ includeBots: false, kind }));
   } catch (err) {
     return apiError(err);
   }
@@ -59,12 +61,13 @@ export async function POST(request) {
     if (action === 'dispatch') {
       const result = await dispatchCampaignWhatsAppWave({
         testOnly: Boolean(body.test_only),
+        kind: body.kind || 'balma',
       });
       return NextResponse.json({ success: true, ...result });
     }
 
     if (action === 'reset') {
-      await resetCampaignWhatsAppTracking();
+      await resetCampaignWhatsAppTracking(body.kind || 'balma');
       return NextResponse.json({ ok: true, reset: true });
     }
 

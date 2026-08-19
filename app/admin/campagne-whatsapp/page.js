@@ -307,16 +307,23 @@ export default function CampagneWhatsAppPage() {
   }
 
   async function launchWave(testOnly = false) {
+    const perBot = stats?.messagesPerBotPerWave || 12;
+    const mins = stats?.windowMinutes || 30;
     const msg = testOnly
-      ? 'Envoyer un message test WhatsApp via le 1er bot connecté ?'
-      ? `Lancer une vague WhatsApp ?\n\nJusqu'à ${stats?.messagesPerBotPerWave || 12} messages / ${stats?.windowMinutes || 30} min.\nUn numéro ne reçoit jamais 2 fois la campagne.`
+      ? "Envoyer un WhatsApp test vers un client déjà en base ?"
+      : [
+          "Lancer une vague WhatsApp ?",
+          "",
+          "Jusqu'à " + perBot + " messages / " + mins + " min par bot.",
+          "Un numéro ne reçoit jamais 2 bots.",
+        ].join("\n");
     if (!window.confirm(msg)) return;
 
     await runDispatch(async () => {
-      const res = await fetch('/api/campaign/whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'dispatch', test_only: testOnly }),
+      const res = await fetch("/api/campaign/whatsapp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "dispatch", test_only: testOnly }),
       });
       const data = await parseApiJson(res);
       if (!res.ok) throw new Error(data.error);
@@ -329,10 +336,12 @@ export default function CampagneWhatsAppPage() {
     <div className="wa-page campaign-wa-page">
       <header className="page-header">
         <div>
-          <h1>Campagne WhatsApp</h1>
+          <h1>Bots WhatsApp campagne</h1>
           <p className="page-subtitle">
-            Un serveur Bothosting (compta) · 12 messages / 30 min · cron toutes les 30 min ·{' '}
-            <Link href="/admin/envoyer-clients">envoyer clients</Link>
+            6 serveurs partagés Com Balma + Offres promo · 12 messages / 30 min · un destinataire = un
+            bot par campagne · <Link href="/admin/com-balma">Com Balma</Link>
+            {' · '}
+            <Link href="/admin/com-offres">Offres promo</Link>
             {' · '}
             <Link href="/admin/campagne-wa-envoyes">déjà envoyés</Link>
           </p>
@@ -365,9 +374,9 @@ export default function CampagneWhatsAppPage() {
       <section className="card" style={{ marginBottom: '1rem' }}>
         <h2 className="section-title">Lancer une vague</h2>
         <p className="muted">
-          Les messages partent via le serveur campagne unique
-          (<code>prem-eu2.bot-hosting.net:20868</code>). Un numéro client n&apos;est jamais contacté deux fois.
-          Test WhatsApp → numéro <code>237693646080</code> (ou <code>CAMPAIGN_TEST_PHONE</code> sur Vercel).
+          Les messages partent via les 6 serveurs <code>gestion-manager-1</code> à{' '}
+          <code>gestion-manager-6</code>. Un numéro n&apos;est jamais contacté par deux bots.
+          Test → fiche déjà en base (Aventure / boxplus-test), pas un nouveau numéro.
         </p>
         <div className="wa-actions">
           <ActionButton className="btn primary" onClick={() => launchWave(false)} loading={dispatching}>

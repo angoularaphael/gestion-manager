@@ -59,8 +59,13 @@ export default function CampagnePlanningPage() {
     <div className="page-stack">
       <h1>Planning campagne horaire</h1>
       <p className="muted">
-        Cron Vercel toutes les 30 min : <strong>200 emails</strong> (plafond horaire) puis{' '}
-        <strong>12 WhatsApp / 30 min × bots connectés</strong>. Mailjet uniquement — pas Brevo.
+        Une campagne auto à la fois : <strong>Com Balma</strong> ou <strong>Offres promo</strong>.
+        Cron : e-mails Resend puis WhatsApp (12 / 30 min × bots). Les 6 SIM sont partagés — ne pas
+        lancer les deux vagues manuelles en même temps.
+      </p>
+      <p className="muted">
+        Lancer à la main : <Link href="/admin/com-balma">Com Balma</Link> ·{' '}
+        <Link href="/admin/com-offres">Offres promo</Link>
       </p>
 
       {missingTable ? (
@@ -78,6 +83,12 @@ export default function CampagnePlanningPage() {
           <div>
             <span className="muted">Cron campagne</span>
             <strong>{active ? 'Actif' : 'En pause'}</strong>
+          </div>
+          <div>
+            <span className="muted">Campagne auto</span>
+            <strong>
+              {settings?.campaign === 'offres' ? 'Offres promo' : 'Com Balma'}
+            </strong>
           </div>
           <div>
             <span className="muted">Réchauffage</span>
@@ -103,15 +114,32 @@ export default function CampagnePlanningPage() {
 
         <div className="wa-actions" style={{ marginTop: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           {!active ? (
-            <ActionButton className="btn primary" onClick={() => action('start')} loading={pending}>
-              Démarrer la campagne auto
-            </ActionButton>
+            <>
+              <ActionButton
+                className="btn primary"
+                onClick={() => action('start', { kind: 'balma' })}
+                loading={pending}
+              >
+                Démarrer auto — Com Balma
+              </ActionButton>
+              <ActionButton
+                className="btn primary"
+                onClick={() => action('start', { kind: 'offres' })}
+                loading={pending}
+              >
+                Démarrer auto — Offres promo
+              </ActionButton>
+            </>
           ) : (
             <ActionButton className="btn btn-secondary" onClick={() => action('pause')} loading={pending}>
               Mettre en pause
             </ActionButton>
           )}
-          <ActionButton className="btn btn-secondary" onClick={() => action('run_now')} loading={pending}>
+          <ActionButton
+            className="btn btn-secondary"
+            onClick={() => action('run_now', { kind: settings?.campaign || 'balma' })}
+            loading={pending}
+          >
             Lancer un cycle maintenant
           </ActionButton>
         </div>
@@ -158,7 +186,7 @@ export default function CampagnePlanningPage() {
       </div>
 
       <div className="card">
-        <h2>WhatsApp — 3 bots</h2>
+        <h2>WhatsApp — 6 bots (partagés)</h2>
         <p className="muted">
           Si un numéro est banni : attendez 24–48 h, puis{' '}
           <Link href="/admin/campagne-whatsapp">rescannez le QR</Link> sur chaque serveur Bothosting.
@@ -181,15 +209,14 @@ export default function CampagnePlanningPage() {
       </div>
 
       <div className="card send-wa-hint">
-        <h2>Checklist Mailjet (anti-ban)</h2>
+        <h2>Checklist e-mail (anti-ban)</h2>
         <ul>
           <li>
-            <code>EMAIL_PROVIDER=mailjet</code> sur Vercel — ne pas utiliser Brevo/suzinabot pour les
-            campagnes
+            <code>EMAIL_PROVIDER=resend</code> sur Vercel — Resend Pro pour les campagnes
           </li>
           <li>SPF + DKIM + DMARC sur boxingcenter.fr</li>
-          <li>Test avec « giffareno237@gmail.com » avant la grosse vague</li>
-          <li>Plafond 200 emails/heure (sous la limite 500/h observée sur linuxcam)</li>
+          <li>Test sur un client existant avant la grosse vague</li>
+          <li>Plafond 80 emails/heure, 1 600/jour (Resend Pro)</li>
         </ul>
       </div>
     </div>

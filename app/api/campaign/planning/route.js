@@ -9,6 +9,7 @@ import {
   setWarmupPhase,
   updateCampaignSettings,
 } from '../../../../lib/campaignSettings';
+import { resolveCampaignKind } from '../../../../lib/campaigns';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,12 +17,19 @@ function json(data, status = 200) {
   return NextResponse.json(data, { status });
 }
 
-export async function GET() {
+function kindFrom(request, body = {}) {
+  const q = new URL(request.url).searchParams.get('kind');
+  const raw = body.kind || q;
+  if (!raw) return undefined;
+  return resolveCampaignKind(raw);
+}
+
+export async function GET(request) {
   const session = await getSession();
   if (!session) return json({ error: 'Non authentifié' }, 401);
 
   try {
-    const stats = await getCampaignPlanningStats();
+    const stats = await getCampaignPlanningStats(kindFrom(request));
     return json(stats);
   } catch (e) {
     return json({ error: e.message }, 500);
@@ -40,11 +48,16 @@ export async function POST(request) {
   }
 
   const action = body.action || 'stats';
+  const kind = kindFrom(request, body);
 
   try {
     if (action === 'start') {
-      await setCampaignActive(true);
-      return json({ ok: true, message: 'Campagne horaire activée (cron chaque heure).' });
+      await setCampaignActive(true, kind);
+      return json({
+        ok: true,
+        kind,
+        message: `Campagne horaire activée (${kind === 'offres' ? 'offres promo' : 'Com Balma'}).`,
+      });
     }
     if (action === 'pause') {
       await setCampaignActive(false);
@@ -55,9 +68,26 @@ export async function POST(request) {
       await setWarmupPhase(phase);
       return json({ ok: true, phase });
     }
+    if (action === 'email_test') {
+      const { sendCampaignEmailTest } = await import('../../../../lib/campaignEmail');
+      const result = await sendCampaignEmailTest(kind);
+      return json({ ok: true, test: true, kind, result, message: 'Test e-mail envoyé (client existant).' });
+    }
+    if (action === 'email_wave') {
+      const { sendCampaignEmailWave } = await import('../../../../lib/campaignEmail');
+      const result = await sendCampaignEmailWave(kind);
+      return json({
+        ok: true,
+        kind,
+        result,
+        message: result.empty
+          ? 'Aucun e-mail restant pour cette campagne.'
+          : `Vague e-mail : ${result.email?.sent || 0} envoyé(s).`,
+      });
+    }
     if (action === 'run_now') {
-      const result = await runCampaignHourlyTick();
-      return json({ ok: true, result });
+      const result = await runCampaignHourlyTick(kind);
+      return json({ ok: true, result, message: 'Vague e-mail / WhatsApp lancée.' });
     }
     if (action === 'reset_hour') {
       await updateCampaignSettings({
@@ -67,7 +97,7 @@ export async function POST(request) {
       return json({ ok: true });
     }
 
-    const stats = await getCampaignPlanningStats();
+    const stats = await getCampaignPlanningStats(kind);
     return json(stats);
   } catch (e) {
     return json({ error: e.message }, 500);
