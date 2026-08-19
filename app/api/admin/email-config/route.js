@@ -18,6 +18,9 @@ export async function GET() {
   } else if (config.provider === 'mailjet') {
     const count = config.mailjet.accounts.filter((a) => a.configured).length;
     hint = `${count} compte(s) Mailjet actif(s). Vérifiez SPF + DKIM sur boxingcenter.fr avant la grosse campagne.`;
+  } else if (config.provider === 'ses') {
+    hint =
+      'Amazon SES actif — sandbox tant que AWS n’a pas validé la prod. Pour envoyer sans attendre : EMAIL_PROVIDER=mailjet.';
   } else {
     hint = 'Clé API Brevo détectée. Les emails partent via Brevo REST depuis Vercel.';
   }
