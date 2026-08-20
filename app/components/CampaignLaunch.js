@@ -15,12 +15,12 @@ const COPY = {
         <a href="https://aventure.boxingcenter.fr/" target="_blank" rel="noreferrer">
           aventure.boxingcenter.fr
         </a>
-        . Un destinataire = un seul bot pour cette campagne. Tests uniquement sur fiches déjà en
-        base.
+        . Un destinataire = un seul bot pour cette campagne. Les e-mails et WhatsApp vont aux
+        fiches <strong>salle Balma</strong> uniquement.
       </>
     ),
     emailHint:
-      '80 mails / heure, 1 600 / jour max. Même contenu que WhatsApp, HTML + bouton vers Aventure.',
+      'Mails uniquement aux fiches salle Balma. Vague courte (~10 mails) pour éviter le timeout. Planning auto pour le reste.',
     otherHref: '/admin/com-offres',
     otherLabel: 'Offres promo (campagne à part)',
   },
@@ -43,6 +43,14 @@ const COPY = {
     otherLabel: 'Com Balma',
   },
 };
+
+function campaignActionError(err) {
+  const m = String(err?.message || err || '');
+  if (/failed to fetch|networkerror|load failed|fetch failed|aborterror/i.test(m)) {
+    return 'La vague a trop duré (timeout). Relance : les destinataires déjà pris ne recevront pas un doublon.';
+  }
+  return m || 'Erreur';
+}
 
 export default function CampaignLaunch({ kind = 'balma' }) {
   const copy = COPY[kind] || COPY.balma;
@@ -91,7 +99,7 @@ export default function CampaignLaunch({ kind = 'balma' }) {
       setMessage(data.message || (data.ok || data.success ? 'OK' : ''));
       setDispatchResult(data);
       await load();
-    }).catch((err) => setError(err.message));
+    }).catch((err) => setError(campaignActionError(err)));
   }
 
   return (
@@ -149,6 +157,11 @@ export default function CampaignLaunch({ kind = 'balma' }) {
           <div className="card stat-card">
             <span className="stat-label">E-mails restants</span>
             <strong>{stats.email?.pendingCount ?? '—'}</strong>
+            {stats.email?.audience ? (
+              <p className="muted" style={{ margin: '6px 0 0' }}>
+                {stats.email.audience}
+              </p>
+            ) : null}
           </div>
           <div className="card stat-card">
             <span className="stat-label">WhatsApp restants</span>
