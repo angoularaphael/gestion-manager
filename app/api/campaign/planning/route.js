@@ -59,9 +59,19 @@ export async function POST(request) {
         message: `Campagne horaire activée (${kind === 'offres' ? 'offres promo' : 'Com Balma'}).`,
       });
     }
-    if (action === 'pause') {
+    if (action === 'pause' || action === 'stop') {
       await setCampaignActive(false);
-      return json({ ok: true, message: 'Campagne mise en pause.' });
+      return json({ ok: true, message: 'Campagne arrêtée.' });
+    }
+    if (action === 'reset') {
+      const { resetCampaignTracking } = await import('../../../../lib/campaignOutbound');
+      await setCampaignActive(false, kind);
+      const reset = await resetCampaignTracking(kind || 'balma');
+      return json({
+        ok: true,
+        ...reset,
+        message: 'Campagne arrêtée et réinitialisée — les destinataires peuvent être recontactés.',
+      });
     }
     if (action === 'warmup') {
       const phase = body.phase;

@@ -132,7 +132,7 @@ export default function CampagnePlanningPage() {
             </>
           ) : (
             <ActionButton className="btn btn-secondary" onClick={() => action('pause')} loading={pending}>
-              Mettre en pause
+              Arrêter campagne
             </ActionButton>
           )}
           <ActionButton
@@ -141,6 +141,22 @@ export default function CampagnePlanningPage() {
             loading={pending}
           >
             Lancer un cycle maintenant
+          </ActionButton>
+          <ActionButton
+            className="btn btn-secondary"
+            onClick={() => {
+              if (
+                !window.confirm(
+                  'Réinitialiser la campagne ?\n\nLe suivi e-mail et WhatsApp est effacé. Les destinataires déjà contactés pourront recevoir le message à nouveau.'
+                )
+              ) {
+                return;
+              }
+              action('reset', { kind: settings?.campaign || 'balma' });
+            }}
+            loading={pending}
+          >
+            Réinitialiser campagne
           </ActionButton>
         </div>
       </div>

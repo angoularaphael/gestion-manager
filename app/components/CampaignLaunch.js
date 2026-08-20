@@ -114,6 +114,35 @@ export default function CampaignLaunch({ kind = 'balma' }) {
       {message ? <p className="success">{message}</p> : null}
 
       <div className="card">
+        <h2>Contrôle campagne</h2>
+        <p className="muted">
+          Arrêter coupe les vagues auto. Réinitialiser efface aussi le suivi e-mail et WhatsApp :
+          tout le monde peut être recontacté, y compris ceux déjà contactés.
+        </p>
+        <div className="wa-actions">
+          <ActionButton className="btn btn-secondary" onClick={() => post('stop')} loading={pending}>
+            Arrêter campagne
+          </ActionButton>
+          <ActionButton
+            className="btn btn-secondary"
+            onClick={() => {
+              if (
+                !window.confirm(
+                  'Réinitialiser cette campagne ?\n\nLe suivi e-mail et WhatsApp est effacé. Les destinataires déjà contactés pourront recevoir le message à nouveau.'
+                )
+              ) {
+                return;
+              }
+              post('reset');
+            }}
+            loading={pending}
+          >
+            Réinitialiser campagne
+          </ActionButton>
+        </div>
+      </div>
+
+      <div className="card">
         <h2>WhatsApp (6 serveurs gestion-manager)</h2>
         <p className="muted">
           Anti-ban : 12 messages / 30 min par bot, ~2 min 30 entre deux envois. Claim SQL : 2 bots
