@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import ActionButton from './ActionButton';
+import CampaignWhatsAppReach from './CampaignWhatsAppReach';
 import { parseApiJson } from '../../lib/apiJson';
 import { useSingleAction } from '../../lib/useSingleAction';
 
@@ -182,21 +183,24 @@ export default function CampaignLaunch({ kind = 'balma' }) {
       </div>
 
       {stats ? (
-        <div className="grid stats-grid">
-          <div className="card stat-card">
-            <span className="stat-label">E-mails restants</span>
-            <strong>{stats.email?.pendingCount ?? '—'}</strong>
-            {stats.email?.audience ? (
-              <p className="muted" style={{ margin: '6px 0 0' }}>
-                {stats.email.audience}
-              </p>
-            ) : null}
+        <>
+          <div className="grid stats-grid">
+            <div className="card stat-card">
+              <span className="stat-label">E-mails restants</span>
+              <strong>{stats.email?.pendingCount ?? '—'}</strong>
+              {stats.email?.audience ? (
+                <p className="muted" style={{ margin: '6px 0 0' }}>
+                  {stats.email.audience}
+                </p>
+              ) : null}
+            </div>
+            <div className="card stat-card">
+              <span className="stat-label">WhatsApp restants</span>
+              <strong>{stats.whatsapp?.pendingCount ?? '—'}</strong>
+            </div>
           </div>
-          <div className="card stat-card">
-            <span className="stat-label">WhatsApp restants</span>
-            <strong>{stats.whatsapp?.pendingCount ?? '—'}</strong>
-          </div>
-        </div>
+          <CampaignWhatsAppReach stats={stats} kind={kind} />
+        </>
       ) : null}
 
       {dispatchResult?.recipients?.length ? (

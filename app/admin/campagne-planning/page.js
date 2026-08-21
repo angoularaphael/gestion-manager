@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import ActionButton from '../../components/ActionButton';
+import CampaignWhatsAppReach from '../../components/CampaignWhatsAppReach';
 import { parseApiJson } from '../../../lib/apiJson';
 import { useSingleAction } from '../../../lib/useSingleAction';
 
@@ -200,6 +201,8 @@ export default function CampagnePlanningPage() {
           </p>
         ) : null}
       </div>
+
+      <CampaignWhatsAppReach stats={stats} kind={settings?.campaign || 'balma'} />
 
       <div className="card">
         <h2>WhatsApp — 6 bots (partagés)</h2>

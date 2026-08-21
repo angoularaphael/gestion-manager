@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import ActionButton from '../../components/ActionButton';
+import CampaignWhatsAppReach from '../../components/CampaignWhatsAppReach';
 import { parseApiJson } from '../../../lib/apiJson';
 import { clientDisplayName, formatClientPhone } from '../../../lib/clientDisplay';
 import { useSingleAction } from '../../../lib/useSingleAction';
@@ -370,6 +371,8 @@ export default function CampagneWhatsAppPage() {
           </div>
         </div>
       ) : null}
+
+      <CampaignWhatsAppReach stats={stats} kind={stats?.kind || 'balma'} />
 
       <section className="card" style={{ marginBottom: '1rem' }}>
         <h2 className="section-title">Lancer une vague</h2>

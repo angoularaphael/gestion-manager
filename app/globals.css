@@ -1641,13 +1641,35 @@ th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; colo
 .metric-band--gold .metric-value { color: var(--accent); }
 .metric-band--green .metric-value { color: #86efac; }
 
+.metric-band-row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.metric-value--rate {
+  color: #86efac;
+}
+
+.campaign-wa-reach {
+  margin: 1rem 0;
+}
+
 @media (max-width: 720px) {
   .metric-band-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .metric-band-row--3 {
+    grid-template-columns: 1fr;
+  }
   .metric-cell:nth-child(2n) { border-right: none; }
   .metric-cell:nth-child(-n+2) {
     border-bottom: 1px solid var(--border);
+  }
+  .metric-band-row--3 .metric-cell {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .metric-band-row--3 .metric-cell:last-child {
+    border-bottom: none;
   }
 }
 
