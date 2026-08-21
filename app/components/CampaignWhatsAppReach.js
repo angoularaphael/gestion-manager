@@ -23,7 +23,7 @@ export default function CampaignWhatsAppReach({ stats, kind = 'balma' }) {
           <strong className="metric-value">{formatFrInt(wa.reads)}</strong>
         </div>
         <div className="metric-cell">
-          <span className="metric-label">Taux de lecture</span>
+          <span className="metric-label">Taux d&apos;ouverture</span>
           <strong className="metric-value metric-value--rate">{formatFrRate(wa.rate)}</strong>
         </div>
       </div>
